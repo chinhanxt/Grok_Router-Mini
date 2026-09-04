@@ -28,7 +28,7 @@
       --badge-text: #e4e4e7;
       --header-bg: rgba(9, 9, 11, 0.9);
       --card-border: #27272a;
-      --table-header-bg: #111114;
+      --table-header-bg: #141418;
       --success-green: #10b981;
       --danger-red: #ef4444;
     }
@@ -69,9 +69,9 @@
     a { color: inherit; text-decoration: none; }
 
     .container-wide {
-      max-width: 1380px;
+      max-width: 1420px;
       margin: 0 auto;
-      padding: 0 36px;
+      padding: 0 32px;
     }
 
     /* Header */
@@ -100,7 +100,7 @@
       font-size: 15px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
 
     .theme-btn {
@@ -121,7 +121,7 @@
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 16px;
-      margin: 32px 0 24px;
+      margin: 28px 0 24px;
     }
 
     .stat-card {
@@ -129,21 +129,38 @@
       border: 1px solid var(--border);
       border-radius: 6px;
       padding: 18px 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
 
     .stat-label {
       font-family: var(--font-mono);
-      font-size: 12px;
+      font-size: 11px;
       color: var(--text-muted);
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.06em;
       margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     .stat-val {
-      font-size: 28px;
+      font-size: 26px;
       font-weight: 700;
       color: var(--text-primary);
+      font-family: var(--font-mono);
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    .stat-unit {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+      font-family: var(--font-sans);
     }
 
     /* Storage Warning Banner */
@@ -166,7 +183,7 @@
       display: flex;
       border-bottom: 1px solid var(--border);
       margin-bottom: 24px;
-      gap: 8px;
+      gap: 12px;
     }
 
     .admin-tab {
@@ -180,6 +197,10 @@
       cursor: pointer;
       border-bottom: 2px solid transparent;
       transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
     }
 
     .admin-tab:hover { color: var(--text-primary); }
@@ -189,11 +210,27 @@
       font-weight: 600;
     }
 
+    .tab-badge {
+      font-size: 11px;
+      padding: 1px 6px;
+      border-radius: 10px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+    }
+    .admin-tab.active .tab-badge {
+      background: var(--text-primary);
+      color: var(--accent-contrast);
+      border-color: var(--text-primary);
+    }
+
     .toolbar-actions {
       display: flex;
       align-items: center;
       justify-content: space-between;
       margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 12px;
     }
 
     .btn-primary {
@@ -209,6 +246,7 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
+      white-space: nowrap;
       transition: opacity 0.15s ease;
     }
     .btn-primary:hover { opacity: 0.9; }
@@ -226,14 +264,16 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
+      white-space: nowrap;
       transition: all 0.15s ease;
     }
     .btn-secondary:hover { background: var(--bg-subtle); border-color: var(--text-primary); }
 
     .btn-sm {
-      padding: 4px 8px;
+      padding: 4px 9px;
       font-size: 11px;
       font-family: var(--font-mono);
+      font-weight: 500;
       border-radius: 3px;
       border: 1px solid var(--border);
       cursor: pointer;
@@ -241,19 +281,27 @@
       color: var(--text-primary);
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 5px;
+      white-space: nowrap;
+      transition: all 0.15s ease;
     }
-    .btn-sm:hover { background: var(--bg-subtle); }
+    .btn-sm:hover { background: var(--bg-subtle); border-color: var(--text-secondary); }
 
     .btn-danger { color: var(--danger-red); }
     .btn-danger:hover { background: rgba(239, 68, 68, 0.1); border-color: var(--danger-red); }
 
-    /* Tables */
+    /* Tables & Responsive Wrapper */
     .table-frame {
       border: 1px solid var(--border);
       border-radius: 6px;
       overflow: hidden;
       background: var(--bg-surface);
+    }
+
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     table.admin-table {
@@ -267,24 +315,34 @@
       background: var(--table-header-bg);
       font-family: var(--font-mono);
       font-weight: 600;
-      font-size: 12px;
+      font-size: 11px;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.06em;
       color: var(--text-muted);
-      padding: 10px 16px;
+      padding: 12px 18px;
       border-bottom: 1px solid var(--border);
+      white-space: nowrap;
     }
 
     table.admin-table td {
-      padding: 12px 16px;
+      padding: 14px 18px;
       border-bottom: 1px solid var(--border-subtle);
       color: var(--text-secondary);
+      white-space: nowrap;
+      vertical-align: middle;
     }
 
     table.admin-table tr:last-child td { border-bottom: none; }
     table.admin-table tr:hover td { background: var(--bg-subtle); color: var(--text-primary); }
 
-    .mono-cell { font-family: var(--font-mono); font-weight: 600; color: var(--text-primary); }
+    .nowrap { white-space: nowrap; }
+
+    .mono-cell {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+    }
 
     .status-badge {
       font-family: var(--font-mono);
@@ -292,8 +350,11 @@
       font-weight: 600;
       padding: 2px 7px;
       border-radius: 3px;
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
       border: 1px solid var(--border);
+      white-space: nowrap;
     }
     .status-active { background: rgba(16, 185, 129, 0.1); color: var(--success-green); border-color: rgba(16, 185, 129, 0.3); }
     .status-disabled { background: rgba(239, 68, 68, 0.1); color: var(--danger-red); border-color: rgba(239, 68, 68, 0.3); }
@@ -302,21 +363,22 @@
       font-family: var(--font-mono);
       font-size: 11px;
       font-weight: 700;
-      padding: 3px 8px;
+      padding: 3px 9px;
       border-radius: 4px;
       background: rgba(16, 185, 129, 0.12);
       color: var(--success-green);
       border: 1px solid rgba(16, 185, 129, 0.3);
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 5px;
+      white-space: nowrap;
     }
 
     /* Dropzone */
     .dropzone {
       border: 2px dashed var(--border);
       border-radius: 6px;
-      padding: 24px;
+      padding: 26px;
       text-align: center;
       background: var(--bg-surface);
       cursor: pointer;
@@ -344,19 +406,6 @@
       background: var(--bg-subtle);
     }
 
-    /* Pagination */
-    .pagination-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 16px;
-      background: var(--table-header-bg);
-      border-top: 1px solid var(--border-subtle);
-      font-family: var(--font-mono);
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
     /* Modal dialogs */
     .modal-overlay {
       position: fixed;
@@ -380,9 +429,7 @@
       box-shadow: 0 20px 50px rgba(0,0,0,0.5);
     }
 
-    .modal-box.modal-lg {
-      max-width: 660px;
-    }
+    .modal-box.modal-lg { max-width: 660px; }
 
     .modal-head {
       display: flex;
@@ -394,6 +441,9 @@
     .modal-title {
       font-size: 17px;
       font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .form-group {
@@ -455,7 +505,7 @@
   <div id="authOverlay">
     <div class="modal-box" style="max-width: 400px; text-align: center;">
       <div style="margin-bottom: 16px;">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto;">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto; color: var(--text-primary);">
           <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
           <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
         </svg>
@@ -480,9 +530,11 @@
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
         AI Claude KeyAPI — Quản trị Node & License
       </div>
-      <div style="display: flex; align-items: center; gap: 12px;">
-        <a href="/" style="font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary);">← Trang chủ</a>
-        <button id="themeToggle" class="theme-btn" title="Toggle Theme">
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <a href="/" style="font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary); display: inline-flex; align-items: center; gap: 4px;">
+          ← Trang chủ
+        </a>
+        <button id="themeToggle" class="theme-btn" title="Chuyển giao diện Sáng / Tối">
           <svg id="themeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
         </button>
       </div>
@@ -493,16 +545,34 @@
     <!-- Thống kê nhanh -->
     <div class="stats-bar">
       <div class="stat-card">
-        <div class="stat-label">Tổng số Node trong kho</div>
-        <div class="stat-val" id="statNodesCount">0</div>
+        <div class="stat-label">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+          Tổng số Node trong kho
+        </div>
+        <div class="stat-val">
+          <span id="statNodesCount">0</span>
+          <span class="stat-unit">Node (Tài khoản)</span>
+        </div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Tổng số License Key</div>
-        <div class="stat-val" id="statKeysCount">0</div>
+        <div class="stat-label">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7.5" cy="15.5" r="5.5"></circle><path d="m21 2-9.6 9.6"></path><path d="m15.5 7.5 3 3L22 7l-3-3"></path></svg>
+          Tổng số License Key
+        </div>
+        <div class="stat-val">
+          <span id="statKeysCount">0</span>
+          <span class="stat-unit">Mã hoạt động</span>
+        </div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Thiết bị đang hoạt động</div>
-        <div class="stat-val" id="statDevicesCount">0</div>
+        <div class="stat-label">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+          Thiết bị đang sử dụng
+        </div>
+        <div class="stat-val">
+          <span id="statDevicesCount">0</span>
+          <span class="stat-unit">Máy đã kết nối</span>
+        </div>
       </div>
     </div>
 
@@ -515,8 +585,16 @@
 
     <!-- Navigation Tabs -->
     <div class="admin-nav">
-      <button class="admin-tab active" onclick="switchAdminTab('keysTab', this)">Quản lý License Keys</button>
-      <button class="admin-tab" onclick="switchAdminTab('nodesTab', this)">Kho Node Tài Khoản</button>
+      <button class="admin-tab active" onclick="switchAdminTab('keysTab', this)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7.5" cy="15.5" r="5.5"></circle><path d="m21 2-9.6 9.6"></path><path d="m15.5 7.5 3 3L22 7l-3-3"></path></svg>
+        Quản lý License Keys
+        <span class="tab-badge" id="keysTabBadge">0</span>
+      </button>
+      <button class="admin-tab" onclick="switchAdminTab('nodesTab', this)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+        Kho Gói Node
+        <span class="tab-badge" id="nodesTabBadge">0 gói</span>
+      </button>
     </div>
 
     <!-- TAB 1: LICENSE KEYS -->
@@ -525,27 +603,29 @@
         <h3 style="font-size: 16px; font-weight: 600;">Danh sách Mã sử dụng đã cấp</h3>
         <button class="btn-primary" onclick="openCreateKeyModal()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-          + Tạo Mã License
+          Tạo Mã License
         </button>
       </div>
 
       <div class="table-frame">
-        <table class="admin-table">
-          <thead>
-            <tr>
-              <th>Mã License (Key)</th>
-              <th>Ghi chú / Tên User</th>
-              <th>Gói Node được gán</th>
-              <th>Thiết bị (Đã dùng / Cho phép)</th>
-              <th>Hạn dùng</th>
-              <th>Trạng thái</th>
-              <th style="text-align: right;">Hành động</th>
-            </tr>
-          </thead>
-          <tbody id="keysTableBody">
-            <tr><td colspan="7" style="text-align: center; padding: 24px; color: var(--text-muted);">Đang tải danh sách key...</td></tr>
-          </tbody>
-        </table>
+        <div class="table-responsive">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Mã License (Key)</th>
+                <th>Ghi chú / Tên User</th>
+                <th>Gói Node & Số lượng</th>
+                <th>Thiết bị (Đã dùng / Cho phép)</th>
+                <th>Hạn dùng</th>
+                <th>Trạng thái</th>
+                <th style="text-align: right;">Hành động</th>
+              </tr>
+            </thead>
+            <tbody id="keysTableBody">
+              <tr><td colspan="7" style="text-align: center; padding: 24px; color: var(--text-muted);">Đang tải danh sách key...</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </section>
 
@@ -553,14 +633,14 @@
     <section id="nodesTab" style="display: none;">
       <!-- Drag & Drop Upload Zone -->
       <div class="dropzone" id="fileDropzone" onclick="document.getElementById('jsonFileInput').click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleFileDrop(event)">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto 8px; display: block; color: var(--text-secondary);">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto 10px; display: block; color: var(--text-secondary);">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
           <polyline points="17 8 12 3 7 8"></polyline>
           <line x1="12" y1="3" x2="12" y2="15"></line>
         </svg>
-        <div style="font-weight: 600; font-size: 14px; margin-bottom: 4px;">Kéo thả file .json vào đây hoặc bấm để chọn file</div>
+        <div style="font-weight: 600; font-size: 14px; margin-bottom: 4px;">Kéo thả file .json vào đây hoặc bấm để chọn file từ máy tính</div>
         <div style="font-size: 12px; color: var(--text-muted);">
-          Hỗ trợ file xuất hàng loạt (ví dụ: <code>ai-router-nodes-2026-09-04.json</code>). Tự động đếm node và cho chọn Đè lên node hiện tại hoặc Tạo gói mới.
+          Hỗ trợ file xuất hàng loạt (ví dụ: <code>ai-router-nodes-2026-09-04.json</code> có 1,883 node). Hệ thống tự đếm và cho chọn Đè lên node cũ hoặc Tạo gói mới.
         </div>
         <input type="file" id="jsonFileInput" accept=".json" style="display: none;" onchange="handleFileInputChange(this)" />
       </div>
@@ -570,64 +650,36 @@
         <div style="display: flex; gap: 8px;">
           <button class="btn-primary" onclick="document.getElementById('jsonFileInput').click()">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-            📁 Tải lên file JSON (.json)
+            Tải lên file JSON (.json)
           </button>
-          <button class="btn-secondary" onclick="openAddNodeModal()">+ Thêm 1 Node</button>
-          <button class="btn-secondary" onclick="openBulkImportModal()">📥 Nhập Token text</button>
+          <button class="btn-secondary" onclick="openAddNodeModal()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Thêm 1 Node
+          </button>
+          <button class="btn-secondary" onclick="openBulkImportModal()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            Nhập Token text
+          </button>
         </div>
       </div>
 
       <!-- Packages Table -->
-      <div class="table-frame" style="margin-bottom: 32px;">
-        <table class="admin-table">
-          <thead>
-            <tr>
-              <th>Tên Gói / File Node</th>
-              <th>Số lượng Node</th>
-              <th>Key đang sử dụng</th>
-              <th>Ngày cập nhật</th>
-              <th style="text-align: right;">Thao tác</th>
-            </tr>
-          </thead>
-          <tbody id="packagesTableBody">
-            <tr><td colspan="5" style="text-align: center; padding: 24px; color: var(--text-muted);">Đang tải danh sách gói node...</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Package Nodes Preview Section -->
-      <div id="packagePreviewSection">
-        <div class="toolbar-actions">
-          <div>
-            <h3 style="font-size: 16px; font-weight: 600;" id="previewTitle">Chi tiết Node trong gói</h3>
-            <p style="font-size: 12px; color: var(--text-muted); margin-top: 2px;" id="previewSubtitle">Xem trước danh sách node và token (đã che giấu an toàn)</p>
-          </div>
-          <div style="display: flex; gap: 8px; align-items: center;">
-            <input type="text" id="nodeSearchInput" class="form-input" style="width: 240px; padding: 6px 10px; font-size: 12px;" placeholder="🔍 Tìm theo tên hoặc email..." oninput="debounceSearchNodes()" />
-          </div>
-        </div>
-
-        <div class="table-frame">
+      <div class="table-frame">
+        <div class="table-responsive">
           <table class="admin-table">
             <thead>
               <tr>
-                <th style="width: 60px;">#</th>
-                <th>Tên Node / Email</th>
-                <th>Token (Che giấu)</th>
-                <th>Trạng thái</th>
+                <th>Tên Gói / File Node</th>
+                <th>Số lượng Node</th>
+                <th>Key đang sử dụng</th>
+                <th>Ngày cập nhật</th>
+                <th style="text-align: right;">Thao tác</th>
               </tr>
             </thead>
-            <tbody id="previewNodesTableBody">
-              <tr><td colspan="4" style="text-align: center; padding: 24px; color: var(--text-muted);">Chọn một gói để xem danh sách node...</td></tr>
+            <tbody id="packagesTableBody">
+              <tr><td colspan="5" style="text-align: center; padding: 24px; color: var(--text-muted);">Đang tải danh sách gói node...</td></tr>
             </tbody>
           </table>
-          <div class="pagination-bar">
-            <div id="paginationInfo">Trang 1 / 1 (0 node)</div>
-            <div style="display: flex; gap: 6px;">
-              <button class="btn-sm" id="prevPageBtn" onclick="changePreviewPage(-1)" disabled>‹ Trước</button>
-              <button class="btn-sm" id="nextPageBtn" onclick="changePreviewPage(1)" disabled>Sau ›</button>
-            </div>
-          </div>
         </div>
       </div>
     </section>
@@ -637,7 +689,10 @@
   <div id="uploadPackageModal" class="modal-overlay">
     <div class="modal-box modal-lg">
       <div class="modal-head">
-        <div class="modal-title">Nạp File Node JSON</div>
+        <div class="modal-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+          Nạp File Node JSON
+        </div>
         <button class="btn-sm" onclick="closeModal('uploadPackageModal')">✕</button>
       </div>
 
@@ -649,6 +704,7 @@
         </div>
         <div>
           <span id="uploadModalNodeCount" class="node-badge-count" style="font-size: 13px; padding: 4px 10px;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
             0 Node
           </span>
         </div>
@@ -715,6 +771,7 @@
       <div class="modal-foot">
         <button type="button" class="btn-secondary" onclick="closeModal('uploadPackageModal')">Hủy</button>
         <button type="button" id="submitUploadBtn" class="btn-primary" onclick="submitUploadPackage()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
           Xác nhận Nạp Node
         </button>
       </div>
@@ -725,7 +782,10 @@
   <div id="assignPackageModal" class="modal-overlay">
     <div class="modal-box" style="max-width: 440px;">
       <div class="modal-head">
-        <div class="modal-title">Đổi Gói Node Cho Key</div>
+        <div class="modal-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+          Đổi Gói Node Cho Key
+        </div>
         <button class="btn-sm" onclick="closeModal('assignPackageModal')">✕</button>
       </div>
       <div style="margin-bottom: 14px;">
@@ -749,7 +809,10 @@
   <div id="createKeyModal" class="modal-overlay">
     <div class="modal-box">
       <div class="modal-head">
-        <div class="modal-title">Tạo Mã License Mới</div>
+        <div class="modal-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7.5" cy="15.5" r="5.5"></circle><path d="m21 2-9.6 9.6"></path><path d="m15.5 7.5 3 3L22 7l-3-3"></path></svg>
+          Tạo Mã License Mới
+        </div>
         <button class="btn-sm" onclick="closeModal('createKeyModal')">✕</button>
       </div>
       <form onsubmit="submitCreateKey(event)">
@@ -846,15 +909,24 @@
     let adminToken = sessionStorage.getItem('admin_token') || '';
     let packagesData = [];
     let keysData = [];
-    let currentPreviewPkgId = 'default';
-    let currentPreviewPkgName = 'Kho Node Mặc Định';
-    let previewPage = 1;
-    let previewQuery = '';
-    let searchDebounceTimer = null;
 
     let currentUploadNodes = [];
     let currentUploadFilename = '';
     let currentAssignKeyId = null;
+
+    // SVG Icons Definitions
+    const SVG_ICONS = {
+      package: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>',
+      key: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7.5" cy="15.5" r="5.5"></circle><path d="m21 2-9.6 9.6"></path><path d="m15.5 7.5 3 3L22 7l-3-3"></path></svg>',
+      copy: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>',
+      edit: '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>',
+      download: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>',
+      trash: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>',
+      lock: '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>',
+      unlock: '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path></svg>',
+      reset: '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 2v6h6"></path><path d="M21 12A9 9 0 0 0 6 5.3L3 8"></path><path d="M21 22v-6h-6"></path><path d="M3 12a9 9 0 0 0 15 6.7l3-2.7"></path></svg>',
+      check: '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>'
+    };
 
     // Check login state on load
     if (adminToken) {
@@ -917,6 +989,7 @@
 
         const totalNodes = data.totalNodes || 0;
         document.getElementById('statNodesCount').textContent = totalNodes.toLocaleString('vi-VN');
+        document.getElementById('nodesTabBadge').textContent = `${packagesData.length} gói (${totalNodes.toLocaleString('vi-VN')} node)`;
 
         if (!data.hasKv) {
           document.getElementById('kvNotice').style.display = 'flex';
@@ -924,14 +997,6 @@
 
         renderPackagesTable();
         populatePackageDropdowns();
-
-        if (packagesData.length > 0) {
-          const target = packagesData.find(p => p.id === currentPreviewPkgId) || packagesData[0];
-          previewPackage(target.id, target.name, previewPage);
-        } else {
-          document.getElementById('packagesTableBody').innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 24px; color: var(--text-muted);">Chưa có gói Node nào. Kéo thả file .json lên hoặc bấm "+ Tải lên file JSON" để bắt đầu.</td></tr>';
-          document.getElementById('previewNodesTableBody').innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 24px; color: var(--text-muted);">Chưa có node nào</td></tr>';
-        }
       } catch (err) {
         console.error('Fetch packages error:', err);
       }
@@ -940,14 +1005,14 @@
     function renderPackagesTable() {
       const tbody = document.getElementById('packagesTableBody');
       if (packagesData.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 24px; color: var(--text-muted);">Chưa có gói Node nào. Kéo thả file .json lên hoặc bấm "+ Tải lên file JSON" để bắt đầu.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 24px; color: var(--text-muted);">Chưa có gói Node nào. Kéo thả file .json lên để bắt đầu.</td></tr>';
         return;
       }
 
       tbody.innerHTML = packagesData.map(p => {
         const assignedKeys = (keysData || []).filter(k => (k.packageId || 'default') === p.id);
         const keysText = assignedKeys.length > 0
-          ? assignedKeys.map(k => '<span class="mono-cell" style="font-size: 11px; background: var(--bg-subtle); padding: 2px 6px; border-radius: 3px; border: 1px solid var(--border);">' + escapeHtml(k.key) + '</span>').join(' ')
+          ? assignedKeys.map(k => '<span class="mono-cell nowrap" style="font-size: 11px; background: var(--bg-subtle); padding: 2px 7px; border-radius: 3px; border: 1px solid var(--border); display: inline-flex; align-items: center; gap: 4px;">' + SVG_ICONS.key + escapeHtml(k.key) + '</span>').join(' ')
           : '<span style="color: var(--text-muted); font-size: 11px;">Chưa gán key nào</span>';
 
         const isDefaultBadge = p.isDefault ? '<span class="status-badge status-active" style="margin-left: 6px; font-size: 10px;">Mặc định</span>' : '';
@@ -955,31 +1020,32 @@
 
         return '<tr>' +
           '<td>' +
-            '<div style="display: flex; align-items: center; gap: 8px;">' +
-              '<span style="font-size: 16px;">📦</span>' +
+            '<div style="display: flex; align-items: center; gap: 10px;" class="nowrap">' +
+              '<div style="width: 28px; height: 28px; border-radius: 4px; background: var(--bg-subtle); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--text-primary);">' +
+                SVG_ICONS.package +
+              '</div>' +
               '<div>' +
                 '<strong style="color: var(--text-primary);">' + escapeHtml(p.name) + '</strong>' + isDefaultBadge +
-                '<div style="font-size: 11px; color: var(--text-muted); font-family: var(--font-mono);">' + escapeHtml(p.filename || '') + '</div>' +
+                '<div style="font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); margin-top: 1px;">' + escapeHtml(p.filename || '') + '</div>' +
               '</div>' +
             '</div>' +
           '</td>' +
           '<td>' +
             '<span class="node-badge-count">' +
-              '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>' +
+              SVG_ICONS.check +
               nodeCountStr + ' Node' +
             '</span>' +
           '</td>' +
           '<td>' +
-            '<div style="display: flex; flex-wrap: wrap; gap: 4px; max-width: 280px;">' +
+            '<div style="display: flex; flex-wrap: wrap; gap: 5px; max-width: 320px;">' +
               keysText +
             '</div>' +
           '</td>' +
-          '<td>' + (p.updatedAt ? new Date(p.updatedAt).toLocaleDateString('vi-VN') : '—') + '</td>' +
-          '<td style="text-align: right;">' +
+          '<td class="nowrap">' + (p.updatedAt ? new Date(p.updatedAt).toLocaleDateString('vi-VN') : '—') + '</td>' +
+          '<td style="text-align: right;" class="nowrap">' +
             '<div style="display: inline-flex; gap: 6px;">' +
-              '<button class="btn-sm" onclick="previewPackage(\'' + p.id + '\', \'' + escapeHtml(p.name) + '\', 1)">👁️ Xem Node</button>' +
-              '<button class="btn-sm" onclick="exportPackage(\'' + p.id + '\', \'' + escapeHtml(p.filename || p.name + '.json') + '\')">📥 Tải .json</button>' +
-              (p.id !== 'default' ? '<button class="btn-sm btn-danger" onclick="deletePackage(\'' + p.id + '\')">Xóa</button>' : '') +
+              '<button class="btn-sm" onclick="exportPackage(\'' + p.id + '\', \'' + escapeHtml(p.filename || p.name + '.json') + '\')">' + SVG_ICONS.download + ' Tải .json</button>' +
+              (p.id !== 'default' ? '<button class="btn-sm btn-danger" onclick="deletePackage(\'' + p.id + '\')">' + SVG_ICONS.trash + ' Xóa</button>' : '') +
             '</div>' +
           '</td>' +
         '</tr>';
@@ -999,64 +1065,6 @@
       if (overwriteSelect) overwriteSelect.innerHTML = options;
       if (createKeySelect) createKeySelect.innerHTML = options;
       if (assignKeySelect) assignKeySelect.innerHTML = options;
-    }
-
-    async function previewPackage(id, name, page = 1) {
-      currentPreviewPkgId = id;
-      currentPreviewPkgName = name;
-      previewPage = page;
-
-      document.getElementById('previewTitle').textContent = 'Chi tiết Node: ' + name;
-      const tbody = document.getElementById('previewNodesTableBody');
-      tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 24px; color: var(--text-muted);">Đang tải danh sách node...</td></tr>';
-
-      try {
-        const query = (document.getElementById('nodeSearchInput').value || '').trim();
-        const res = await fetch('/api/admin?action=getPackageNodes&id=' + id + '&page=' + page + '&limit=50&query=' + encodeURIComponent(query), {
-          headers: authHeaders()
-        });
-        const data = await res.json();
-        if (!res.ok) return;
-
-        const nodes = data.nodes || [];
-        const total = data.total || 0;
-        const totalPages = Math.max(1, Math.ceil(total / (data.limit || 50)));
-
-        document.getElementById('previewSubtitle').textContent = 'Tổng cộng: ' + total.toLocaleString('vi-VN') + ' node';
-        document.getElementById('paginationInfo').textContent = 'Trang ' + page + ' / ' + totalPages + ' (' + total.toLocaleString('vi-VN') + ' node)';
-
-        document.getElementById('prevPageBtn').disabled = (page <= 1);
-        document.getElementById('nextPageBtn').disabled = (page >= totalPages);
-
-        if (nodes.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 24px; color: var(--text-muted);">Không tìm thấy node nào phù hợp.</td></tr>';
-          return;
-        }
-
-        const startIndex = (page - 1) * (data.limit || 50);
-        tbody.innerHTML = nodes.map((n, idx) => '<tr>' +
-          '<td style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);">' + (startIndex + idx + 1) + '</td>' +
-          '<td>' +
-            '<div class="mono-cell">' + escapeHtml(n.name || 'AI Node') + '</div>' +
-            (n.email ? '<div style="font-size: 11px; color: var(--text-muted);">' + escapeHtml(n.email) + '</div>' : '') +
-          '</td>' +
-          '<td><code>' + escapeHtml(n.maskedKey || '••••••••') + '</code></td>' +
-          '<td><span class="status-badge status-active">' + escapeHtml(n.status || 'active') + '</span></td>' +
-        '</tr>').join('');
-      } catch (err) {
-        console.error(err);
-      }
-    }
-
-    function debounceSearchNodes() {
-      clearTimeout(searchDebounceTimer);
-      searchDebounceTimer = setTimeout(() => {
-        previewPackage(currentPreviewPkgId, currentPreviewPkgName, 1);
-      }, 300);
-    }
-
-    function changePreviewPage(delta) {
-      previewPackage(currentPreviewPkgId, currentPreviewPkgName, previewPage + delta);
     }
 
     async function exportPackage(id, filename) {
@@ -1135,7 +1143,7 @@
           } else if (parsed && Array.isArray(parsed.nodes)) {
             rawNodes = parsed.nodes;
           } else {
-            alert('File JSON không chứa danh sách Node hợp lệ (cần là mảng danh sách account).');
+            alert('File JSON không chứa danh sách Node hợp lệ.');
             return;
           }
 
@@ -1148,14 +1156,11 @@
           currentUploadNodes = validNodes;
           currentUploadFilename = file.name;
 
-          // Open and populate Upload Modal
           document.getElementById('uploadModalFileName').textContent = file.name;
-          document.getElementById('uploadModalNodeCount').textContent = validNodes.length.toLocaleString('vi-VN') + ' Node';
+          document.getElementById('uploadModalNodeCount').innerHTML = SVG_ICONS.check + ' ' + validNodes.length.toLocaleString('vi-VN') + ' Node';
           document.getElementById('newPkgNameInput').value = file.name.replace(/\.json$/i, '');
 
-          // Populate Key Selects for both options
           populateKeyTargetSelects();
-
           selectUploadOption('overwrite');
           document.getElementById('uploadPackageModal').style.display = 'flex';
         } catch (err) {
@@ -1212,7 +1217,7 @@
 
       const btn = document.getElementById('submitUploadBtn');
       btn.disabled = true;
-      btn.textContent = 'Đang nạp dữ liệu...';
+      btn.innerHTML = 'Đang nạp dữ liệu...';
 
       const minifiedNodes = currentUploadNodes.map(n => ({
         id: n.id,
@@ -1243,9 +1248,6 @@
           closeModal('uploadPackageModal');
           document.getElementById('jsonFileInput').value = '';
           await loadAllData();
-          if (data.package && data.package.id) {
-            previewPackage(data.package.id, data.package.name, 1);
-          }
         } else {
           alert(data.error || 'Lỗi khi nạp node');
         }
@@ -1253,7 +1255,7 @@
         alert('Lỗi kết nối máy chủ: ' + err.message);
       } finally {
         btn.disabled = false;
-        btn.textContent = 'Xác nhận Nạp Node';
+        btn.innerHTML = SVG_ICONS.check + ' Xác nhận Nạp Node';
       }
     }
 
@@ -1266,6 +1268,7 @@
 
         keysData = data.keys || [];
         document.getElementById('statKeysCount').textContent = keysData.length;
+        document.getElementById('keysTabBadge').textContent = keysData.length;
 
         let totalDevices = 0;
         keysData.forEach(k => { totalDevices += (k.devices || []).length; });
@@ -1280,7 +1283,7 @@
     function renderKeysTable() {
       const tbody = document.getElementById('keysTableBody');
       if (keysData.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 24px; color: var(--text-muted);">Chưa có mã License nào. Bấm "+ Tạo Mã License" để cấp cho khách.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 24px; color: var(--text-muted);">Chưa có mã License nào. Bấm "Tạo Mã License" để cấp cho khách.</td></tr>';
         return;
       }
 
@@ -1296,36 +1299,38 @@
 
         return '<tr>' +
           '<td>' +
-            '<div style="display: flex; align-items: center; gap: 8px;">' +
-              '<span class="mono-cell">' + escapeHtml(k.key) + '</span>' +
-              '<button class="btn-sm" onclick="copyText(\'' + escapeHtml(k.key) + '\')">Sao chép</button>' +
+            '<div style="display: flex; align-items: center; gap: 8px;" class="nowrap">' +
+              '<span class="mono-cell" style="font-size: 13px;">' + escapeHtml(k.key) + '</span>' +
+              '<button class="btn-sm" onclick="copyText(\'' + escapeHtml(k.key) + '\')" title="Sao chép mã">' + SVG_ICONS.copy + ' Chép</button>' +
             '</div>' +
           '</td>' +
-          '<td>' + escapeHtml(k.label) + '</td>' +
+          '<td class="nowrap">' + escapeHtml(k.label) + '</td>' +
           '<td>' +
-            '<div style="display: inline-flex; align-items: center; gap: 6px;">' +
-              '<span class="node-badge-count" style="font-size: 11px;">' +
-                '📦 ' + escapeHtml(pkgName) + ' (' + pkgNodeCount + ' Node)' +
+            '<div style="display: inline-flex; align-items: center; gap: 6px;" class="nowrap">' +
+              '<span class="node-badge-count">' +
+                SVG_ICONS.package +
+                '<strong>' + pkgNodeCount + ' Node</strong>' +
+                '<span style="opacity: 0.75; font-weight: normal; margin-left: 2px;">(' + escapeHtml(pkgName) + ')</span>' +
               '</span>' +
-              '<button class="btn-sm" onclick="openAssignModal(\'' + k.id + '\', \'' + (k.packageId || 'default') + '\', \'' + escapeHtml(k.key) + '\')">Đổi</button>' +
+              '<button class="btn-sm" onclick="openAssignModal(\'' + k.id + '\', \'' + (k.packageId || 'default') + '\', \'' + escapeHtml(k.key) + '\')" title="Đổi gói node cấp cho key">' + SVG_ICONS.edit + ' Đổi</button>' +
             '</div>' +
           '</td>' +
-          '<td>' +
+          '<td class="nowrap">' +
             '<span style="font-family: var(--font-mono); font-weight: 600; color: ' + (isFull ? 'var(--danger-red)' : 'var(--text-primary)') + '">' +
               deviceCount + ' / ' + maxAllowed + ' máy' +
             '</span>' +
           '</td>' +
-          '<td>' + expireStr + '</td>' +
-          '<td>' +
+          '<td class="nowrap">' + expireStr + '</td>' +
+          '<td class="nowrap">' +
             '<span class="status-badge ' + (k.active ? 'status-active' : 'status-disabled') + '">' +
-              (k.active ? 'Hoạt động' : 'Đã khóa') +
+              (k.active ? SVG_ICONS.check + ' Hoạt động' : SVG_ICONS.lock + ' Đã khóa') +
             '</span>' +
           '</td>' +
-          '<td style="text-align: right;">' +
+          '<td style="text-align: right;" class="nowrap">' +
             '<div style="display: inline-flex; gap: 6px;">' +
-              '<button class="btn-sm" onclick="toggleKey(\'' + k.id + '\')">' + (k.active ? 'Khóa' : 'Mở') + '</button>' +
-              '<button class="btn-sm" onclick="resetKeyDevices(\'' + k.id + '\')" title="Xóa các máy đã gán để user đổi sang máy khác">Reset máy</button>' +
-              '<button class="btn-sm btn-danger" onclick="deleteKey(\'' + k.id + '\')">Xóa</button>' +
+              '<button class="btn-sm" onclick="toggleKey(\'' + k.id + '\')">' + (k.active ? SVG_ICONS.lock + ' Khóa' : SVG_ICONS.unlock + ' Mở') + '</button>' +
+              '<button class="btn-sm" onclick="resetKeyDevices(\'' + k.id + '\')" title="Xóa các máy đã gán để user đổi sang máy khác">' + SVG_ICONS.reset + ' Reset máy</button>' +
+              '<button class="btn-sm btn-danger" onclick="deleteKey(\'' + k.id + '\')">' + SVG_ICONS.trash + ' Xóa</button>' +
             '</div>' +
           '</td>' +
         '</tr>';
