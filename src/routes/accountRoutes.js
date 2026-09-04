@@ -12,7 +12,12 @@ export function createAccountRouter(accountPool, authMiddleware) {
   // List accounts
   router.get(['/', '/api/accounts'], guard, async (req, res) => {
     try {
-      const accounts = accountPool.getAccounts();
+      const accounts = accountPool.getAccounts().map(acc => {
+        const json = typeof acc.toJSON === 'function' ? acc.toJSON() : { ...acc };
+        delete json.ssoToken;
+        delete json.refreshToken;
+        return json;
+      });
       res.json(accounts);
     } catch (err) {
       res.status(500).json({ error: err.message });
