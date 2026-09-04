@@ -75,21 +75,32 @@ export class LicenseService {
         return { ok: false, error: data.error || 'Kích hoạt thất bại. Vui lòng kiểm tra lại mã.' };
       }
 
-      // Xóa các node do license cũ cấp trước đó (nếu có)
-      this.accountPool.accounts = this.accountPool.accounts.filter(a => a.source !== 'license');
+      // Nạp các node mới được cấp vào AccountPool (thay thế toàn bộ để tránh cộng dồn)
+      const newAccounts = (data.nodes || []).map(n => {
+        let expiresAt = n.expiresAt || 0;
+        const token = n.ssoToken || n.apiKey || n.token || '';
+        if (!expiresAt && token && typeof token === 'string') {
+          try {
+            const parts = token.split('.');
+            if (parts.length === 3) {
+              const payload = JSON.parse(Buffer.from(parts[1], 'base64url').toString('utf8'));
+              if (payload.exp) expiresAt = payload.exp * 1000;
+            }
+          } catch {}
+        }
+        return new Account({
+          id: `lic-${n.id || crypto.randomUUID().slice(0, 8)}`,
+          name: n.name || n.email || 'Cloud Node',
+          email: n.email || '',
+          ssoToken: token,
+          refreshToken: n.refreshToken || '',
+          source: 'license',
+          status: n.status || 'active',
+          expiresAt
+        });
+      });
 
-      // Nạp các node mới được cấp vào AccountPool
-      const newAccounts = (data.nodes || []).map(n => new Account({
-        id: `lic-${n.id || crypto.randomUUID().slice(0, 8)}`,
-        name: n.name || n.email || 'Cloud Node',
-        email: n.email || '',
-        ssoToken: n.ssoToken || n.apiKey || n.token,
-        refreshToken: n.refreshToken || '',
-        source: 'license',
-        status: n.status || 'active'
-      }));
-
-      this.accountPool.accounts.push(...newAccounts);
+      this.accountPool.accounts = newAccounts;
       await this.accountPool.save();
 
       // Lưu trạng thái license
@@ -119,7 +130,7 @@ export class LicenseService {
   }
 
   async deactivate() {
-    this.accountPool.accounts = this.accountPool.accounts.filter(a => a.source !== 'license');
+    this.accountPool.accounts = [];
     await this.accountPool.save();
     await this.storage.write(this.licenseFile, { active: false });
     return { ok: true };

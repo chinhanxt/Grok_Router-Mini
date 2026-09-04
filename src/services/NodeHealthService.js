@@ -81,8 +81,16 @@ export class NodeHealthService {
       recovered = true;
     }
 
+    // Derive expiresAt from token if missing
+    if (!account.expiresAt && account.ssoToken) {
+      const jwtInfo = this.decodeJwt(account.ssoToken);
+      if (jwtInfo?.exp) {
+        account.expiresAt = jwtInfo.exp * 1000;
+      }
+    }
+
     // 2. Check if token needs refresh (within 15 minutes of expiry or expired or forceRefresh)
-    const isNearExpiry = !account.expiresAt || (account.expiresAt - now < 15 * 60 * 1000);
+    const isNearExpiry = account.expiresAt ? (account.expiresAt - now < 15 * 60 * 1000) : false;
     if ((isNearExpiry || forceRefresh) && account.refreshToken && account.status !== 'disabled') {
       const res = await this.refreshAccountToken(account);
       if (res.success) {
