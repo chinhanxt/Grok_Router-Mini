@@ -1258,6 +1258,54 @@
     .alert-danger { background-color: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
     .alert-success { background-color: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
 
+    /* Modern Toast System */
+    .toast-container {
+      position: fixed;
+      top: 1.25rem;
+      right: 1.25rem;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      pointer-events: none;
+    }
+
+    .toast-item {
+      pointer-events: auto;
+      min-width: 260px;
+      max-width: 420px;
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 0.65rem 0.95rem;
+      border-radius: var(--radius-lg);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      font-size: 0.8125rem;
+      line-height: 1.4;
+      animation: toastIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .toast-item.toast-success {
+      border-left: 3.5px solid #10b981;
+    }
+
+    .toast-item.toast-error {
+      border-left: 3.5px solid #ef4444;
+    }
+
+    .toast-item.toast-info {
+      border-left: 3.5px solid #3b82f6;
+    }
+
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateY(-10px) scale(0.96); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
     /* Playground Output */
     .playground-result {
       margin-top: 0.75rem;
@@ -1662,11 +1710,15 @@
 
               <!-- Filter Toolbar for 1000 nodes -->
               <div class="table-toolbar">
-                <div style="display: flex; gap: 0.25rem;">
+                <div style="display: flex; gap: 0.25rem; align-items: center;">
                   <button type="button" class="node-filter-btn active" id="filterBtn-all" onclick="filterNodesByStatus('all')">Tất cả</button>
                   <button type="button" class="node-filter-btn" id="filterBtn-active" onclick="filterNodesByStatus('active')">Sẵn sàng</button>
                   <button type="button" class="node-filter-btn" id="filterBtn-cooling" onclick="filterNodesByStatus('cooling')">Hạ nhiệt</button>
-                  <button type="button" class="node-filter-btn" id="filterBtn-disabled" onclick="filterNodesByStatus('disabled')">Tạm dừng</button>
+                  <button type="button" class="node-filter-btn" id="filterBtn-disabled" onclick="filterNodesByStatus('disabled')">Vô hiệu hóa</button>
+                  <button type="button" class="btn btn-outline btn-xs" id="btnPurgeDisabled" onclick="confirmDeleteDisabledAccounts()" style="color: #dc2626; border-color: #fecaca; background: #fff5f5; display: none; margin-left: 0.25rem; font-weight: 500;" title="Xóa tất cả các Node bị vô hiệu hóa">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    <span>Xóa Node lỗi (<span id="disabledCountText">0</span>)</span>
+                  </button>
                 </div>
 
                 <input type="text" id="nodeSearchInput" placeholder="Tìm Node..." oninput="handleNodeSearch(this.value)" style="height:28px; width:115px; font-size:12px; padding:0 8px; border-radius:var(--radius-md); border:1px solid var(--border);">
@@ -1890,6 +1942,76 @@
       </div>
     </div>
   </div>
+
+  <!-- HEALTH CHECK & REVIVE RESULT MODAL (THIẾT KẾ ĐẸP THAY THẾ ALERT) -->
+  <div class="modal-backdrop hidden" id="healthResultModal">
+    <div class="modal-panel" style="max-width: 450px;">
+      <div class="modal-header" style="margin-bottom: 0.75rem;">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <div style="width: 28px; height: 28px; border-radius: 8px; background: #eff6ff; display: flex; align-items: center; justify-content: center; color: #2563eb;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+          </div>
+          <div>
+            <h2 style="font-size: 0.95rem; font-weight: 600; margin: 0; color: #0f172a;">Kết quả kiểm tra Node</h2>
+            <div style="font-size: 11px; color: #64748b; margin-top: 1px;">Trạng thái sức khỏe token & độ sẵn sàng cụm</div>
+          </div>
+        </div>
+        <button type="button" class="btn btn-outline btn-sm" onclick="closeHealthResultModal()" style="border:none; padding:2px 6px; font-size:14px; color:#64748b;">✕</button>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; margin-bottom: 0.85rem;">
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.65rem 0.75rem;">
+          <div style="font-size: 11px; font-weight: 500; color: #64748b; margin-bottom: 2px;">🟢 Đang hoạt động</div>
+          <div style="font-size: 1.25rem; font-weight: 700; color: #10b981;" id="hrActiveCount">0</div>
+        </div>
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.65rem 0.75rem;">
+          <div style="font-size: 11px; font-weight: 500; color: #64748b; margin-bottom: 2px;">⚡ Hồi sinh Token</div>
+          <div style="font-size: 1.25rem; font-weight: 700; color: #3b82f6;" id="hrRefreshedCount">0</div>
+        </div>
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.65rem 0.75rem;">
+          <div style="font-size: 11px; font-weight: 500; color: #64748b; margin-bottom: 2px;">⏳ Khôi phục Cooldown</div>
+          <div style="font-size: 1.25rem; font-weight: 700; color: #f59e0b;" id="hrRecoveredCount">0</div>
+        </div>
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.65rem 0.75rem;">
+          <div style="font-size: 11px; font-weight: 500; color: #64748b; margin-bottom: 2px;">🔴 Vô hiệu hóa</div>
+          <div style="font-size: 1.25rem; font-weight: 700; color: #ef4444;" id="hrDisabledCount">0</div>
+        </div>
+      </div>
+
+      <div id="hrDisabledAlert" style="background: #fef2f2; border: 1px solid #fee2e2; border-radius: 8px; padding: 0.75rem; margin-bottom: 0.85rem; display: none;">
+        <div style="display: flex; gap: 0.5rem; align-items: flex-start;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" style="flex-shrink:0; margin-top:2px;">
+            <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <div style="font-size: 11px; color: #991b1b; line-height: 1.4;">
+            Phát hiện <strong id="hrDisabledTextCount">0</strong> Node bị hết hạn session hoặc lỗi OAuth trên Grok. Bạn có thể xóa các tài khoản này để cụm định tuyến hoạt động nhanh hơn.
+          </div>
+        </div>
+      </div>
+
+      <div id="hrSuccessAlert" style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 0.75rem; margin-bottom: 0.85rem; display: none;">
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#166534" stroke-width="2" style="flex-shrink:0;">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+          <div style="font-size: 11px; color: #166534; line-height: 1.4;">
+            Toàn bộ các Node trong cụm đều đang hoạt động ổn định và sẵn sàng phục vụ!
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer" style="margin-top: 0.5rem; display: flex; justify-content: flex-end; gap: 0.5rem; align-items: center;">
+        <button type="button" class="btn btn-outline btn-xs" onclick="closeHealthResultModal()">Đóng</button>
+        <button type="button" class="btn btn-xs" id="btnDeleteDisabledFromModal" onclick="deleteDisabledNodesAction()" style="background: #ef4444; color: white; border: none; display: none;">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          <span id="btnDeleteDisabledText">Xóa Node vô hiệu hóa</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
 
   <script>
     let currentToken = localStorage.getItem('ai_router_token') || '';
@@ -2250,13 +2372,130 @@
 
         const stats = await res.json();
         await loadAccounts();
-        alert(`Kiểm tra hoàn tất!\n• Tổng Node: ${stats.total || accounts.length}\n• Đã hồi sinh Token: ${stats.refreshed || 0}\n• Khôi phục Cooldown: ${stats.recovered || 0}\n• Đang hoạt động: ${stats.active || 0}\n• Đã vô hiệu hóa: ${stats.disabled || 0}`);
+        openHealthResultModal(stats);
       } catch (err) {
-        alert(err.message || 'Lỗi khi kiểm tra Node');
+        showToast(err.message || 'Lỗi khi kiểm tra Node', 'error');
       } finally {
         btn.disabled = false;
         btn.innerHTML = originalHtml;
       }
+    }
+
+    function openHealthResultModal(stats) {
+      const modal = document.getElementById('healthResultModal');
+      if (!modal) return;
+      document.getElementById('hrActiveCount').textContent = (stats.active ?? 0).toLocaleString('vi-VN');
+      document.getElementById('hrRefreshedCount').textContent = (stats.refreshed ?? 0).toLocaleString('vi-VN');
+      document.getElementById('hrRecoveredCount').textContent = (stats.recovered ?? 0).toLocaleString('vi-VN');
+      const disabledCount = stats.disabled ?? 0;
+      document.getElementById('hrDisabledCount').textContent = disabledCount.toLocaleString('vi-VN');
+
+      const alertBox = document.getElementById('hrDisabledAlert');
+      const successBox = document.getElementById('hrSuccessAlert');
+      const deleteBtn = document.getElementById('btnDeleteDisabledFromModal');
+      const deleteText = document.getElementById('btnDeleteDisabledText');
+
+      if (disabledCount > 0) {
+        if (alertBox) alertBox.style.display = 'block';
+        if (successBox) successBox.style.display = 'none';
+        const txtCount = document.getElementById('hrDisabledTextCount');
+        if (txtCount) txtCount.textContent = disabledCount.toLocaleString('vi-VN');
+        if (deleteBtn) deleteBtn.style.display = 'inline-flex';
+        if (deleteText) deleteText.textContent = `Xóa ${disabledCount.toLocaleString('vi-VN')} Node vô hiệu hóa`;
+      } else {
+        if (alertBox) alertBox.style.display = 'none';
+        if (successBox) successBox.style.display = 'block';
+        if (deleteBtn) deleteBtn.style.display = 'none';
+      }
+
+      modal.classList.remove('hidden');
+    }
+
+    function closeHealthResultModal() {
+      const modal = document.getElementById('healthResultModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    async function deleteDisabledNodesAction() {
+      const btn = document.getElementById('btnDeleteDisabledFromModal');
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Đang xóa...';
+      }
+      try {
+        const res = await fetch('/api/accounts/disabled', {
+          method: 'DELETE',
+          headers: { 'Authorization': 'Bearer ' + currentToken }
+        });
+        if (!res.ok) {
+          throw new Error('Lỗi khi xóa tài khoản vô hiệu hóa.');
+        }
+        const result = await res.json();
+        closeHealthResultModal();
+        await loadAccounts();
+        showToast(`Đã xóa thành công ${result.deleted || 0} Node bị vô hiệu hóa!`, 'success');
+      } catch (err) {
+        showToast(err.message, 'error');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+        }
+      }
+    }
+
+    async function confirmDeleteDisabledAccounts() {
+      const disabledCount = accounts.filter(a => a.status === 'disabled').length;
+      if (disabledCount === 0) {
+        showToast('Không có Node nào bị vô hiệu hóa.', 'info');
+        return;
+      }
+      if (!confirm(`Bạn có chắc muốn xóa vĩnh viễn ${disabledCount} Node bị vô hiệu hóa khỏi hệ thống?`)) {
+        return;
+      }
+      try {
+        const res = await fetch('/api/accounts/disabled', {
+          method: 'DELETE',
+          headers: { 'Authorization': 'Bearer ' + currentToken }
+        });
+        if (!res.ok) {
+          throw new Error('Lỗi khi xóa tài khoản vô hiệu hóa.');
+        }
+        const result = await res.json();
+        await loadAccounts();
+        showToast(`Đã xóa thành công ${result.deleted || 0} Node bị vô hiệu hóa!`, 'success');
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    function showToast(message, type = 'info', duration = 3500) {
+      const container = document.getElementById('toastContainer');
+      if (!container) return;
+      const toast = document.createElement('div');
+      toast.className = 'toast-item toast-' + type;
+
+      let iconSvg = '';
+      if (type === 'success') {
+        iconSvg = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+      } else if (type === 'error') {
+        iconSvg = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>`;
+      } else {
+        iconSvg = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>`;
+      }
+
+      toast.innerHTML = `
+        ${iconSvg}
+        <div style="flex:1; word-break:break-word;">${message}</div>
+        <button onclick="this.parentElement.remove()" style="background:none; border:none; color:#94a3b8; cursor:pointer; padding:0 2px; font-size:14px; line-height:1;">✕</button>
+      `;
+
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(-10px)';
+        setTimeout(() => toast.remove(), 250);
+      }, duration);
     }
 
     function filterNodesByStatus(status) {
@@ -2320,6 +2559,18 @@
 
       const statPill = document.getElementById('statAccountsPill');
       if (statPill) statPill.textContent = total.toLocaleString('vi-VN') + ' Node';
+
+      // Update Purge Disabled Button in Toolbar
+      const purgeBtn = document.getElementById('btnPurgeDisabled');
+      const disabledCountBadge = document.getElementById('disabledCountText');
+      if (purgeBtn && disabledCountBadge) {
+        if (disabledCount > 0) {
+          purgeBtn.style.display = 'inline-flex';
+          disabledCountBadge.textContent = disabledCount.toLocaleString('vi-VN');
+        } else {
+          purgeBtn.style.display = 'none';
+        }
+      }
 
       // Render Visual Charts (Bar & Donut)
       renderCharts(accounts);
@@ -2571,9 +2822,12 @@
           },
           body: JSON.stringify({ status: nextStatus })
         });
-        if (res.ok) loadAccounts();
+        if (res.ok) {
+          loadAccounts();
+          showToast('Đã cập nhật trạng thái Node.', 'success');
+        }
       } catch (err) {
-        alert(err.message);
+        showToast(err.message, 'error');
       }
     }
 
@@ -2585,9 +2839,12 @@
           method: 'DELETE',
           headers: { 'Authorization': 'Bearer ' + currentToken }
         });
-        if (res.ok) loadAccounts();
+        if (res.ok) {
+          loadAccounts();
+          showToast('Đã xóa Node thành công.', 'success');
+        }
       } catch (err) {
-        alert(err.message);
+        showToast(err.message, 'error');
       }
     }
 
@@ -2623,8 +2880,9 @@
         closeAddAccountModal();
         loadAccounts();
         loadStatus();
+        showToast('Đã thêm Node mới thành công!', 'success');
       } catch (err) {
-        alert(err.message);
+        showToast(err.message, 'error');
       }
     }
 
@@ -2887,7 +3145,7 @@
     async function submitBatchImport() {
       const selected = importParsedAccounts.filter(a => a.selected);
       if (selected.length === 0) {
-        alert('Vui lòng chọn ít nhất 1 Node để nạp.');
+        showToast('Vui lòng chọn ít nhất 1 Node để nạp.', 'error');
         return;
       }
 
@@ -2911,12 +3169,12 @@
         }
 
         const result = await res.json();
-        alert(`Thành công: Thêm mới ${result.added} Node, Cập nhật ${result.updated} Node (Tổng: ${result.total} Node).`);
+        showToast(`Thành công: Thêm mới ${result.added} Node, Cập nhật ${result.updated} Node.`, 'success');
         closeBatchImportModal();
         loadAccounts();
         loadStatus();
       } catch (err) {
-        alert(err.message);
+        showToast(err.message, 'error');
       } finally {
         if (btn) btn.disabled = false;
       }
@@ -3032,5 +3290,7 @@
         .replace(/'/g, '&#39;');
     }
   </script>
+  <div id="toastContainer" class="toast-container"></div>
 </body>
 </html>
+

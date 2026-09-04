@@ -91,6 +91,16 @@ export function createAccountRouter(accountPool, authMiddleware, nodeHealthServi
   router.put(['/:id', '/api/accounts/:id'], guard, handleUpdate);
   router.patch(['/:id', '/api/accounts/:id'], guard, handleUpdate);
 
+  // Delete all disabled accounts
+  router.delete(['/disabled', '/api/accounts/disabled'], guard, async (req, res) => {
+    try {
+      const result = await accountPool.deleteDisabledAccounts();
+      res.json(result);
+    } catch (err) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
   // Delete account
   router.delete(['/:id', '/api/accounts/:id'], guard, async (req, res) => {
     try {

@@ -142,4 +142,15 @@ export class AccountPool {
       errors
     };
   }
+
+  async deleteDisabledAccounts() {
+    const initial = this.accounts.length;
+    this.accounts = this.accounts.filter(a => a.status !== 'disabled');
+    const deleted = initial - this.accounts.length;
+    if (deleted > 0) {
+      await this.save();
+    }
+    return { success: true, deleted, total: this.accounts.length };
+  }
 }
+

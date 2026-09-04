@@ -160,3 +160,36 @@ test('AccountPool batchImportAccounts handles array import, updates, and skips',
     fs.rmSync(tmpFile, { force: true });
   }
 });
+
+test('AccountPool deleteDisabledAccounts removes only disabled accounts and persists', async () => {
+  const tmpFile = '/tmp/grok-pool-disabled-test-' + Date.now() + '.json';
+  const pool = new AccountPool(new JsonStorage(), { ACCOUNTS_FILE: tmpFile });
+
+  try {
+    await pool.addAccount({ email: 'active1@test.com', status: 'active' });
+    const acc2 = await pool.addAccount({ email: 'disabled1@test.com', status: 'active' });
+    await pool.addAccount({ email: 'active2@test.com', status: 'active' });
+    const acc4 = await pool.addAccount({ email: 'disabled2@test.com', status: 'active' });
+
+    acc2.status = 'disabled';
+    acc4.status = 'disabled';
+    await pool.save();
+
+    assert.equal(pool.getAccounts().length, 4);
+
+    const result = await pool.deleteDisabledAccounts();
+    assert.equal(result.success, true);
+    assert.equal(result.deleted, 2);
+    assert.equal(result.total, 2);
+    assert.equal(pool.getAccounts().length, 2);
+    assert.deepEqual(pool.getAccounts().map(a => a.email), ['active1@test.com', 'active2@test.com']);
+
+    const pool2 = new AccountPool(new JsonStorage(), { ACCOUNTS_FILE: tmpFile });
+    await pool2.init();
+    assert.equal(pool2.getAccounts().length, 2);
+    assert.deepEqual(pool2.getAccounts().map(a => a.email), ['active1@test.com', 'active2@test.com']);
+  } finally {
+    fs.rmSync(tmpFile, { force: true });
+  }
+});
+

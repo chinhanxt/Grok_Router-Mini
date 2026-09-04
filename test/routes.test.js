@@ -415,5 +415,38 @@ test('accountRoutes check-health and refresh-token work with NodeHealthService',
   }
 });
 
+test('accountRoutes DELETE /api/accounts/disabled deletes only disabled accounts', async () => {
+  const tmpAccounts = path.join(os.tmpdir(), 'test-delete-disabled-' + Date.now() + '.json');
+  const pool = new AccountPool(new JsonStorage(), { ACCOUNTS_FILE: tmpAccounts });
+  await pool.addAccount({ email: 'active@test.com', status: 'active' });
+  const d1 = await pool.addAccount({ email: 'dis1@test.com', status: 'active' });
+  d1.status = 'disabled';
+  await pool.save();
+
+  const app = express();
+  app.use(express.json());
+  const dummyAuth = { requireAdmin: (req, res, next) => next() };
+  app.use('/api/accounts', createAccountRouter(pool, dummyAuth));
+
+  const server = app.listen(0);
+  const port = server.address().port;
+  const baseUrl = `http://127.0.0.1:${port}`;
+
+  try {
+    const res = await fetch(`${baseUrl}/api/accounts/disabled`, { method: 'DELETE' });
+    assert.equal(res.status, 200);
+    const data = await res.json();
+    assert.equal(data.success, true);
+    assert.equal(data.deleted, 1);
+    assert.equal(data.total, 1);
+    assert.equal(pool.getAccounts().length, 1);
+    assert.equal(pool.getAccounts()[0].email, 'active@test.com');
+  } finally {
+    server.close();
+    if (fs.existsSync(tmpAccounts)) fs.unlinkSync(tmpAccounts);
+  }
+});
+
+
 
 
