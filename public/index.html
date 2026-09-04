@@ -700,6 +700,53 @@
               <code style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--primary); background: var(--secondary); padding: 2px 8px; border-radius: var(--radius-sm); border: 1px solid var(--border);" id="manualBaseUrl">http://localhost:3005</code>
             </div>
           </div>
+
+          <div class="card" style="margin-top: 1rem;">
+            <div class="card-header">
+              <h2 class="card-title">Tính năng</h2>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 0.85rem;">
+              <div style="border: 1px solid var(--border); border-radius: var(--radius-md); padding: 0.85rem; background: #ffffff;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.35rem;">
+                  <strong style="font-size: 0.875rem; color: var(--foreground);">Truyện ngụ ngôn Claude 5.1</strong>
+                  <code style="font-size: 0.725rem; background: var(--secondary); padding: 2px 6px; border-radius: var(--radius-sm); color: var(--primary);">claude-fable-5-1</code>
+                </div>
+                <div style="font-size: 0.8rem; color: var(--muted-foreground); line-height: 1.45;">
+                  Dành cho những người đòi hỏi khả năng suy luận cao và thực hiện công việc mang tính chủ động trong thời gian dài.
+                </div>
+              </div>
+
+              <div style="border: 1px solid var(--border); border-radius: var(--radius-md); padding: 0.85rem; background: #ffffff;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.35rem;">
+                  <strong style="font-size: 0.875rem; color: var(--foreground);">Claude Opus 5</strong>
+                  <code style="font-size: 0.725rem; background: var(--secondary); padding: 2px 6px; border-radius: var(--radius-sm); color: var(--primary);">claude-opus-5</code>
+                </div>
+                <div style="font-size: 0.8rem; color: var(--muted-foreground); line-height: 1.45;">
+                  Dành cho lập trình tác nhân phức tạp và công việc cấp doanh nghiệp
+                </div>
+              </div>
+
+              <div style="border: 1px solid var(--border); border-radius: var(--radius-md); padding: 0.85rem; background: #ffffff;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.35rem;">
+                  <strong style="font-size: 0.875rem; color: var(--foreground);">Claude Sonnet 5</strong>
+                  <code style="font-size: 0.725rem; background: var(--secondary); padding: 2px 6px; border-radius: var(--radius-sm); color: var(--primary);">claude-sonnet-5</code>
+                </div>
+                <div style="font-size: 0.8rem; color: var(--muted-foreground); line-height: 1.45;">
+                  Sự kết hợp tốt nhất giữa tốc độ và trí thông minh.
+                </div>
+              </div>
+
+              <div style="border: 1px solid var(--border); border-radius: var(--radius-md); padding: 0.85rem; background: #ffffff;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.35rem;">
+                  <strong style="font-size: 0.875rem; color: var(--foreground);">Claude Haiku 4.5</strong>
+                  <code style="font-size: 0.725rem; background: var(--secondary); padding: 2px 6px; border-radius: var(--radius-sm); color: var(--primary);">claude-haiku-4-5</code>
+                </div>
+                <div style="font-size: 0.8rem; color: var(--muted-foreground); line-height: 1.45;">
+                  Mẫu xe nhanh nhất với trí thông minh gần như vượt trội.
+                </div>
+              </div>
+            </div>
+          </div>
         </section>
 
         <!-- TAB 2: PLAYGROUND -->
@@ -712,11 +759,11 @@
               <textarea id="aiTestPrompt" rows="2" placeholder="Nhập câu hỏi...">Xin chào!</textarea>
             </div>
             <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
-              <select id="aiTestModel" style="width: auto; min-width: 180px;">
-                <option value="claude-3-5-sonnet" selected>claude-3-5-sonnet</option>
-                <option value="claude-3-7-sonnet">claude-3-7-sonnet</option>
-                <option value="claude-opus-5">claude-opus-5</option>
-                <option value="claude-haiku-4-5">claude-haiku-4-5</option>
+              <select id="aiTestModel" style="width: auto; min-width: 240px;">
+                <option value="claude-fable-5-1">Truyện ngụ ngôn Claude 5.1 (claude-fable-5-1)</option>
+                <option value="claude-opus-5">Claude Opus 5 (claude-opus-5)</option>
+                <option value="claude-sonnet-5" selected>Claude Sonnet 5 (claude-sonnet-5)</option>
+                <option value="claude-haiku-4-5">Claude Haiku 4.5 (claude-haiku-4-5)</option>
               </select>
               <button class="btn btn-primary" id="aiTestBtn" onclick="sendAITest()">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

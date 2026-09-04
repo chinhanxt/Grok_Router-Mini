@@ -75,7 +75,8 @@ test('Claude mask utilities replace Grok brand with Claude', () => {
   assert.equal(getClaudeModelName('claude-3-5-sonnet-20241022'), 'Claude Sonnet 5');
   assert.equal(getClaudeModelName('claude-3-opus-20240229'), 'Claude Opus 5');
   assert.equal(getClaudeModelName('claude-3-5-haiku-20241022'), 'Claude Haiku 4.5');
-  assert.equal(getClaudeModelName('claude-fable'), 'Claude Fable 5');
+  assert.equal(getClaudeModelName('claude-fable'), 'Claude Fable 5.1');
+  assert.equal(getClaudeModelName('claude-fable-5-1'), 'Claude Fable 5.1');
   assert.equal(getClaudeModelName('custom-unknown'), 'Claude Sonnet 5');
 
   const errorSanitized = sanitizeToClaudeError('grok-4.6 failed on cli-chat-proxy.grok.com from xai');
@@ -461,6 +462,10 @@ test('ProxyService forwardChatCompletion and listModels work correctly', async (
   proxy.listModels({}, resModels);
   assert.equal(resModels.statusCode, 200);
   assert.ok(Array.isArray(resModels.body.data));
+  assert.ok(resModels.body.data.some(m => m.id === 'claude-fable-5-1'));
+  assert.ok(resModels.body.data.some(m => m.id === 'claude-opus-5'));
+  assert.ok(resModels.body.data.some(m => m.id === 'claude-sonnet-5'));
+  assert.ok(resModels.body.data.some(m => m.id === 'claude-haiku-4-5'));
   assert.ok(resModels.body.data.some(m => m.id === 'grok-4.6'));
 
   const originalFetch = globalThis.fetch;

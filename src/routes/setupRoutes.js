@@ -7,13 +7,8 @@ export function createSetupRouter(config = {}) {
 
   function resolveKey(req) {
     const defaultKey = config?.API_KEY || 'sk-keychinhan-xtchinhan-YOUR_KEY';
-    if (req.query?.key && typeof req.query.key === 'string') {
-      const trimmed = req.query.key.trim();
-      if (SAFE_KEY_REGEX.test(trimmed)) {
-        return trimmed;
-      }
-    }
-    return defaultKey;
+    const key = typeof req.query?.key === 'string' ? req.query.key.trim() : '';
+    return (key && SAFE_KEY_REGEX.test(key)) ? key : defaultKey;
   }
 
   function getBaseUrl(req) {
@@ -28,14 +23,12 @@ export function createSetupRouter(config = {}) {
     const baseUrl = getBaseUrl(req);
 
     const script = `#!/usr/bin/env bash
-# ==========================================================
-# AI Router - 1-Click Auto Setup for Claude Code (macOS/Linux)
-# ==========================================================
 
 export ANTHROPIC_BASE_URL="${baseUrl}"
 export ANTHROPIC_AUTH_TOKEN="${key}"
-export ANTHROPIC_DEFAULT_SONNET_MODEL="claude-sonnet-5"
+export ANTHROPIC_DEFAULT_FABLE_MODEL="claude-fable-5-1"
 export ANTHROPIC_DEFAULT_OPUS_MODEL="claude-opus-5"
+export ANTHROPIC_DEFAULT_SONNET_MODEL="claude-sonnet-5"
 export ANTHROPIC_DEFAULT_HAIKU_MODEL="claude-haiku-4-5"
 export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC="1"
 
@@ -53,8 +46,9 @@ if [ ! -f "$CLAUDE_SETTINGS" ]; then
   "env": {
     "ANTHROPIC_BASE_URL": "${baseUrl}",
     "ANTHROPIC_AUTH_TOKEN": "${key}",
-    "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-5",
+    "ANTHROPIC_DEFAULT_FABLE_MODEL": "claude-fable-5-1",
     "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-5",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-5",
     "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-haiku-4-5",
     "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1"
   },
@@ -79,8 +73,9 @@ if [ -n "$RC_FILE" ]; then
   sed "\${SED_INPLACE[@]}" '/CLAUDE_CODE_/d' "$RC_FILE" 2>/dev/null || true
   echo 'export ANTHROPIC_BASE_URL="${baseUrl}"' >> "$RC_FILE"
   echo 'export ANTHROPIC_AUTH_TOKEN="${key}"' >> "$RC_FILE"
-  echo 'export ANTHROPIC_DEFAULT_SONNET_MODEL="claude-sonnet-5"' >> "$RC_FILE"
+  echo 'export ANTHROPIC_DEFAULT_FABLE_MODEL="claude-fable-5-1"' >> "$RC_FILE"
   echo 'export ANTHROPIC_DEFAULT_OPUS_MODEL="claude-opus-5"' >> "$RC_FILE"
+  echo 'export ANTHROPIC_DEFAULT_SONNET_MODEL="claude-sonnet-5"' >> "$RC_FILE"
   echo 'export ANTHROPIC_DEFAULT_HAIKU_MODEL="claude-haiku-4-5"' >> "$RC_FILE"
   echo 'export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC="1"' >> "$RC_FILE"
 fi
@@ -102,24 +97,22 @@ fi
     const key = resolveKey(req);
     const baseUrl = getBaseUrl(req);
 
-    const script = `# ==========================================================
-# AI Router - 1-Click Auto Setup for Claude Code (PowerShell)
-# ==========================================================
-
-$baseUrl = "${baseUrl}"
+    const script = `$baseUrl = "${baseUrl}"
 $apiKey = "${key}"
 
 [System.Environment]::SetEnvironmentVariable('ANTHROPIC_BASE_URL', $baseUrl, 'User')
 [System.Environment]::SetEnvironmentVariable('ANTHROPIC_AUTH_TOKEN', $apiKey, 'User')
-[System.Environment]::SetEnvironmentVariable('ANTHROPIC_DEFAULT_SONNET_MODEL', 'claude-sonnet-5', 'User')
+[System.Environment]::SetEnvironmentVariable('ANTHROPIC_DEFAULT_FABLE_MODEL', 'claude-fable-5-1', 'User')
 [System.Environment]::SetEnvironmentVariable('ANTHROPIC_DEFAULT_OPUS_MODEL', 'claude-opus-5', 'User')
+[System.Environment]::SetEnvironmentVariable('ANTHROPIC_DEFAULT_SONNET_MODEL', 'claude-sonnet-5', 'User')
 [System.Environment]::SetEnvironmentVariable('ANTHROPIC_DEFAULT_HAIKU_MODEL', 'claude-haiku-4-5', 'User')
 [System.Environment]::SetEnvironmentVariable('CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC', '1', 'User')
 
 $env:ANTHROPIC_BASE_URL = $baseUrl
 $env:ANTHROPIC_AUTH_TOKEN = $apiKey
-$env:ANTHROPIC_DEFAULT_SONNET_MODEL = 'claude-sonnet-5'
+$env:ANTHROPIC_DEFAULT_FABLE_MODEL = 'claude-fable-5-1'
 $env:ANTHROPIC_DEFAULT_OPUS_MODEL = 'claude-opus-5'
+$env:ANTHROPIC_DEFAULT_SONNET_MODEL = 'claude-sonnet-5'
 $env:ANTHROPIC_DEFAULT_HAIKU_MODEL = 'claude-haiku-4-5'
 $env:CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = '1'
 
@@ -132,8 +125,9 @@ $jsonConfig = @"
   "env": {
     "ANTHROPIC_BASE_URL": "$baseUrl",
     "ANTHROPIC_AUTH_TOKEN": "$apiKey",
-    "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-5",
+    "ANTHROPIC_DEFAULT_FABLE_MODEL": "claude-fable-5-1",
     "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-5",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-5",
     "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-haiku-4-5",
     "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1"
   },
@@ -163,24 +157,23 @@ if (Get-Command claude -ErrorAction SilentlyContinue) {
     const baseUrl = getBaseUrl(req);
 
     const script = `@echo off
-rem ==========================================================
 rem AI Router - 1-Click Auto Setup for Claude Code (CMD)
-rem ==========================================================
-
 set "BASE_URL=${baseUrl}"
 set "API_KEY=${key}"
 
 setx ANTHROPIC_BASE_URL "%BASE_URL%" >nul 2>&1
 setx ANTHROPIC_AUTH_TOKEN "%API_KEY%" >nul 2>&1
-setx ANTHROPIC_DEFAULT_SONNET_MODEL "claude-sonnet-5" >nul 2>&1
+setx ANTHROPIC_DEFAULT_FABLE_MODEL "claude-fable-5-1" >nul 2>&1
 setx ANTHROPIC_DEFAULT_OPUS_MODEL "claude-opus-5" >nul 2>&1
+setx ANTHROPIC_DEFAULT_SONNET_MODEL "claude-sonnet-5" >nul 2>&1
 setx ANTHROPIC_DEFAULT_HAIKU_MODEL "claude-haiku-4-5" >nul 2>&1
 setx CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC "1" >nul 2>&1
 
 set "ANTHROPIC_BASE_URL=%BASE_URL%"
 set "ANTHROPIC_AUTH_TOKEN=%API_KEY%"
-set "ANTHROPIC_DEFAULT_SONNET_MODEL=claude-sonnet-5"
+set "ANTHROPIC_DEFAULT_FABLE_MODEL=claude-fable-5-1"
 set "ANTHROPIC_DEFAULT_OPUS_MODEL=claude-opus-5"
+set "ANTHROPIC_DEFAULT_SONNET_MODEL=claude-sonnet-5"
 set "ANTHROPIC_DEFAULT_HAIKU_MODEL=claude-haiku-4-5"
 set "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1"
 

@@ -31,6 +31,7 @@ test('Setup routes return correct bash, powershell, and cmd scripts with dynamic
     const bashText = await bashRes.text();
     assert.ok(bashText.includes(`ANTHROPIC_BASE_URL="http://127.0.0.1:${port}"`));
     assert.ok(bashText.includes('ANTHROPIC_AUTH_TOKEN="test-token-bash"'));
+    assert.ok(bashText.includes('claude-fable-5-1'));
     assert.ok(bashText.includes('claude-sonnet-5'));
     assert.ok(bashText.includes('claude-opus-5'));
     assert.ok(bashText.includes('claude-haiku-4-5'));
@@ -50,6 +51,7 @@ test('Setup routes return correct bash, powershell, and cmd scripts with dynamic
     const psText = await psRes.text();
     assert.ok(psText.includes('$baseUrl = "https://my-domain.com:443"'));
     assert.ok(psText.includes('$apiKey = "test-token-ps1"'));
+    assert.ok(psText.includes('claude-fable-5-1'));
     assert.ok(psText.includes('claude-sonnet-5'));
     assert.ok(psText.includes('claude-opus-5'));
     assert.ok(psText.includes('claude-haiku-4-5'));
@@ -65,6 +67,7 @@ test('Setup routes return correct bash, powershell, and cmd scripts with dynamic
     const cmdText = await cmdRes.text();
     assert.ok(cmdText.includes(`set "BASE_URL=http://127.0.0.1:${port}"`));
     assert.ok(cmdText.includes('set "API_KEY=test-token-cmd"'));
+    assert.ok(cmdText.includes('claude-fable-5-1'));
     assert.ok(cmdText.includes('claude-sonnet-5'));
     assert.ok(cmdText.includes('claude-opus-5'));
     assert.ok(cmdText.includes('claude-haiku-4-5'));

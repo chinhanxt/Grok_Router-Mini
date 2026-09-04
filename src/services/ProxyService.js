@@ -72,13 +72,15 @@ export class ProxyService {
     return res.json({
       object: 'list',
       data: [
-        { id: 'grok-4.6', object: 'model', created: 1786947792, owned_by: 'xai' },
-        { id: 'grok-beta', object: 'model', created: 1786947792, owned_by: 'xai' },
-        { id: 'gpt-4o', object: 'model', created: 1786947792, owned_by: 'xai' },
-        { id: 'claude-3-5-sonnet', object: 'model', created: 1786947792, owned_by: 'xai' },
-        { id: 'claude-3-5-sonnet-20241022', object: 'model', created: 1786947792, owned_by: 'xai' },
-        { id: 'claude-3-7-sonnet-20250219', object: 'model', created: 1786947792, owned_by: 'xai' },
-        { id: 'claude-3-opus-20240229', object: 'model', created: 1786947792, owned_by: 'xai' }
+        { id: 'claude-fable-5-1', object: 'model', created: 1786947792, owned_by: 'anthropic' },
+        { id: 'claude-opus-5', object: 'model', created: 1786947792, owned_by: 'anthropic' },
+        { id: 'claude-sonnet-5', object: 'model', created: 1786947792, owned_by: 'anthropic' },
+        { id: 'claude-haiku-4-5', object: 'model', created: 1786947792, owned_by: 'anthropic' },
+        { id: 'claude-3-5-sonnet', object: 'model', created: 1786947792, owned_by: 'anthropic' },
+        { id: 'claude-3-5-sonnet-20241022', object: 'model', created: 1786947792, owned_by: 'anthropic' },
+        { id: 'claude-3-7-sonnet-20250219', object: 'model', created: 1786947792, owned_by: 'anthropic' },
+        { id: 'claude-3-opus-20240229', object: 'model', created: 1786947792, owned_by: 'anthropic' },
+        { id: 'grok-4.6', object: 'model', created: 1786947792, owned_by: 'anthropic' }
       ]
     });
   }

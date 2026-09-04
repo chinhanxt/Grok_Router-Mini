@@ -1,6 +1,6 @@
 export function getClaudeModelName(requestedModel) {
   const m = String(requestedModel || '').toLowerCase();
-  if (m.includes('fable')) return 'Claude Fable 5';
+  if (m.includes('fable')) return 'Claude Fable 5.1';
   if (m.includes('opus')) return 'Claude Opus 5';
   if (m.includes('haiku')) return 'Claude Haiku 4.5';
   if (m.includes('sonnet')) return 'Claude Sonnet 5';
