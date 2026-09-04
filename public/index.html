@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grok Router Mini — Local AI Gateway</title>
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: #111827;
+      --card-border: #1f2937;
+      --text: #f3f4f6;
+      --text-muted: #9ca3af;
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --primary-rgb: 99, 102, 241;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+    }
+
+    .hidden { display: none !important; }
+
+    /* Auth View */
+    .auth-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .auth-card {
+      width: 100%;
+      max-width: 420px;
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 2.25rem 2rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    }
+
+    .auth-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .logo-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 0.85rem;
+      background: rgba(var(--primary-rgb), 0.12);
+      border: 1px solid rgba(var(--primary-rgb), 0.25);
+      border-radius: 9999px;
+      color: #a5b4fc;
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+
+    .auth-header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .auth-header p {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.825rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 0.375rem;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      background: #1f2937;
+      border: 1px solid #374151;
+      border-radius: 6px;
+      color: #fff;
+      padding: 0.65rem 0.85rem;
+      font-size: 0.9rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--primary);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background-color: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 0.65rem 1.25rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease-in-out;
+    }
+
+    .btn:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-block { width: 100%; }
+
+    .btn-secondary {
+      background-color: #374151;
+      color: #e5e7eb;
+    }
+    .btn-secondary:hover { background-color: #4b5563; }
+
+    .btn-danger {
+      background-color: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      color: #fca5a5;
+    }
+    .btn-danger:hover {
+      background-color: rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-sm {
+      padding: 0.35rem 0.65rem;
+      font-size: 0.8rem;
+    }
+
+    .alert {
+      padding: 0.75rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      margin-bottom: 1.25rem;
+    }
+    .alert-danger {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+    }
+
+    .auth-hint {
+      text-align: center;
+      margin-top: 1.5rem;
+      font-size: 0.775rem;
+      color: var(--text-muted);
+      background: rgba(255,255,255,0.03);
+      padding: 0.5rem;
+      border-radius: 6px;
+      border: 1px dashed #374151;
+    }
+
+    /* App Header */
+    header {
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--card-border);
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-title {
+      font-weight: 700;
+      font-size: 1.05rem;
+      letter-spacing: -0.01em;
+      color: #fff;
+    }
+
+    .dot-live {
+      width: 8px;
+      height: 8px;
+      background-color: var(--success);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--success);
+    }
+
+    .user-nav {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.2rem 0.55rem;
+      border-radius: 9999px;
+      font-size: 0.725rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .badge-admin {
+      background: rgba(99, 102, 241, 0.2);
+      color: #a5b4fc;
+      border: 1px solid rgba(99, 102, 241, 0.4);
+    }
+    .badge-user {
+      background: rgba(16, 185, 129, 0.2);
+      color: #6ee7b7;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+    .badge-active {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .badge-cooling {
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+    .badge-disabled {
+      background: rgba(156, 163, 175, 0.15);
+      color: #9ca3af;
+      border: 1px solid rgba(156, 163, 175, 0.3);
+    }
+
+    /* Main Container */
+    main {
+      flex: 1;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 1.25rem 1.5rem;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid #1f2937;
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .card-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 0.2rem;
+    }
+
+    /* Status Grid */
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+
+    .stat-card {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .stat-val {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #fff;
+      margin-top: 0.25rem;
+    }
+
+    /* Setup Tabs */
+    .tabs-nav {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid #1f2937;
+      padding-bottom: 0.5rem;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 0.5rem 0.9rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .tab-btn:hover {
+      color: #fff;
+      background: rgba(255,255,255,0.04);
+    }
+
+    .tab-btn.active {
+      color: #fff;
+      background: var(--primary);
+    }
+
+    .code-box-wrapper {
+      position: relative;
+      background: #060911;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      color: #e2e8f0;
+      overflow-x: auto;
+      margin-top: 0.5rem;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #cbd5e1;
+      font-size: 0.75rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .copy-btn:hover {
+      background: #334155;
+      color: #fff;
+    }
+
+    .copy-btn.copied {
+      background: var(--success);
+      color: #fff;
+      border-color: var(--success);
+    }
+
+    /* Tables */
+    .table-container {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.875rem;
+    }
+
+    th {
+      padding: 0.75rem 1rem;
+      background: #161f30;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid #1a2333;
+      color: #e5e7eb;
+    }
+
+    tr:hover td {
+      background: rgba(255,255,255,0.015);
+    }
+
+    /* AI Test Box */
+    .test-result-box {
+      margin-top: 1rem;
+      background: #060911;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      white-space: pre-wrap;
+      max-height: 250px;
+      overflow-y: auto;
+      color: #e2e8f0;
+    }
+
+    .test-result-box.loading { color: #94a3b8; }
+    .test-result-box.error { color: #fca5a5; border-color: rgba(239,68,68,0.4); }
+    .test-result-box.success { color: #6ee7b7; border-color: rgba(16,185,129,0.4); }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      z-index: 100;
+    }
+
+    .modal-content {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      width: 100%;
+      max-width: 500px;
+      padding: 1.75rem;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+    }
+
+    /* Live Logs */
+    .logs-terminal {
+      background: #060911;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 0.75rem;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      max-height: 280px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .log-row {
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+      padding: 0.25rem 0.4rem;
+      border-radius: 4px;
+    }
+
+    .log-row:hover { background: #0e1424; }
+    .log-time { color: #64748b; font-size: 0.75rem; }
+    .log-method { font-weight: 700; color: #a5b4fc; }
+    .log-path { color: #e2e8f0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .log-status-200 { color: #34d399; font-weight: 700; }
+    .log-status-429 { color: #fbbf24; font-weight: 700; }
+    .log-status-err { color: #f87171; font-weight: 700; }
+    .log-duration { color: #94a3b8; font-size: 0.75rem; }
+  </style>
+</head>
+<body>
+
+  <!-- Auth Screen -->
+  <div class="auth-container" id="authView">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="logo-badge">
+          <span>⚡ Grok Router Mini</span>
+        </div>
+        <h1>Đăng nhập Gateway</h1>
+        <p>Hệ thống điều phối Grok AI & 1-Chạm Claude Code</p>
+      </div>
+
+      <div id="loginAlert" class="alert alert-danger hidden"></div>
+
+      <form id="loginForm" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label for="loginEmail">Email / Tài khoản</label>
+          <input type="text" id="loginEmail" required placeholder="admin@local.com" autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label for="loginPassword">Mật khẩu</label>
+          <input type="password" id="loginPassword" required placeholder="••••••••" autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn btn-block" id="loginBtn">Đăng nhập</button>
+      </form>
+
+      <div class="auth-hint">
+        💡 Admin mặc định: <b>admin@local.com</b> / <b>admin123</b>
+      </div>
+    </div>
+  </div>
+
+  <!-- App Header -->
+  <header class="hidden" id="appHeader">
+    <div class="brand">
+      <span class="dot-live"></span>
+      <span class="brand-title">Grok Router Mini</span>
+    </div>
+    <div class="user-nav">
+      <span id="currentUserEmail" style="font-size:0.875rem; color:var(--text-muted)"></span>
+      <span id="currentUserRoleBadge" class="badge"></span>
+      <button class="btn btn-secondary btn-sm" onclick="handleLogout()">Đăng xuất</button>
+    </div>
+  </header>
+
+  <!-- App Content -->
+  <main class="hidden" id="appView">
+
+    <!-- Admin Status Bar -->
+    <div class="status-grid hidden" id="adminStatusBar">
+      <div class="stat-card">
+        <div class="stat-label">Cổng & Trạng thái</div>
+        <div class="stat-val" id="statServer">Online</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Tài khoản Grok sẵn sàng</div>
+        <div class="stat-val" id="statAccounts">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Thời gian hoạt động</div>
+        <div class="stat-val" id="statUptime">0s</div>
+      </div>
+    </div>
+
+    <!-- Section: 1-Click OS Setup Commands (BOTH Admin and User) -->
+    <section class="card" id="setupSection">
+      <div class="card-header">
+        <div>
+          <h2 class="card-title">🚀 1-Chạm Thiết lập Claude Code</h2>
+          <p class="card-subtitle">Sao chép và chạy lệnh tương ứng với hệ điều hành của bạn để kết nối Claude Code CLI với Router.</p>
+        </div>
+      </div>
+
+      <div class="tabs-nav">
+        <button class="tab-btn active" onclick="switchSetupTab('bash', this)">macOS / Linux (Bash)</button>
+        <button class="tab-btn" onclick="switchSetupTab('ps', this)">Windows PowerShell</button>
+        <button class="tab-btn" onclick="switchSetupTab('cmd', this)">Windows CMD</button>
+      </div>
+
+      <div class="code-box-wrapper">
+        <pre><code id="setupCodeContent">curl -fsSL http://localhost:3005/claude.sh | bash</code></pre>
+        <button class="copy-btn" id="copySetupBtn" onclick="copyCurrentSetupCmd()">Sao chép lệnh</button>
+      </div>
+    </section>
+
+    <!-- Section: AI Connection Test Box (BOTH Admin and User) -->
+    <section class="card" id="testAiSection">
+      <div class="card-header">
+        <div>
+          <h2 class="card-title">🧪 Thử nghiệm kết nối AI</h2>
+          <p class="card-subtitle">Gửi truy vấn nhanh qua router để kiểm tra khả năng phản hồi và độ trễ.</p>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 0.75rem;">
+        <input type="text" id="aiTestPrompt" placeholder="Nhập câu hỏi thử nghiệm..." value="Xin chào! Bạn là mô hình AI nào?" style="flex: 1; min-width: 240px;">
+        <select id="aiTestModel" style="width: auto; min-width: 180px;">
+          <option value="claude-3-5-sonnet" selected>claude-3-5-sonnet</option>
+          <option value="claude-3-7-sonnet-20250219">claude-3-7-sonnet</option>
+          <option value="grok-4.6">grok-4.6</option>
+        </select>
+        <button class="btn" id="aiTestBtn" onclick="sendAITest()">Gửi thử nghiệm</button>
+      </div>
+
+      <div class="test-result-box" id="aiTestResult">Kết quả kiểm tra kết nối sẽ xuất hiện tại đây...</div>
+    </section>
+
+    <!-- Section: Grok Accounts Pool (STRICTLY ADMIN ONLY) -->
+    <section class="card hidden" id="adminAccountsSection">
+      <div class="card-header">
+        <div>
+          <h2 class="card-title">👥 Quản lý Kho tài khoản Grok</h2>
+          <p class="card-subtitle">Hệ thống luân phiên thông minh với thuật toán AutoStrategy và tự động hạ nhiệt khi gặp 429.</p>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+          <button class="btn btn-secondary btn-sm" onclick="loadAccounts()">Làm mới</button>
+          <button class="btn btn-sm" onclick="openAddAccountModal()">+ Thêm tài khoản</button>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Tên / Email</th>
+              <th>Trạng thái</th>
+              <th>Lượt gọi</th>
+              <th>Tổng Token</th>
+              <th>Hạ nhiệt</th>
+              <th style="text-align: right;">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody id="accountsTableBody">
+            <tr><td colspan="6" style="text-align: center; color: var(--text-muted);">Đang tải danh sách tài khoản...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Section: Live Activity Logs (STRICTLY ADMIN ONLY) -->
+    <section class="card hidden" id="adminLogsSection">
+      <div class="card-header">
+        <div>
+          <h2 class="card-title">📡 Nhật ký Lưu lượng Thời gian thực</h2>
+          <p class="card-subtitle">Theo dõi các lượt gọi API và chuyển tiếp qua Grok Router.</p>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+          <button class="btn btn-secondary btn-sm" onclick="loadLogs()">Làm mới</button>
+          <button class="btn btn-danger btn-sm" onclick="clearLogs()">Xóa logs</button>
+        </div>
+      </div>
+
+      <div class="logs-terminal" id="logsTerminal">
+        <div style="color: var(--text-muted); text-align: center; padding: 1rem;">Chưa có dữ liệu nhật ký.</div>
+      </div>
+    </section>
+
+    <!-- Section: Create User Form (STRICTLY ADMIN ONLY) -->
+    <section class="card hidden" id="adminUsersSection">
+      <div class="card-header">
+        <div>
+          <h2 class="card-title">🔑 Cấp quyền Người dùng Mới</h2>
+          <p class="card-subtitle">Tạo tài khoản thành viên để sử dụng Claude Code mà không lộ cấu hình Grok.</p>
+        </div>
+      </div>
+      <form id="createUserForm" onsubmit="handleCreateUser(event)" style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+        <input type="email" id="newUserEmail" required placeholder="user@domain.com" style="flex: 2; min-width: 200px;">
+        <input type="password" id="newUserPassword" required placeholder="Mật khẩu" style="flex: 1.5; min-width: 150px;">
+        <select id="newUserRole" style="flex: 1; min-width: 120px;">
+          <option value="user" selected>User</option>
+          <option value="admin">Admin</option>
+        </select>
+        <button type="submit" class="btn" id="createUserBtn">Tạo User</button>
+      </form>
+      <div id="createUserAlert" class="alert hidden" style="margin-top: 0.75rem;"></div>
+    </section>
+
+  </main>
+
+  <!-- Add Account Modal (ADMIN ONLY) -->
+  <div class="modal-overlay hidden" id="addAccountModal">
+    <div class="modal-content">
+      <h2 style="font-size:1.25rem; font-weight:700; margin-bottom:1rem; color:#fff;">Thêm tài khoản Grok</h2>
+      <form id="addAccountForm" onsubmit="handleAddAccount(event)">
+        <div class="form-group">
+          <label for="accName">Tên nhận diện</label>
+          <input type="text" id="accName" required placeholder="Grok Account #1">
+        </div>
+        <div class="form-group">
+          <label for="accEmail">Email tài khoản</label>
+          <input type="email" id="accEmail" required placeholder="name@x.ai">
+        </div>
+        <div class="form-group">
+          <label for="accSso">SSO Token / Cookie (sso=...)</label>
+          <input type="text" id="accSso" required placeholder="sso token hoặc cookie xAI">
+        </div>
+        <div class="form-group">
+          <label for="accRefresh">Refresh Token / Cookie (sso-rw=...)</label>
+          <input type="text" id="accRefresh" placeholder="Tuỳ chọn refresh token">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeAddAccountModal()">Hủy</button>
+          <button type="submit" class="btn">Lưu tài khoản</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    let currentToken = localStorage.getItem('grok_router_token') || '';
+    let currentUser = null;
+    let currentSetupTab = 'bash';
+
+    window.addEventListener('DOMContentLoaded', () => {
+      if (currentToken) {
+        verifySession();
+      } else {
+        showAuthView();
+      }
+    });
+
+    async function verifySession() {
+      try {
+        const res = await fetch('/api/auth/me', {
+          headers: { 'Authorization': `Bearer ${currentToken}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          currentUser = data.user;
+          showAppView();
+        } else {
+          handleLogout();
+        }
+      } catch {
+        showAuthView();
+      }
+    }
+
+    function showAuthView() {
+      document.getElementById('authView').classList.remove('hidden');
+      document.getElementById('appHeader').classList.add('hidden');
+      document.getElementById('appView').classList.add('hidden');
+    }
+
+    function showAppView() {
+      document.getElementById('authView').classList.add('hidden');
+      document.getElementById('appHeader').classList.remove('hidden');
+      document.getElementById('appView').classList.remove('hidden');
+
+      document.getElementById('currentUserEmail').textContent = currentUser.email;
+      const roleBadge = document.getElementById('currentUserRoleBadge');
+      roleBadge.textContent = currentUser.role;
+      roleBadge.className = `badge ${currentUser.role === 'admin' ? 'badge-admin' : 'badge-user'}`;
+
+      updateSetupCommands();
+
+      // ROLE ISOLATION:
+      if (currentUser.role === 'admin') {
+        document.getElementById('adminStatusBar').classList.remove('hidden');
+        document.getElementById('adminAccountsSection').classList.remove('hidden');
+        document.getElementById('adminLogsSection').classList.remove('hidden');
+        document.getElementById('adminUsersSection').classList.remove('hidden');
+        loadStatus();
+        loadAccounts();
+        loadLogs();
+      } else {
+        // STRICTLY HIDE accounts, logs, user management from non-admin
+        document.getElementById('adminStatusBar').classList.add('hidden');
+        document.getElementById('adminAccountsSection').classList.add('hidden');
+        document.getElementById('adminLogsSection').classList.add('hidden');
+        document.getElementById('adminUsersSection').classList.add('hidden');
+      }
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      const alertBox = document.getElementById('loginAlert');
+      const submitBtn = document.getElementById('loginBtn');
+
+      alertBox.classList.add('hidden');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Đang xác thực...';
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || 'Đăng nhập thất bại.');
+        }
+        currentToken = data.token;
+        currentUser = data.user;
+        localStorage.setItem('grok_router_token', currentToken);
+        showAppView();
+      } catch (err) {
+        alertBox.textContent = err.message;
+        alertBox.classList.remove('hidden');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Đăng nhập';
+      }
+    }
+
+    function handleLogout() {
+      currentToken = '';
+      currentUser = null;
+      localStorage.removeItem('grok_router_token');
+      showAuthView();
+    }
+
+    // 1-Click Setup Commands
+    function switchSetupTab(tab, btn) {
+      currentSetupTab = tab;
+      document.querySelectorAll('.tabs-nav .tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      updateSetupCommands();
+    }
+
+    function updateSetupCommands() {
+      const origin = window.location.origin;
+      const keyParam = currentToken ? `?key=${encodeURIComponent(currentToken)}` : '';
+      const codeElem = document.getElementById('setupCodeContent');
+
+      if (currentSetupTab === 'bash') {
+        codeElem.textContent = `curl -fsSL "${origin}/claude.sh${keyParam}" | bash`;
+      } else if (currentSetupTab === 'ps') {
+        codeElem.textContent = `irm "${origin}/claude.ps1${keyParam}" | iex`;
+      } else if (currentSetupTab === 'cmd') {
+        codeElem.textContent = `curl -fsSL "${origin}/claude.cmd${keyParam}" -o setup.cmd && setup.cmd`;
+      }
+    }
+
+    function copyCurrentSetupCmd() {
+      const code = document.getElementById('setupCodeContent').textContent;
+      const btn = document.getElementById('copySetupBtn');
+      navigator.clipboard.writeText(code).then(() => {
+        const oldText = btn.textContent;
+        btn.textContent = '✓ Đã sao chép!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = oldText;
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    // AI Connection Test
+    async function sendAITest() {
+      const prompt = document.getElementById('aiTestPrompt').value.trim();
+      const model = document.getElementById('aiTestModel').value;
+      const resultBox = document.getElementById('aiTestResult');
+      const sendBtn = document.getElementById('aiTestBtn');
+      if (!prompt) return;
+
+      sendBtn.disabled = true;
+      sendBtn.textContent = 'Đang gửi...';
+      resultBox.textContent = 'Đang kết nối tới mô hình AI qua Grok Router...';
+      resultBox.className = 'test-result-box loading';
+
+      const startTime = Date.now();
+      try {
+        const headers = { 'Content-Type': 'application/json' };
+        if (currentToken) headers['Authorization'] = `Bearer ${currentToken}`;
+
+        const res = await fetch('/v1/chat/completions', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            model,
+            messages: [{ role: 'user', content: prompt }],
+            stream: false
+          })
+        });
+
+        const elapsed = Date.now() - startTime;
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({ error: res.statusText }));
+          resultBox.textContent = `[HTTP ${res.status}] ${err.error?.message || err.error || JSON.stringify(err)}`;
+          resultBox.className = 'test-result-box error';
+        } else {
+          const data = await res.json();
+          const content = data.choices?.[0]?.message?.content || JSON.stringify(data);
+          resultBox.textContent = `[Mô hình: ${data.model || model} | Độ trễ: ${elapsed}ms]\n\n${content}`;
+          resultBox.className = 'test-result-box success';
+        }
+      } catch (err) {
+        resultBox.textContent = `Lỗi mạng: ${err.message}`;
+        resultBox.className = 'test-result-box error';
+      } finally {
+        sendBtn.disabled = false;
+        sendBtn.textContent = 'Gửi thử nghiệm';
+      }
+    }
+
+    // Admin: Accounts Management
+    async function loadAccounts() {
+      if (!currentUser || currentUser.role !== 'admin') return;
+      try {
+        const res = await fetch('/api/accounts', {
+          headers: { 'Authorization': `Bearer ${currentToken}` }
+        });
+        if (!res.ok) return;
+        const accounts = await res.json();
+        const tbody = document.getElementById('accountsTableBody');
+        tbody.innerHTML = '';
+
+        if (accounts.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">Chưa có tài khoản Grok nào trong kho. Hãy thêm tài khoản để bắt đầu!</td></tr>';
+          return;
+        }
+
+        const now = Date.now();
+        accounts.forEach(acc => {
+          const tr = document.createElement('tr');
+          let statusBadge = `<span class="badge badge-active">Hoạt động</span>`;
+          let cooldownInfo = '-';
+
+          if (acc.status === 'disabled') {
+            statusBadge = `<span class="badge badge-disabled">Tạm dừng</span>`;
+          } else if (acc.status === 'cooling' && acc.cooldownUntil > now) {
+            const leftSec = Math.ceil((acc.cooldownUntil - now) / 1000);
+            statusBadge = `<span class="badge badge-cooling">Hạ nhiệt</span>`;
+            cooldownInfo = `${leftSec}s còn lại`;
+          }
+
+          const toggleLabel = acc.status === 'disabled' ? 'Kích hoạt' : 'Tạm dừng';
+
+          tr.innerHTML = `
+            <td>
+              <div style="font-weight:600;">${escapeHtml(acc.name || 'Grok')}</div>
+              <div style="font-size:0.75rem; color:var(--text-muted);">${escapeHtml(acc.email || '-')}</div>
+            </td>
+            <td>${statusBadge}</td>
+            <td>${acc.requestCount || 0}</td>
+            <td>${acc.totalTokens || 0}</td>
+            <td>${cooldownInfo}</td>
+            <td style="text-align: right;">
+              <button class="btn btn-secondary btn-sm" onclick="toggleAccountStatus('${acc.id}', '${acc.status}')">${toggleLabel}</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteAccount('${acc.id}', '${escapeHtml(acc.name)}')">Xóa</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        console.error('Error loading accounts:', err);
+      }
+    }
+
+    async function toggleAccountStatus(id, currentStatus) {
+      const nextStatus = currentStatus === 'disabled' ? 'active' : 'disabled';
+      try {
+        const res = await fetch(`/api/accounts/${id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${currentToken}`
+          },
+          body: JSON.stringify({ status: nextStatus })
+        });
+        if (res.ok) loadAccounts();
+      } catch (err) {
+        alert('Lỗi cập nhật: ' + err.message);
+      }
+    }
+
+    async function deleteAccount(id, name) {
+      if (!confirm(`Bạn có chắc chắn muốn xóa tài khoản "${name}"?`)) return;
+      try {
+        const res = await fetch(`/api/accounts/${id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${currentToken}` }
+        });
+        if (res.ok) loadAccounts();
+      } catch (err) {
+        alert('Lỗi xóa tài khoản: ' + err.message);
+      }
+    }
+
+    function openAddAccountModal() {
+      document.getElementById('addAccountForm').reset();
+      document.getElementById('addAccountModal').classList.remove('hidden');
+    }
+
+    function closeAddAccountModal() {
+      document.getElementById('addAccountModal').classList.add('hidden');
+    }
+
+    async function handleAddAccount(e) {
+      e.preventDefault();
+      const name = document.getElementById('accName').value.trim();
+      const email = document.getElementById('accEmail').value.trim();
+      const ssoToken = document.getElementById('accSso').value.trim();
+      const refreshToken = document.getElementById('accRefresh').value.trim();
+
+      try {
+        const res = await fetch('/api/accounts', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${currentToken}`
+          },
+          body: JSON.stringify({ name, email, ssoToken, refreshToken })
+        });
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.error || 'Không thể thêm tài khoản.');
+        }
+        closeAddAccountModal();
+        loadAccounts();
+        loadStatus();
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    // Admin: Logs
+    async function loadLogs() {
+      if (!currentUser || currentUser.role !== 'admin') return;
+      try {
+        const res = await fetch('/api/logs', {
+          headers: { 'Authorization': `Bearer ${currentToken}` }
+        });
+        if (!res.ok) return;
+        const logs = await res.json();
+        const term = document.getElementById('logsTerminal');
+        term.innerHTML = '';
+
+        if (!logs || logs.length === 0) {
+          term.innerHTML = '<div style="color:var(--text-muted); text-align:center; padding:1rem;">Chưa có dữ liệu nhật ký.</div>';
+          return;
+        }
+
+        logs.forEach(l => {
+          const row = document.createElement('div');
+          row.className = 'log-row';
+          let statusClass = 'log-status-200';
+          if (l.status === 429) statusClass = 'log-status-429';
+          else if (l.status >= 400) statusClass = 'log-status-err';
+
+          row.innerHTML = `
+            <span class="log-time">[${l.timestamp}]</span>
+            <span class="log-method">${l.method}</span>
+            <span class="log-path">${escapeHtml(l.path)}</span>
+            <span class="${statusClass}">${l.status}</span>
+            <span class="log-duration">${l.duration}ms</span>
+          `;
+          term.appendChild(row);
+        });
+      } catch (err) {
+        console.error('Error loading logs:', err);
+      }
+    }
+
+    async function clearLogs() {
+      try {
+        await fetch('/api/logs', {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${currentToken}` }
+        });
+        loadLogs();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // Admin: Status
+    async function loadStatus() {
+      try {
+        const res = await fetch('/api/status');
+        if (!res.ok) return;
+        const data = await res.json();
+        document.getElementById('statAccounts').textContent = `${data.accountsActive} / ${data.accountsTotal}`;
+        const sec = data.uptime || 0;
+        const h = Math.floor(sec / 3600);
+        const m = Math.floor((sec % 3600) / 60);
+        const s = sec % 60;
+        document.getElementById('statUptime').textContent = h > 0 ? `${h}h ${m}m` : (m > 0 ? `${m}m ${s}s` : `${s}s`);
+      } catch {}
+    }
+
+    // Admin: Create User
+    async function handleCreateUser(e) {
+      e.preventDefault();
+      const email = document.getElementById('newUserEmail').value.trim();
+      const password = document.getElementById('newUserPassword').value;
+      const role = document.getElementById('newUserRole').value;
+      const alertBox = document.getElementById('createUserAlert');
+
+      alertBox.className = 'alert hidden';
+      try {
+        const res = await fetch('/api/auth/users', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${currentToken}`
+          },
+          body: JSON.stringify({ email, password, role })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Lỗi tạo người dùng.');
+        alertBox.textContent = `✓ Đã tạo thành công người dùng: ${data.email} (${data.role})`;
+        alertBox.className = 'alert alert-active';
+        alertBox.style.background = 'rgba(16,185,129,0.15)';
+        alertBox.style.color = '#6ee7b7';
+        alertBox.style.border = '1px solid rgba(16,185,129,0.3)';
+        alertBox.classList.remove('hidden');
+        document.getElementById('createUserForm').reset();
+      } catch (err) {
+        alertBox.textContent = err.message;
+        alertBox.className = 'alert alert-danger';
+        alertBox.classList.remove('hidden');
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+  </script>
+</body>
+</html>
