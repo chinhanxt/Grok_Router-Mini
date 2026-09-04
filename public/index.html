@@ -6,29 +6,29 @@
   <title>AI API KEY</title>
   <style>
     :root {
-      --primary: #1d4ed8;
-      --primary-hover: #1e40af;
+      --primary: #15803d;
+      --primary-hover: #166534;
       --primary-foreground: #ffffff;
       --background: #f8fafc;
-      --foreground: #020817;
+      --foreground: #0f172a;
       --card: #ffffff;
-      --card-foreground: #020817;
+      --card-foreground: #0f172a;
       --secondary: #f1f5f9;
-      --muted: #f1f5f9;
+      --muted: #f8fafc;
       --muted-foreground: #64748b;
-      --accent: #e2e8f0;
+      --accent: #f1f5f9;
       --border: #e2e8f0;
       --input: #e2e8f0;
-      --ring: #1d4ed8;
-      --sidebar: #f1f5f9;
-      --sidebar-foreground: #334155;
-      --sidebar-accent: #e2e8f0;
+      --ring: #16a34a;
+      --sidebar: #ffffff;
+      --sidebar-foreground: #475569;
+      --sidebar-accent: #f8fafc;
       --destructive: #ef4444;
       --destructive-foreground: #ffffff;
-      --success: #22c55e;
-      --warning: #eab308;
-      --brand: #004b93;
-      --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --success: #16a34a;
+      --warning: #d97706;
+      --brand: #0f172a;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
       --radius-sm: 0.25rem;
       --radius-md: 0.375rem;
@@ -66,12 +66,13 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      transition: width 0.22s cubic-bezier(0.4, 0, 0.2, 1), min-width 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: width 0.24s cubic-bezier(0.16, 1, 0.3, 1), min-width 0.24s cubic-bezier(0.16, 1, 0.3, 1);
       position: relative;
+      overflow: hidden;
     }
 
     .sidebar-header {
-      height: 56px;
+      height: 54px;
       padding: 0 0.85rem;
       display: flex;
       align-items: center;
@@ -99,36 +100,41 @@
     }
 
     .brand-icon {
-      width: 30px;
-      height: 30px;
-      background: #D97757;
-      border-radius: var(--radius-md);
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #d97757 0%, #c45d40 100%);
+      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
       color: #fff;
       flex-shrink: 0;
       position: relative;
-      transition: all 0.2s ease;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(217, 119, 87, 0.25);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .brand-icon .icon-claude {
       display: block;
-      transition: opacity 0.15s ease;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .brand-icon .icon-expand-arrow {
-      display: none;
       position: absolute;
+      opacity: 0;
+      transform: translateX(-12px);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
     }
 
     .sidebar-collapse-btn {
-      width: 26px;
-      height: 26px;
+      width: 28px;
+      height: 28px;
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: var(--radius-sm);
+      border-radius: var(--radius-md);
       border: 1px solid transparent;
       background: transparent;
       color: var(--muted-foreground);
@@ -138,15 +144,16 @@
     }
 
     .sidebar-collapse-btn:hover {
-      background: var(--sidebar-accent);
+      background: var(--secondary);
       color: var(--foreground);
       border-color: var(--border);
     }
 
     .brand-name {
-      font-size: 15px;
+      font-size: 14.5px;
       font-weight: 700;
       color: var(--brand);
+      letter-spacing: 0.02em;
       white-space: nowrap;
     }
 
@@ -163,6 +170,7 @@
 
     .sidebar.collapsed .brand-group {
       justify-content: center;
+      width: 100%;
     }
 
     .sidebar.collapsed .brand-name,
@@ -172,119 +180,137 @@
 
     .sidebar.collapsed .brand-icon-btn {
       cursor: pointer;
-    }
-
-    .sidebar.collapsed .brand-icon {
-      cursor: pointer;
-      box-shadow: 0 1px 4px rgba(217, 119, 87, 0.25);
-    }
-
-    .sidebar.collapsed .brand-icon-btn:hover .brand-icon,
-    .sidebar.collapsed .brand-icon:hover {
-      background: #c25e3f;
-      transform: scale(1.08);
-    }
-
-    .sidebar.collapsed .brand-icon-btn:hover .icon-claude,
-    .sidebar.collapsed .brand-icon:hover .icon-claude {
-      display: none;
-    }
-
-    .sidebar.collapsed .brand-icon-btn:hover .icon-expand-arrow,
-    .sidebar.collapsed .brand-icon:hover .icon-expand-arrow {
-      display: block;
-      animation: arrowPulse 0.7s infinite alternate ease-in-out;
-    }
-
-    @keyframes arrowPulse {
-      from { transform: translateX(-1px); }
-      to { transform: translateX(2.5px); }
-    }
-
-    .sidebar.collapsed .nav-item {
-      justify-content: center;
-      padding: 0.65rem 0;
-      gap: 0;
-    }
-
-    .sidebar.collapsed .nav-item span {
-      display: none;
-    }
-
-    .sidebar.collapsed .sidebar-footer {
-      padding: 0.75rem 0.35rem;
       display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .sidebar.collapsed .user-box {
       justify-content: center;
-      margin-bottom: 0.65rem;
-    }
-
-    .sidebar.collapsed .user-info {
-      display: none;
-    }
-
-    .sidebar.collapsed .sidebar-footer .btn-block {
-      width: 32px;
-      height: 32px;
-      padding: 0;
-      display: flex;
       align-items: center;
-      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      transition: all 0.2s ease;
     }
 
-    .sidebar.collapsed .sidebar-footer .btn-block span {
-      display: none;
+    .sidebar.collapsed .brand-icon-btn:hover {
+      background: #f1f5f9;
+    }
+
+    .sidebar.collapsed .brand-icon-btn:hover .brand-icon {
+      background: linear-gradient(135deg, #e27d60 0%, #cc5f41 100%);
+      box-shadow: 0 3px 8px rgba(217, 119, 87, 0.35);
+      transform: scale(1.04);
+    }
+
+    .sidebar.collapsed .brand-icon-btn:hover .icon-claude {
+      opacity: 0;
+      transform: translateX(10px);
+    }
+
+    .sidebar.collapsed .brand-icon-btn:hover .icon-expand-arrow {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    /* Straight Horizontal Left-to-Right Transitions */
+    @keyframes slideRightStraight {
+      0% {
+        opacity: 0;
+        transform: translateX(-24px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes slideRightLabel {
+      0% {
+        opacity: 0;
+        transform: translateX(-12px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .sidebar:not(.collapsed) .nav-item span,
+    .sidebar:not(.collapsed) .brand-name,
+    .sidebar:not(.collapsed) .user-info {
+      animation: slideRightLabel 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+      white-space: nowrap;
     }
 
     .sidebar-nav {
       flex: 1;
-      padding: 0.75rem 0.5rem;
+      padding: 0.85rem 0.6rem;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 0.25rem;
+      gap: 0.35rem;
     }
 
     .nav-item {
       display: flex;
       align-items: center;
-      gap: 0.65rem;
-      padding: 0.55rem 0.75rem;
-      border-radius: var(--radius-lg);
+      gap: 0.75rem;
+      padding: 0.6rem 0.85rem;
+      border-radius: 8px;
       font-size: 13.5px;
       font-weight: 500;
       color: var(--sidebar-foreground);
       background: transparent;
-      border: none;
+      border: 1px solid transparent;
       cursor: pointer;
       width: 100%;
       text-align: left;
-      transition: all 0.15s;
+      transition: all 0.15s ease;
     }
 
     .nav-item:hover {
-      background-color: var(--sidebar-accent);
+      background-color: #f8fafc;
       color: var(--foreground);
     }
 
     .nav-item.active {
-      background-color: rgba(29, 78, 216, 0.1);
-      color: var(--primary);
+      background-color: #f0fdf4;
+      color: #15803d;
       font-weight: 600;
+      border-color: #dcfce7;
     }
 
     .nav-item svg {
       flex-shrink: 0;
     }
 
+    .sidebar.collapsed .nav-item {
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      margin: 2px auto;
+      padding: 0;
+      border-radius: 8px;
+    }
+
+    .sidebar.collapsed .nav-item.active {
+      background-color: #f0fdf4;
+      color: #15803d;
+      box-shadow: inset 0 0 0 1px #bbf7d0;
+    }
+
+    .sidebar.collapsed .nav-item span {
+      display: none;
+    }
+
     .sidebar-footer {
-      padding: 0.75rem;
+      padding: 0.85rem;
       border-top: 1px solid var(--border);
       background: var(--sidebar);
+    }
+
+    .sidebar.collapsed .sidebar-footer {
+      padding: 0.85rem 0.35rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     .user-box {
@@ -298,7 +324,7 @@
       width: 28px;
       height: 28px;
       border-radius: var(--radius-full);
-      background-color: var(--primary);
+      background-color: #15803d;
       color: #fff;
       font-size: 11px;
       font-weight: 700;
@@ -322,6 +348,29 @@
       text-overflow: ellipsis;
     }
 
+    .sidebar.collapsed .user-box {
+      justify-content: center;
+      margin-bottom: 0.65rem;
+    }
+
+    .sidebar.collapsed .user-info {
+      display: none;
+    }
+
+    .sidebar.collapsed .sidebar-footer .btn-block {
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+    }
+
+    .sidebar.collapsed .sidebar-footer .btn-block span {
+      display: none;
+    }
+
     /* Main */
     .main-wrapper {
       flex: 1;
@@ -331,7 +380,7 @@
     }
 
     .topbar {
-      height: 56px;
+      height: 52px;
       padding: 0 1.5rem;
       border-bottom: 1px solid var(--border);
       background-color: #fff;
@@ -343,8 +392,33 @@
     .breadcrumb {
       display: flex;
       align-items: center;
-      gap: 0.4rem;
-      font-size: 0.85rem;
+      gap: 0.45rem;
+      font-size: 13px;
+    }
+
+    .breadcrumb-app {
+      color: var(--muted-foreground);
+      font-weight: 500;
+    }
+
+    .breadcrumb-sep {
+      color: #cbd5e1;
+      font-size: 12px;
+    }
+
+    .breadcrumb-current {
+      font-weight: 600;
+      color: var(--foreground);
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #16a34a;
+      display: inline-block;
+      margin-right: 4px;
+      box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.2);
     }
 
     .main-content {
@@ -359,6 +433,7 @@
 
     .tab-screen.active {
       display: block;
+      animation: slideRightStraight 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
 
     /* Cards */
@@ -764,7 +839,8 @@
                   <path d="M4.709 15.955l4.72-2.647.08-.23-.08-.128H9.2l-.79-.048-2.698-.073-2.339-.097-2.266-.122-.571-.121L0 11.784l.055-.352.48-.321.686.06 1.52.103 2.278.158 1.652.097 2.449.255h.389l.055-.157-.134-.098-.103-.097-2.358-1.596-2.552-1.688-1.336-.972-.724-.491-.364-.462-.158-1.008.656-.722.881.06.225.061.893.686 1.908 1.476 2.491 1.833.365.304.145-.103.019-.073-.164-.274-1.355-2.446-1.446-2.49-.644-1.032-.17-.619a2.97 2.97 0 01-.104-.729L6.283.134 6.696 0l.996.134.42.364.62 1.414 1.002 2.229 1.555 3.03.456.898.243.832.091.255h.158V9.01l.128-1.706.237-2.095.23-2.695.08-.76.376-.91.747-.492.584.28.48.685-.067.444-.286 1.851-.559 2.903-.364 1.942h.212l.243-.242.985-1.306 1.652-2.064.73-.82.85-.904.547-.431h1.033l.76 1.129-.34 1.166-1.064 1.347-.881 1.142-1.264 1.7-.79 1.36.073.11.188-.02 2.856-.606 1.543-.28 1.841-.315.833.388.091.395-.328.807-1.969.486-2.309.462-3.439.813-.042.03.049.061 1.549.146.662.036h1.622l3.02.225.79.522.474.638-.079.485-1.215.62-1.64-.389-3.829-.91-1.312-.329h-.182v.11l1.093 1.068 2.006 1.81 2.509 2.33.127.578-.322.455-.34-.049-2.205-1.657-.851-.747-1.926-1.62h-.128v.17l.444.649 2.345 3.521.122 1.08-.17.353-.608.213-.668-.122-1.374-1.925-1.415-2.167-1.143-1.943-.14.08-.674 7.254-.316.37-.729.28-.607-.461-.322-.747.322-1.476.389-1.924.315-1.53.286-1.9.17-.632-.012-.042-.14.018-1.434 1.967-2.18 2.945-1.726 1.845-.414.164-.717-.37.067-.662.401-.589 2.388-3.036 1.44-1.882.93-1.086-.006-.158h-.055L4.132 18.56l-1.13.146-.487-.456.061-.746.231-.243 1.908-1.312-.006.006z"></path>
                 </svg>
                 <svg class="icon-expand-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="9 18 15 12 9 6"></polyline>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <polyline points="12 5 19 12 12 19"></polyline>
                 </svg>
               </div>
             </button>
@@ -780,24 +856,25 @@
         <!-- Sidebar Navigation -->
         <nav class="sidebar-nav">
           <button class="nav-item active" id="nav-setup" onclick="switchTab('setup')" title="Thiết lập">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="4 17 10 11 4 5"></polyline>
-              <line x1="12" y1="19" x2="20" y2="19"></line>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="18" height="18" x="3" y="3" rx="3"></rect>
+              <path d="m8 9 3 3-3 3"></path>
+              <line x1="13" y1="15" x2="16" y2="15"></line>
             </svg>
             <span>Thiết lập</span>
           </button>
 
           <button class="nav-item" id="nav-playground" onclick="switchTab('playground')" title="Thử nghiệm">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
             </svg>
             <span>Thử nghiệm</span>
           </button>
 
           <button class="nav-item" id="nav-accounts" onclick="switchTab('accounts')" title="Tài khoản">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect width="20" height="8" x="2" y="2" rx="2" ry="2"></rect>
-              <rect width="20" height="8" x="2" y="14" rx="2" ry="2"></rect>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="20" height="8" x="2" y="2" rx="2"></rect>
+              <rect width="20" height="8" x="2" y="14" rx="2"></rect>
               <line x1="6" x2="6.01" y1="6" y2="6"></line>
               <line x1="6" x2="6.01" y1="18" y2="18"></line>
             </svg>
@@ -805,7 +882,7 @@
           </button>
 
           <button class="nav-item" id="nav-logs" onclick="switchTab('logs')" title="Nhật ký">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
             </svg>
             <span>Nhật ký</span>
@@ -836,13 +913,15 @@
     <div class="main-wrapper">
       <header class="topbar">
         <div class="breadcrumb">
-          <span style="color: var(--muted-foreground);">AI API KEY</span>
-          <span style="color: var(--muted-foreground);">›</span>
-          <span style="font-weight: 600;" id="sectionBreadcrumb">Thiết lập</span>
+          <span class="breadcrumb-app">AI API KEY</span>
+          <span class="breadcrumb-sep">/</span>
+          <span class="breadcrumb-current" id="sectionBreadcrumb">Thiết lập</span>
         </div>
-        <div style="display: flex; gap: 0.5rem;" id="adminTopStats">
-          <span class="status-badge badge-muted" id="statServerPill">Port 3005</span>
-          <span class="status-badge badge-admin" id="statAccountsPill">0 Tài khoản</span>
+        <div style="display: flex; gap: 0.5rem; align-items: center;" id="adminTopStats">
+          <span class="status-badge badge-success" id="statServerPill">
+            <span class="status-dot"></span>Port 3005
+          </span>
+          <span class="status-badge badge-muted" id="statAccountsPill">0 Tài khoản</span>
         </div>
       </header>
 
@@ -882,21 +961,21 @@
               <h2 class="card-title">Mô hình</h2>
             </div>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.65rem;">
-              <div style="border: 1px solid var(--border); border-radius: var(--radius-md); padding: 0.65rem 0.85rem; background: #ffffff; display: flex; align-items: center; gap: 0.5rem;">
-                <span style="width: 7px; height: 7px; border-radius: 50%; background: #16a34a; flex-shrink: 0;"></span>
-                <strong style="font-size: 0.85rem; color: var(--foreground);">Claude Fable 5.1</strong>
+              <div style="border: 1px solid var(--border); border-radius: var(--radius-md); padding: 0.75rem 1rem; background: #ffffff; display: flex; align-items: center; gap: 0.65rem; transition: border-color 0.15s ease;">
+                <span style="width: 7px; height: 7px; border-radius: 50%; background: #16a34a; flex-shrink: 0; box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15);"></span>
+                <strong style="font-size: 0.85rem; color: #15803d; font-weight: 600;">Claude Fable 5.1</strong>
               </div>
-              <div style="border: 1px solid var(--border); border-radius: var(--radius-md); padding: 0.65rem 0.85rem; background: #ffffff; display: flex; align-items: center; gap: 0.5rem;">
-                <span style="width: 7px; height: 7px; border-radius: 50%; background: #16a34a; flex-shrink: 0;"></span>
-                <strong style="font-size: 0.85rem; color: var(--foreground);">Claude Opus 5</strong>
+              <div style="border: 1px solid var(--border); border-radius: var(--radius-md); padding: 0.75rem 1rem; background: #ffffff; display: flex; align-items: center; gap: 0.65rem; transition: border-color 0.15s ease;">
+                <span style="width: 7px; height: 7px; border-radius: 50%; background: #16a34a; flex-shrink: 0; box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15);"></span>
+                <strong style="font-size: 0.85rem; color: #15803d; font-weight: 600;">Claude Opus 5</strong>
               </div>
-              <div style="border: 1px solid var(--border); border-radius: var(--radius-md); padding: 0.65rem 0.85rem; background: #ffffff; display: flex; align-items: center; gap: 0.5rem;">
-                <span style="width: 7px; height: 7px; border-radius: 50%; background: #16a34a; flex-shrink: 0;"></span>
-                <strong style="font-size: 0.85rem; color: var(--foreground);">Claude Sonnet 5</strong>
+              <div style="border: 1px solid var(--border); border-radius: var(--radius-md); padding: 0.75rem 1rem; background: #ffffff; display: flex; align-items: center; gap: 0.65rem; transition: border-color 0.15s ease;">
+                <span style="width: 7px; height: 7px; border-radius: 50%; background: #16a34a; flex-shrink: 0; box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15);"></span>
+                <strong style="font-size: 0.85rem; color: #15803d; font-weight: 600;">Claude Sonnet 5</strong>
               </div>
-              <div style="border: 1px solid var(--border); border-radius: var(--radius-md); padding: 0.65rem 0.85rem; background: #ffffff; display: flex; align-items: center; gap: 0.5rem;">
-                <span style="width: 7px; height: 7px; border-radius: 50%; background: #16a34a; flex-shrink: 0;"></span>
-                <strong style="font-size: 0.85rem; color: var(--foreground);">Claude Haiku 4.5</strong>
+              <div style="border: 1px solid var(--border); border-radius: var(--radius-md); padding: 0.75rem 1rem; background: #ffffff; display: flex; align-items: center; gap: 0.65rem; transition: border-color 0.15s ease;">
+                <span style="width: 7px; height: 7px; border-radius: 50%; background: #16a34a; flex-shrink: 0; box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15);"></span>
+                <strong style="font-size: 0.85rem; color: #15803d; font-weight: 600;">Claude Haiku 4.5</strong>
               </div>
             </div>
           </div>
