@@ -1,9 +1,10 @@
 {
-  "name": "grok-router-mini",
+  "name": "ai-router-mini",
   "version": "1.0.0",
-  "description": "Ultra-lightweight local Grok AI Router with 1-Click Claude Code Setup",
+  "description": "Ultra-lightweight local AI Router with 1-Click Claude Code Setup",
   "type": "module",
   "bin": {
+    "ai-router-mini": "./bin/cli.js",
     "grok-router-mini": "./bin/cli.js"
   },
   "files": [
