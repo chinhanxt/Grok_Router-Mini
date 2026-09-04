@@ -9,9 +9,10 @@
 - **Zero Database Required**: Pure atomic JSON file storage in `~/.grok-router/` (or `$DATA_DIR`). No PostgreSQL, SQLite, or Redis dependencies.
 - **Smart AutoStrategy Failover**: Rotates across Grok accounts by load score (`requestCount * 1000 + totalTokens`) and lifespan. Automatically recovers on HTTP 429 without dropping active Claude CLI connections.
 - **1-Click 3-OS Claude Code Auto-Setup**: Instant configuration scripts for macOS/Linux (Bash), Windows PowerShell, and Windows CMD.
-- **Role-Based UI & Credential Protection**:
-  - **Admin**: Manage Grok accounts (add/toggle/delete), view live request logs, generate user accounts, and access setup commands.
-  - **Regular User**: Accounts table and SSO tokens/cookies are **strictly hidden** (API `/api/accounts` returns `403 Forbidden`). Users only see 1-click setup commands and connection verification.
+- **Local Dashboard & Credential Protection**:
+  - Pre-configured single local account (`admin` / `admin123`) running directly on your machine.
+  - Manage accounts (add/toggle/delete), view live terminal logs, copy 1-click setup commands, and test AI playground.
+  - Sensitive tokens are masked in the UI.
 - **Protocol Translation & Brand Masking**: Verbatim Anthropic Messages API translation (SSE streaming, tool calls deltas, multimodal inputs) with Grok brand masking (`sanitizeClaudeText`).
 - **Featherweight Footprint**: Built purely with native Node.js ESM (`node:crypto`, `node:fs`), Express, CORS, and Compression. Unbundled and code-signing ready.
 
@@ -63,14 +64,13 @@ Examples:
 
 ---
 
-## 🔐 Authentication & Roles
+## 🔐 Local Authentication
 
-On initial startup, `grok-router-mini` automatically seeds a default administrator:
+`grok-router-mini` runs locally on your machine with a pre-configured local account:
 
-| Role | Default Email | Default Password | Permissions |
-|---|---|---|---|
-| **Admin** | `admin@local.com` | `admin123` | Full access: Add/delete Grok SSO tokens, view logs, create users, copy setup commands |
-| **User** | *(Created by Admin)* | *(Set at creation)* | Claude Code setup commands, connection test. **Grok account list is completely hidden & blocked (403)** |
+| Username / Email | Password | Permissions |
+|---|---|---|
+| `admin` (or `admin@local.com`) | `admin123` (or `admin`) | Full local control: Account management, live logs, 1-click setup, playground |
 
 ---
 

@@ -589,14 +589,17 @@
 
       <form id="loginForm" onsubmit="handleLogin(event)">
         <div class="form-group">
-          <label for="loginEmail">Email</label>
-          <input type="text" id="loginEmail" required autocomplete="username">
+          <label for="loginEmail">Tài khoản</label>
+          <input type="text" id="loginEmail" value="admin" required autocomplete="username">
         </div>
         <div class="form-group">
           <label for="loginPassword">Mật khẩu</label>
-          <input type="password" id="loginPassword" required autocomplete="current-password">
+          <input type="password" id="loginPassword" value="admin123" required autocomplete="current-password">
         </div>
         <button type="submit" class="btn btn-primary btn-block" id="loginBtn">Đăng nhập</button>
+        <div style="font-size: 0.75rem; color: var(--muted-foreground); margin-top: 0.75rem; text-align: center;">
+          Tài khoản cục bộ: <code>admin</code> / <code>admin123</code>
+        </div>
       </form>
     </div>
   </div>
@@ -633,45 +636,32 @@
             <span>Thử nghiệm</span>
           </button>
 
-          <!-- Admin Navigation Group -->
-          <div id="adminNavGroup" class="hidden" style="display: flex; flex-direction: column; gap: 0.25rem;">
-            <button class="nav-item" id="nav-accounts" onclick="switchTab('accounts')">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect width="20" height="8" x="2" y="2" rx="2" ry="2"></rect>
-                <rect width="20" height="8" x="2" y="14" rx="2" ry="2"></rect>
-                <line x1="6" x2="6.01" y1="6" y2="6"></line>
-                <line x1="6" x2="6.01" y1="18" y2="18"></line>
-              </svg>
-              <span>Tài khoản</span>
-            </button>
+          <button class="nav-item" id="nav-accounts" onclick="switchTab('accounts')">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="20" height="8" x="2" y="2" rx="2" ry="2"></rect>
+              <rect width="20" height="8" x="2" y="14" rx="2" ry="2"></rect>
+              <line x1="6" x2="6.01" y1="6" y2="6"></line>
+              <line x1="6" x2="6.01" y1="18" y2="18"></line>
+            </svg>
+            <span>Tài khoản</span>
+          </button>
 
-            <button class="nav-item" id="nav-logs" onclick="switchTab('logs')">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-              </svg>
-              <span>Nhật ký</span>
-            </button>
-
-            <button class="nav-item" id="nav-users" onclick="switchTab('users')">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-                <circle cx="9" cy="7" r="4"></circle>
-                <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-              </svg>
-              <span>Người dùng</span>
-            </button>
-          </div>
+          <button class="nav-item" id="nav-logs" onclick="switchTab('logs')">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+            </svg>
+            <span>Nhật ký</span>
+          </button>
         </nav>
       </div>
 
       <!-- Footer -->
       <div class="sidebar-footer">
         <div class="user-box">
-          <div class="avatar" id="avatarInitial">U</div>
+          <div class="avatar" id="avatarInitial">A</div>
           <div class="user-info">
-            <div class="user-email-text" id="currentUserEmail">user</div>
-            <span id="currentUserRoleBadge" class="status-badge badge-user">User</span>
+            <div class="user-email-text" id="currentUserEmail">admin</div>
+            <span id="currentUserRoleBadge" class="status-badge badge-admin">Local</span>
           </div>
         </div>
         <button class="btn btn-outline btn-sm btn-block" onclick="handleLogout()">
@@ -883,72 +873,6 @@
             </div>
           </div>
         </section>
-
-        <!-- TAB 5: USERS (ADMIN ONLY) -->
-        <section class="tab-screen" id="tab-users">
-          <div class="card">
-            <div class="card-header">
-              <div style="display: flex; align-items: center; gap: 0.5rem;">
-                <h2 class="card-title">Người dùng</h2>
-                <span class="status-badge badge-admin" id="userTotalCountBadge">0</span>
-              </div>
-              <div style="display: flex; gap: 0.35rem;">
-                <button class="btn btn-outline btn-sm" onclick="loadUsers()">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
-                    <path d="M21 3v5h-5"></path>
-                    <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
-                    <path d="M8 16H3v5"></path>
-                  </svg>
-                  <span>Làm mới</span>
-                </button>
-                <button class="btn btn-primary btn-sm" onclick="openAddUserModal()">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                  </svg>
-                  <span>Thêm</span>
-                </button>
-              </div>
-            </div>
-
-            <!-- Users Paginated Table -->
-            <div class="table-container">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Email</th>
-                    <th>Vai trò</th>
-                    <th>Ngày tạo</th>
-                    <th style="text-align: right;">Hành động</th>
-                  </tr>
-                </thead>
-                <tbody id="usersTableBody">
-                  <tr><td colspan="4" style="text-align: center; color: var(--muted-foreground);">Đang tải...</td></tr>
-                </tbody>
-              </table>
-
-              <!-- Users Pagination -->
-              <div class="pagination-bar">
-                <span id="userPaginationInfo">Trang 1 / 1 (0 người dùng)</span>
-                <div class="pagination-controls">
-                  <button class="btn btn-outline btn-sm" id="userPrevBtn" onclick="prevUsersPage()">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <polyline points="15 18 9 12 15 6"></polyline>
-                    </svg>
-                    <span>Trước</span>
-                  </button>
-                  <button class="btn btn-outline btn-sm" id="userNextBtn" onclick="nextUsersPage()">
-                    <span>Sau</span>
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <polyline points="9 18 15 12 9 6"></polyline>
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
       </main>
     </div>
   </div>
@@ -986,40 +910,6 @@
     </div>
   </div>
 
-  <!-- ADD USER MODAL -->
-  <div class="modal-backdrop hidden" id="addUserModal">
-    <div class="modal-panel">
-      <div class="modal-header">
-        <h2 style="font-size: 1rem; font-weight: 600;">Thêm người dùng</h2>
-        <button type="button" class="btn btn-outline btn-sm" onclick="closeAddUserModal()" style="border:none; padding:2px 6px;">✕</button>
-      </div>
-
-      <div id="createUserAlert" class="alert hidden"></div>
-
-      <form id="createUserForm" onsubmit="handleCreateUser(event)">
-        <div class="form-group">
-          <label for="newUserEmail">Email</label>
-          <input type="email" id="newUserEmail" required>
-        </div>
-        <div class="form-group">
-          <label for="newUserPassword">Mật khẩu</label>
-          <input type="password" id="newUserPassword" required>
-        </div>
-        <div class="form-group">
-          <label for="newUserRole">Vai trò</label>
-          <select id="newUserRole">
-            <option value="user" selected>User</option>
-            <option value="admin">Admin</option>
-          </select>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-outline" onclick="closeAddUserModal()">Hủy</button>
-          <button type="submit" class="btn btn-primary" id="createUserBtn">Tạo</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
   <script>
     let currentToken = localStorage.getItem('ai_router_token') || '';
     let currentUser = null;
@@ -1031,17 +921,11 @@
     let accountsPage = 1;
     const ACCOUNTS_PER_PAGE = 5;
 
-    // Users data & pagination
-    let usersList = [];
-    let usersPage = 1;
-    const USERS_PER_PAGE = 5;
-
     const TAB_TITLES = {
       setup: 'Thiết lập',
       playground: 'Thử nghiệm',
       accounts: 'Tài khoản',
-      logs: 'Nhật ký',
-      users: 'Người dùng'
+      logs: 'Nhật ký'
     };
 
     window.addEventListener('DOMContentLoaded', () => {
@@ -1091,30 +975,22 @@
       document.getElementById('authView').classList.add('hidden');
       document.getElementById('appShell').classList.remove('hidden');
 
-      const email = currentUser.email || 'user';
+      const email = currentUser?.email || 'admin';
       document.getElementById('currentUserEmail').textContent = email;
       document.getElementById('avatarInitial').textContent = email.charAt(0).toUpperCase();
 
       const roleBadge = document.getElementById('currentUserRoleBadge');
-      roleBadge.textContent = currentUser.role === 'admin' ? 'Admin' : 'User';
-      roleBadge.className = 'status-badge ' + (currentUser.role === 'admin' ? 'badge-admin' : 'badge-user');
-
-      if (currentUser.role === 'admin') {
-        document.getElementById('adminNavGroup').classList.remove('hidden');
-        document.getElementById('adminTopStats').classList.remove('hidden');
-        loadStatus();
-        loadAccounts();
-        loadLogs();
-        loadUsers();
-      } else {
-        document.getElementById('adminNavGroup').classList.add('hidden');
-        document.getElementById('adminTopStats').classList.add('hidden');
+      if (roleBadge) {
+        roleBadge.textContent = 'Local';
+        roleBadge.className = 'status-badge badge-admin';
       }
 
+      loadStatus();
+      loadAccounts();
+      loadLogs();
+
       const targetTab = getTabFromHash();
-      if (currentUser.role !== 'admin' && (targetTab === 'accounts' || targetTab === 'logs' || targetTab === 'users')) {
-        switchTab('setup', true);
-      } else if (TAB_TITLES[targetTab]) {
+      if (TAB_TITLES[targetTab]) {
         switchTab(targetTab, true);
       } else {
         switchTab('setup', true);
@@ -1125,7 +1001,7 @@
 
     function switchTab(tabId, updateHash) {
       if (updateHash === undefined) updateHash = true;
-      if (currentUser && currentUser.role !== 'admin' && (tabId === 'accounts' || tabId === 'logs' || tabId === 'users')) {
+      if (!TAB_TITLES[tabId]) {
         tabId = 'setup';
       }
 
@@ -1145,12 +1021,10 @@
         window.location.hash = '/tab/' + tabId;
       }
 
-      if (tabId === 'accounts' && currentUser?.role === 'admin') {
+      if (tabId === 'accounts') {
         loadAccounts();
-      } else if (tabId === 'logs' && currentUser?.role === 'admin') {
+      } else if (tabId === 'logs') {
         loadLogs();
-      } else if (tabId === 'users' && currentUser?.role === 'admin') {
-        loadUsers();
       }
     }
 
@@ -1281,7 +1155,7 @@
 
     // Accounts Management & Pagination
     async function loadAccounts() {
-      if (!currentUser || currentUser.role !== 'admin') return;
+      if (!currentUser) return;
       try {
         const res = await fetch('/api/accounts', {
           headers: { 'Authorization': 'Bearer ' + currentToken }
@@ -1434,7 +1308,7 @@
 
     // Logs
     async function loadLogs() {
-      if (!currentUser || currentUser.role !== 'admin') return;
+      if (!currentUser) return;
       try {
         const res = await fetch('/api/logs', {
           headers: { 'Authorization': 'Bearer ' + currentToken }
@@ -1492,136 +1366,6 @@
           portPill.textContent = 'Port ' + window.location.port;
         }
       } catch {}
-    }
-
-    // Users Management & Pagination
-    async function loadUsers() {
-      if (!currentUser || currentUser.role !== 'admin') return;
-      try {
-        const res = await fetch('/api/auth/users', {
-          headers: { 'Authorization': 'Bearer ' + currentToken }
-        });
-        if (!res.ok) {
-          usersList = [{ id: currentUser.id, email: currentUser.email, role: currentUser.role, createdAt: Date.now() }];
-          renderUsersPage();
-          return;
-        }
-        usersList = await res.json();
-        renderUsersPage();
-      } catch (err) {
-        console.error(err);
-      }
-    }
-
-    function renderUsersPage() {
-      const tbody = document.getElementById('usersTableBody');
-      tbody.innerHTML = '';
-      const total = usersList.length;
-      document.getElementById('userTotalCountBadge').textContent = total;
-
-      const totalPages = Math.max(1, Math.ceil(total / USERS_PER_PAGE));
-      if (usersPage > totalPages) usersPage = totalPages;
-      if (usersPage < 1) usersPage = 1;
-
-      const start = (usersPage - 1) * USERS_PER_PAGE;
-      const pageItems = usersList.slice(start, start + USERS_PER_PAGE);
-
-      if (total === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--muted-foreground); padding:1.25rem;">Chưa có người dùng.</td></tr>';
-      } else {
-        pageItems.forEach(u => {
-          const isSelf = u.id === currentUser.id || u.email === currentUser.email;
-          const dateStr = u.createdAt ? new Date(u.createdAt).toLocaleDateString('vi-VN') : '-';
-          const roleBadge = u.role === 'admin'
-            ? '<span class="status-badge badge-admin">Admin</span>'
-            : '<span class="status-badge badge-user">User</span>';
-
-          const actionBtn = isSelf
-            ? '<span style="font-size:0.75rem; color:var(--muted-foreground);">-</span>'
-            : `<button class="btn btn-destructive btn-sm" onclick="deleteUser('${u.id}')">Xóa</button>`;
-
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td style="font-weight:600;">${escapeHtml(u.email)}</td>
-            <td>${roleBadge}</td>
-            <td style="color:var(--muted-foreground); font-size:0.8rem;">${dateStr}</td>
-            <td style="text-align:right;">${actionBtn}</td>
-          `;
-          tbody.appendChild(tr);
-        });
-      }
-
-      document.getElementById('userPaginationInfo').textContent = 'Trang ' + usersPage + ' / ' + totalPages + ' (' + total + ' người dùng)';
-      document.getElementById('userPrevBtn').disabled = usersPage <= 1;
-      document.getElementById('userNextBtn').disabled = usersPage >= totalPages;
-    }
-
-    function prevUsersPage() {
-      if (usersPage > 1) {
-        usersPage--;
-        renderUsersPage();
-      }
-    }
-
-    function nextUsersPage() {
-      const totalPages = Math.ceil(usersList.length / USERS_PER_PAGE);
-      if (usersPage < totalPages) {
-        usersPage++;
-        renderUsersPage();
-      }
-    }
-
-    async function deleteUser(id) {
-      const user = usersList.find(u => u.id === id);
-      const email = user?.email || id;
-      if (!confirm('Xóa người dùng ' + email + '?')) return;
-      try {
-        const res = await fetch('/api/auth/users/' + id, {
-          method: 'DELETE',
-          headers: { 'Authorization': 'Bearer ' + currentToken }
-        });
-        if (res.ok) loadUsers();
-      } catch (err) {
-        alert(err.message);
-      }
-    }
-
-    function openAddUserModal() {
-      document.getElementById('createUserForm').reset();
-      document.getElementById('createUserAlert').className = 'alert hidden';
-      document.getElementById('addUserModal').classList.remove('hidden');
-    }
-
-    function closeAddUserModal() {
-      document.getElementById('addUserModal').classList.add('hidden');
-    }
-
-    async function handleCreateUser(e) {
-      e.preventDefault();
-      const email = document.getElementById('newUserEmail').value.trim();
-      const password = document.getElementById('newUserPassword').value;
-      const role = document.getElementById('newUserRole').value;
-      const alertBox = document.getElementById('createUserAlert');
-
-      alertBox.className = 'alert hidden';
-      try {
-        const res = await fetch('/api/auth/users', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + currentToken
-          },
-          body: JSON.stringify({ email, password, role })
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Lỗi tạo người dùng.');
-        closeAddUserModal();
-        loadUsers();
-      } catch (err) {
-        alertBox.textContent = err.message;
-        alertBox.className = 'alert alert-danger';
-        alertBox.classList.remove('hidden');
-      }
     }
 
     function escapeHtml(str) {

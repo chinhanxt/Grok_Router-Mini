@@ -14,6 +14,12 @@ test('UserService seeds default admin and handles login/token verification', asy
   assert.ok(loginRes.token);
   assert.equal(loginRes.user.role, 'admin');
 
+  const aliasRes = await service.login('admin', 'admin123');
+  assert.ok(aliasRes.token);
+
+  const fallbackPassRes = await service.login('admin', 'admin');
+  assert.ok(fallbackPassRes.token);
+
   const verified = service.verifyToken(loginRes.token);
   assert.equal(verified.email, 'admin@local.com');
   assert.equal(verified.role, 'admin');
