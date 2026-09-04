@@ -2,6 +2,8 @@
 
 > Cổng kết nối AI Router nội bộ dành cho Claude Code, Cursor, Codex... hỗ trợ định tuyến và tự động chuyển đổi tài khoản khi gặp giới hạn tần suất.
 
+🌐 **Trang tài liệu trực tuyến (GitHub Pages):** [https://chinhanxt.github.io/Grok_Router-Mini/](https://chinhanxt.github.io/Grok_Router-Mini/)
+
 ---
 
 <p align="center">
