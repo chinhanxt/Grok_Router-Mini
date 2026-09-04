@@ -27,10 +27,10 @@ await esbuild.build({
   minify: true,
   legalComments: 'none',
   sourcemap: false,
+  banner: {
+    js: "import { createRequire as __createRequire } from 'node:module'; const require = __createRequire(import.meta.url);"
+  },
   external: [
-    'express',
-    'cors',
-    'compression',
     'node:*'
   ]
 });

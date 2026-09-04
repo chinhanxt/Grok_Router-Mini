@@ -1,6 +1,6 @@
 {
   "name": "ai-claude-keyapi",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Ultra-lightweight local AI Gateway with 1-Click Claude Code Setup",
   "type": "module",
   "bin": {
@@ -22,12 +22,11 @@
     "prepublishOnly": "npm run build && npm test",
     "test": "node --test test/*.test.js"
   },
-  "dependencies": {
+  "dependencies": {},
+  "devDependencies": {
     "compression": "^1.8.1",
     "cors": "^2.8.5",
+    "esbuild": "^0.28.2",
     "express": "^4.21.2"
-  },
-  "devDependencies": {
-    "esbuild": "^0.28.2"
   }
 }
