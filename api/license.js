@@ -17,9 +17,10 @@ export default async function handler(req, res) {
 
   try {
     const body = await parseRequestBody(req);
-    const { licenseKey, machineId, deviceName } = body || {};
+    const { licenseKey, key, machineId, deviceName } = body || {};
+    const effectiveKey = licenseKey || key;
 
-    if (!licenseKey || typeof licenseKey !== 'string') {
+    if (!effectiveKey || typeof effectiveKey !== 'string') {
       return res.status(400).json({ ok: false, error: 'Vui lòng nhập mã kích hoạt (License Key)' });
     }
 
@@ -27,7 +28,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ ok: false, error: 'Thiếu định danh thiết bị (Machine ID)' });
     }
 
-    const cleanKey = licenseKey.trim().toUpperCase();
+    const cleanKey = effectiveKey.trim().toUpperCase();
     const rawKeys = await kvGet('keys');
     const keys = Array.isArray(rawKeys) ? rawKeys : [];
     const targetKey = keys.find(k => k && k.key && k.key.toUpperCase() === cleanKey);
@@ -80,8 +81,12 @@ export default async function handler(req, res) {
   // Cập nhật trạng thái thiết bị vào KV
   await kvSet('keys', keys);
 
-    // 5. Cung cấp Node cho client
-    const rawNodes = await kvGet('nodes');
+    // 5. Cung cấp Node cho client theo Gói Node được gán
+    const packageId = targetKey.packageId || 'default';
+    let rawNodes = await kvGet(`package_${packageId}`);
+    if ((!rawNodes || (Array.isArray(rawNodes) && rawNodes.length === 0)) && packageId === 'default') {
+      rawNodes = await kvGet('nodes');
+    }
     const allNodes = Array.isArray(rawNodes) ? rawNodes : [];
     const activeNodes = allNodes.filter(n => n && n.status !== 'disabled');
 
@@ -114,7 +119,10 @@ export default async function handler(req, res) {
       nodes: grantedNodes.map(n => ({
         id: n.id,
         name: n.name,
-        apiKey: n.apiKey
+        email: n.email || '',
+        apiKey: n.ssoToken || n.apiKey || '',
+        ssoToken: n.ssoToken || n.apiKey || '',
+        refreshToken: n.refreshToken || ''
       }))
     });
   } catch (err) {

@@ -159,7 +159,6 @@
       justify-content: space-between;
       color: var(--text-secondary);
     }
-
     .storage-banner strong { color: var(--text-primary); }
 
     /* Action Tabs */
@@ -240,6 +239,9 @@
       cursor: pointer;
       background: var(--bg-surface);
       color: var(--text-primary);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
     }
     .btn-sm:hover { background: var(--bg-subtle); }
 
@@ -296,6 +298,65 @@
     .status-active { background: rgba(16, 185, 129, 0.1); color: var(--success-green); border-color: rgba(16, 185, 129, 0.3); }
     .status-disabled { background: rgba(239, 68, 68, 0.1); color: var(--danger-red); border-color: rgba(239, 68, 68, 0.3); }
 
+    .node-badge-count {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: rgba(16, 185, 129, 0.12);
+      color: var(--success-green);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Dropzone */
+    .dropzone {
+      border: 2px dashed var(--border);
+      border-radius: 6px;
+      padding: 24px;
+      text-align: center;
+      background: var(--bg-surface);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      margin-bottom: 24px;
+    }
+    .dropzone:hover, .dropzone.dragover {
+      border-color: var(--text-primary);
+      background: var(--bg-subtle);
+    }
+
+    /* Option Cards */
+    .option-card {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 14px;
+      margin-bottom: 12px;
+      background: var(--bg-surface);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .option-card:hover { border-color: var(--text-secondary); }
+    .option-card.selected {
+      border-color: var(--text-primary);
+      background: var(--bg-subtle);
+    }
+
+    /* Pagination */
+    .pagination-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      background: var(--table-header-bg);
+      border-top: 1px solid var(--border-subtle);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
     /* Modal dialogs */
     .modal-overlay {
       position: fixed;
@@ -317,6 +378,10 @@
       max-width: 520px;
       padding: 24px;
       box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    }
+
+    .modal-box.modal-lg {
+      max-width: 660px;
     }
 
     .modal-head {
@@ -470,6 +535,7 @@
             <tr>
               <th>Mã License (Key)</th>
               <th>Ghi chú / Tên User</th>
+              <th>Gói Node được gán</th>
               <th>Thiết bị (Đã dùng / Cho phép)</th>
               <th>Hạn dùng</th>
               <th>Trạng thái</th>
@@ -477,7 +543,7 @@
             </tr>
           </thead>
           <tbody id="keysTableBody">
-            <tr><td colspan="6" style="text-align: center; padding: 24px; color: var(--text-muted);">Đang tải danh sách key...</td></tr>
+            <tr><td colspan="7" style="text-align: center; padding: 24px; color: var(--text-muted);">Đang tải danh sách key...</td></tr>
           </tbody>
         </table>
       </div>
@@ -485,32 +551,199 @@
 
     <!-- TAB 2: KHO NODE TÀI KHOẢN -->
     <section id="nodesTab" style="display: none;">
+      <!-- Drag & Drop Upload Zone -->
+      <div class="dropzone" id="fileDropzone" onclick="document.getElementById('jsonFileInput').click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleFileDrop(event)">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto 8px; display: block; color: var(--text-secondary);">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="17 8 12 3 7 8"></polyline>
+          <line x1="12" y1="3" x2="12" y2="15"></line>
+        </svg>
+        <div style="font-weight: 600; font-size: 14px; margin-bottom: 4px;">Kéo thả file .json vào đây hoặc bấm để chọn file</div>
+        <div style="font-size: 12px; color: var(--text-muted);">
+          Hỗ trợ file xuất hàng loạt (ví dụ: <code>ai-router-nodes-2026-09-04.json</code>). Tự động đếm node và cho chọn Đè lên node hiện tại hoặc Tạo gói mới.
+        </div>
+        <input type="file" id="jsonFileInput" accept=".json" style="display: none;" onchange="handleFileInputChange(this)" />
+      </div>
+
       <div class="toolbar-actions">
-        <h3 style="font-size: 16px; font-weight: 600;">Kho Token định tuyến tập trung</h3>
+        <h3 style="font-size: 16px; font-weight: 600;">Danh sách File & Gói Node</h3>
         <div style="display: flex; gap: 8px;">
+          <button class="btn-primary" onclick="document.getElementById('jsonFileInput').click()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+            📁 Tải lên file JSON (.json)
+          </button>
           <button class="btn-secondary" onclick="openAddNodeModal()">+ Thêm 1 Node</button>
-          <button class="btn-primary" onclick="openBulkImportModal()">📥 Nhập nhiều Node</button>
+          <button class="btn-secondary" onclick="openBulkImportModal()">📥 Nhập Token text</button>
         </div>
       </div>
 
-      <div class="table-frame">
+      <!-- Packages Table -->
+      <div class="table-frame" style="margin-bottom: 32px;">
         <table class="admin-table">
           <thead>
             <tr>
-              <th>Tên Node</th>
-              <th>Token (Được che giấu)</th>
-              <th>Ngày tạo</th>
-              <th>Trạng thái</th>
+              <th>Tên Gói / File Node</th>
+              <th>Số lượng Node</th>
+              <th>Key đang sử dụng</th>
+              <th>Ngày cập nhật</th>
               <th style="text-align: right;">Thao tác</th>
             </tr>
           </thead>
-          <tbody id="nodesTableBody">
-            <tr><td colspan="5" style="text-align: center; padding: 24px; color: var(--text-muted);">Đang tải kho node...</td></tr>
+          <tbody id="packagesTableBody">
+            <tr><td colspan="5" style="text-align: center; padding: 24px; color: var(--text-muted);">Đang tải danh sách gói node...</td></tr>
           </tbody>
         </table>
       </div>
+
+      <!-- Package Nodes Preview Section -->
+      <div id="packagePreviewSection">
+        <div class="toolbar-actions">
+          <div>
+            <h3 style="font-size: 16px; font-weight: 600;" id="previewTitle">Chi tiết Node trong gói</h3>
+            <p style="font-size: 12px; color: var(--text-muted); margin-top: 2px;" id="previewSubtitle">Xem trước danh sách node và token (đã che giấu an toàn)</p>
+          </div>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <input type="text" id="nodeSearchInput" class="form-input" style="width: 240px; padding: 6px 10px; font-size: 12px;" placeholder="🔍 Tìm theo tên hoặc email..." oninput="debounceSearchNodes()" />
+          </div>
+        </div>
+
+        <div class="table-frame">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th style="width: 60px;">#</th>
+                <th>Tên Node / Email</th>
+                <th>Token (Che giấu)</th>
+                <th>Trạng thái</th>
+              </tr>
+            </thead>
+            <tbody id="previewNodesTableBody">
+              <tr><td colspan="4" style="text-align: center; padding: 24px; color: var(--text-muted);">Chọn một gói để xem danh sách node...</td></tr>
+            </tbody>
+          </table>
+          <div class="pagination-bar">
+            <div id="paginationInfo">Trang 1 / 1 (0 node)</div>
+            <div style="display: flex; gap: 6px;">
+              <button class="btn-sm" id="prevPageBtn" onclick="changePreviewPage(-1)" disabled>‹ Trước</button>
+              <button class="btn-sm" id="nextPageBtn" onclick="changePreviewPage(1)" disabled>Sau ›</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
   </main>
+
+  <!-- MODAL: Nạp File Node JSON -->
+  <div id="uploadPackageModal" class="modal-overlay">
+    <div class="modal-box modal-lg">
+      <div class="modal-head">
+        <div class="modal-title">Nạp File Node JSON</div>
+        <button class="btn-sm" onclick="closeModal('uploadPackageModal')">✕</button>
+      </div>
+
+      <!-- File info banner -->
+      <div style="background: var(--bg-code); border: 1px solid var(--border); border-radius: 6px; padding: 14px 18px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between;">
+        <div>
+          <div style="font-family: var(--font-mono); font-weight: 600; font-size: 13px;" id="uploadModalFileName">ai-router-nodes.json</div>
+          <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Cấu trúc hợp lệ, đã giải mã danh sách tài khoản</div>
+        </div>
+        <div>
+          <span id="uploadModalNodeCount" class="node-badge-count" style="font-size: 13px; padding: 4px 10px;">
+            0 Node
+          </span>
+        </div>
+      </div>
+
+      <div style="font-size: 13px; font-weight: 600; margin-bottom: 10px;">Chọn cách nạp danh sách Node:</div>
+
+      <!-- Option 1: Overwrite -->
+      <div class="option-card selected" id="optCardOverwrite" onclick="selectUploadOption('overwrite')">
+        <div style="display: flex; align-items: flex-start; gap: 10px;">
+          <input type="radio" id="radioOverwrite" name="uploadOption" value="overwrite" checked style="margin-top: 3px;" onchange="selectUploadOption('overwrite')">
+          <div style="flex: 1;">
+            <label for="radioOverwrite" style="font-weight: 600; cursor: pointer; display: block;">Lựa chọn 1: Đè lên node hiện tại (Ghi đè)</label>
+            <div style="font-size: 12px; color: var(--text-muted); margin: 4px 0 10px;">
+              Ghi đè toàn bộ danh sách node trong một gói có sẵn. Các Key đang dùng gói này sẽ nhận danh sách node mới ngay lập tức.
+            </div>
+
+            <div id="overwriteFields" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <div>
+                <label class="form-label">Chọn Gói cần ghi đè:</label>
+                <select id="overwriteTargetPkgSelect" class="form-select" style="font-size: 12px; padding: 7px 10px;">
+                  <!-- Dynamically populated -->
+                </select>
+              </div>
+              <div>
+                <label class="form-label">Áp dụng cho Key nào:</label>
+                <select id="overwriteTargetKeySelect" class="form-select" style="font-size: 12px; padding: 7px 10px;">
+                  <option value="">Giữ nguyên các Key hiện tại</option>
+                  <!-- Dynamically populated -->
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Option 2: Create new package -->
+      <div class="option-card" id="optCardNew" onclick="selectUploadOption('new')">
+        <div style="display: flex; align-items: flex-start; gap: 10px;">
+          <input type="radio" id="radioNew" name="uploadOption" value="new" style="margin-top: 3px;" onchange="selectUploadOption('new')">
+          <div style="flex: 1;">
+            <label for="radioNew" style="font-weight: 600; cursor: pointer; display: block;">Lựa chọn 2: Tạo ra 1 file node mới (Gói độc lập)</label>
+            <div style="font-size: 12px; color: var(--text-muted); margin: 4px 0 10px;">
+              Tạo một gói node hoàn toàn riêng biệt. Không làm thay đổi các node của các gói khác.
+            </div>
+
+            <div id="newPkgFields" style="display: none; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <div>
+                <label class="form-label">Tên gói node mới:</label>
+                <input type="text" id="newPkgNameInput" class="form-input" placeholder="Ví dụ: Gói VIP 2026" style="font-size: 12px; padding: 7px 10px;" />
+              </div>
+              <div>
+                <label class="form-label">Gán ngay cho Key (Tùy chọn):</label>
+                <select id="newPkgKeySelect" class="form-select" style="font-size: 12px; padding: 7px 10px;">
+                  <option value="">Chưa gán (Sẽ gán sau)</option>
+                  <!-- Dynamically populated -->
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-foot">
+        <button type="button" class="btn-secondary" onclick="closeModal('uploadPackageModal')">Hủy</button>
+        <button type="button" id="submitUploadBtn" class="btn-primary" onclick="submitUploadPackage()">
+          Xác nhận Nạp Node
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Gán Gói Node cho Key -->
+  <div id="assignPackageModal" class="modal-overlay">
+    <div class="modal-box" style="max-width: 440px;">
+      <div class="modal-head">
+        <div class="modal-title">Đổi Gói Node Cho Key</div>
+        <button class="btn-sm" onclick="closeModal('assignPackageModal')">✕</button>
+      </div>
+      <div style="margin-bottom: 14px;">
+        <div style="font-size: 12px; color: var(--text-muted);">Mã License:</div>
+        <div class="mono-cell" id="assignModalKeyString" style="font-size: 14px; margin-top: 2px;"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Chọn Gói Node định tuyến:</label>
+        <select id="assignModalPackageSelect" class="form-select">
+          <!-- Populated dynamically -->
+        </select>
+      </div>
+      <div class="modal-foot">
+        <button type="button" class="btn-secondary" onclick="closeModal('assignPackageModal')">Hủy</button>
+        <button type="button" class="btn-primary" onclick="submitAssignPackage()">Lưu thay đổi</button>
+      </div>
+    </div>
+  </div>
 
   <!-- MODAL: Tạo License Key mới -->
   <div id="createKeyModal" class="modal-overlay">
@@ -527,6 +760,12 @@
         <div class="form-group">
           <label class="form-label">Mã License (Để trống sẽ tự tạo ngẫu nhiên)</label>
           <input type="text" id="newKeyString" class="form-input" placeholder="Ví dụ: VIP-NAM-2026" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Gói Node cấp cho Key này</label>
+          <select id="newKeyPackage" class="form-select">
+            <!-- Populated dynamically -->
+          </select>
         </div>
         <div class="form-group">
           <label class="form-label">Số thiết bị cho phép sử dụng đồng thời</label>
@@ -556,11 +795,11 @@
     </div>
   </div>
 
-  <!-- MODAL: Nhập nhiều Node (Bulk Import) -->
+  <!-- MODAL: Nhập nhiều Node (Text) -->
   <div id="bulkImportModal" class="modal-overlay">
     <div class="modal-box">
       <div class="modal-head">
-        <div class="modal-title">Nhập nhiều Node tài khoản</div>
+        <div class="modal-title">Nhập nhiều Token text</div>
         <button class="btn-sm" onclick="closeModal('bulkImportModal')">✕</button>
       </div>
       <form onsubmit="submitBulkImport(event)">
@@ -569,7 +808,7 @@
           <textarea id="bulkNodesInput" class="form-textarea" placeholder="gsk_token1&#10;gsk_token2&#10;Node3:gsk_token3" required></textarea>
         </div>
         <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">
-          * Hệ thống tự động lọc bỏ các token trùng lặp và phân bổ ngay vào kho định tuyến.
+          * Hệ thống tự động lọc bỏ các token trùng lặp và phân bổ vào kho mặc định.
         </p>
         <div class="modal-foot">
           <button type="button" class="btn-secondary" onclick="closeModal('bulkImportModal')">Hủy</button>
@@ -592,8 +831,8 @@
           <input type="text" id="nodeNameInput" class="form-input" placeholder="Node-Chính-01" required />
         </div>
         <div class="form-group">
-          <label class="form-label">API Token</label>
-          <input type="text" id="nodeKeyInput" class="form-input" placeholder="gsk_..." required />
+          <label class="form-label">API Token / SSO Token</label>
+          <input type="text" id="nodeKeyInput" class="form-input" placeholder="sso_... hoặc gsk_..." required />
         </div>
         <div class="modal-foot">
           <button type="button" class="btn-secondary" onclick="closeModal('addNodeModal')">Hủy</button>
@@ -605,6 +844,17 @@
 
   <script>
     let adminToken = sessionStorage.getItem('admin_token') || '';
+    let packagesData = [];
+    let keysData = [];
+    let currentPreviewPkgId = 'default';
+    let currentPreviewPkgName = 'Kho Node Mặc Định';
+    let previewPage = 1;
+    let previewQuery = '';
+    let searchDebounceTimer = null;
+
+    let currentUploadNodes = [];
+    let currentUploadFilename = '';
+    let currentAssignKeyId = null;
 
     // Check login state on load
     if (adminToken) {
@@ -646,122 +896,487 @@
     function authHeaders() {
       return {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${adminToken}`
+        'Authorization': 'Bearer ' + adminToken
       };
     }
 
     async function loadAllData() {
-      await Promise.all([fetchNodes(), fetchKeys()]);
+      await fetchPackages();
+      await fetchKeys();
     }
 
-    async function fetchNodes() {
+    // 1. Packages & Nodes Data
+    async function fetchPackages() {
       try {
-        const res = await fetch('/api/admin?action=getNodes', { headers: authHeaders() });
+        const res = await fetch('/api/admin?action=getNodePackages', { headers: authHeaders() });
         const data = await res.json();
         if (!res.ok) return;
 
-        document.getElementById('statNodesCount').textContent = data.nodes.length;
+        packagesData = data.packages || [];
+        keysData = data.keys || [];
+
+        const totalNodes = data.totalNodes || 0;
+        document.getElementById('statNodesCount').textContent = totalNodes.toLocaleString('vi-VN');
+
         if (!data.hasKv) {
           document.getElementById('kvNotice').style.display = 'flex';
         }
 
-        const tbody = document.getElementById('nodesTableBody');
-        if (data.nodes.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 24px; color: var(--text-muted);">Kho hiện chưa có Node nào. Bấm "+ Thêm Node" để bắt đầu.</td></tr>';
+        renderPackagesTable();
+        populatePackageDropdowns();
+
+        if (packagesData.length > 0) {
+          const target = packagesData.find(p => p.id === currentPreviewPkgId) || packagesData[0];
+          previewPackage(target.id, target.name, previewPage);
+        } else {
+          document.getElementById('packagesTableBody').innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 24px; color: var(--text-muted);">Chưa có gói Node nào. Kéo thả file .json lên hoặc bấm "+ Tải lên file JSON" để bắt đầu.</td></tr>';
+          document.getElementById('previewNodesTableBody').innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 24px; color: var(--text-muted);">Chưa có node nào</td></tr>';
+        }
+      } catch (err) {
+        console.error('Fetch packages error:', err);
+      }
+    }
+
+    function renderPackagesTable() {
+      const tbody = document.getElementById('packagesTableBody');
+      if (packagesData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 24px; color: var(--text-muted);">Chưa có gói Node nào. Kéo thả file .json lên hoặc bấm "+ Tải lên file JSON" để bắt đầu.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = packagesData.map(p => {
+        const assignedKeys = (keysData || []).filter(k => (k.packageId || 'default') === p.id);
+        const keysText = assignedKeys.length > 0
+          ? assignedKeys.map(k => '<span class="mono-cell" style="font-size: 11px; background: var(--bg-subtle); padding: 2px 6px; border-radius: 3px; border: 1px solid var(--border);">' + escapeHtml(k.key) + '</span>').join(' ')
+          : '<span style="color: var(--text-muted); font-size: 11px;">Chưa gán key nào</span>';
+
+        const isDefaultBadge = p.isDefault ? '<span class="status-badge status-active" style="margin-left: 6px; font-size: 10px;">Mặc định</span>' : '';
+        const nodeCountStr = (p.nodeCount || 0).toLocaleString('vi-VN');
+
+        return '<tr>' +
+          '<td>' +
+            '<div style="display: flex; align-items: center; gap: 8px;">' +
+              '<span style="font-size: 16px;">📦</span>' +
+              '<div>' +
+                '<strong style="color: var(--text-primary);">' + escapeHtml(p.name) + '</strong>' + isDefaultBadge +
+                '<div style="font-size: 11px; color: var(--text-muted); font-family: var(--font-mono);">' + escapeHtml(p.filename || '') + '</div>' +
+              '</div>' +
+            '</div>' +
+          '</td>' +
+          '<td>' +
+            '<span class="node-badge-count">' +
+              '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>' +
+              nodeCountStr + ' Node' +
+            '</span>' +
+          '</td>' +
+          '<td>' +
+            '<div style="display: flex; flex-wrap: wrap; gap: 4px; max-width: 280px;">' +
+              keysText +
+            '</div>' +
+          '</td>' +
+          '<td>' + (p.updatedAt ? new Date(p.updatedAt).toLocaleDateString('vi-VN') : '—') + '</td>' +
+          '<td style="text-align: right;">' +
+            '<div style="display: inline-flex; gap: 6px;">' +
+              '<button class="btn-sm" onclick="previewPackage(\'' + p.id + '\', \'' + escapeHtml(p.name) + '\', 1)">👁️ Xem Node</button>' +
+              '<button class="btn-sm" onclick="exportPackage(\'' + p.id + '\', \'' + escapeHtml(p.filename || p.name + '.json') + '\')">📥 Tải .json</button>' +
+              (p.id !== 'default' ? '<button class="btn-sm btn-danger" onclick="deletePackage(\'' + p.id + '\')">Xóa</button>' : '') +
+            '</div>' +
+          '</td>' +
+        '</tr>';
+      }).join('');
+    }
+
+    function populatePackageDropdowns() {
+      const overwriteSelect = document.getElementById('overwriteTargetPkgSelect');
+      const createKeySelect = document.getElementById('newKeyPackage');
+      const assignKeySelect = document.getElementById('assignModalPackageSelect');
+
+      const options = packagesData.map(p => {
+        const count = (p.nodeCount || 0).toLocaleString('vi-VN');
+        return '<option value="' + p.id + '">' + escapeHtml(p.name) + ' (' + count + ' Node)' + (p.isDefault ? ' [Mặc định]' : '') + '</option>';
+      }).join('');
+
+      if (overwriteSelect) overwriteSelect.innerHTML = options;
+      if (createKeySelect) createKeySelect.innerHTML = options;
+      if (assignKeySelect) assignKeySelect.innerHTML = options;
+    }
+
+    async function previewPackage(id, name, page = 1) {
+      currentPreviewPkgId = id;
+      currentPreviewPkgName = name;
+      previewPage = page;
+
+      document.getElementById('previewTitle').textContent = 'Chi tiết Node: ' + name;
+      const tbody = document.getElementById('previewNodesTableBody');
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 24px; color: var(--text-muted);">Đang tải danh sách node...</td></tr>';
+
+      try {
+        const query = (document.getElementById('nodeSearchInput').value || '').trim();
+        const res = await fetch('/api/admin?action=getPackageNodes&id=' + id + '&page=' + page + '&limit=50&query=' + encodeURIComponent(query), {
+          headers: authHeaders()
+        });
+        const data = await res.json();
+        if (!res.ok) return;
+
+        const nodes = data.nodes || [];
+        const total = data.total || 0;
+        const totalPages = Math.max(1, Math.ceil(total / (data.limit || 50)));
+
+        document.getElementById('previewSubtitle').textContent = 'Tổng cộng: ' + total.toLocaleString('vi-VN') + ' node';
+        document.getElementById('paginationInfo').textContent = 'Trang ' + page + ' / ' + totalPages + ' (' + total.toLocaleString('vi-VN') + ' node)';
+
+        document.getElementById('prevPageBtn').disabled = (page <= 1);
+        document.getElementById('nextPageBtn').disabled = (page >= totalPages);
+
+        if (nodes.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 24px; color: var(--text-muted);">Không tìm thấy node nào phù hợp.</td></tr>';
           return;
         }
 
-        tbody.innerHTML = data.nodes.map(n => `
-          <tr>
-            <td class="mono-cell">${escapeHtml(n.name)}</td>
-            <td><code>${escapeHtml(n.maskedKey)}</code></td>
-            <td>${new Date(n.createdAt).toLocaleDateString('vi-VN')}</td>
-            <td><span class="status-badge status-active">Hoạt động</span></td>
-            <td style="text-align: right;">
-              <button class="btn-sm btn-danger" onclick="deleteNode('${n.id}')">Xóa</button>
-            </td>
-          </tr>
-        `).join('');
+        const startIndex = (page - 1) * (data.limit || 50);
+        tbody.innerHTML = nodes.map((n, idx) => '<tr>' +
+          '<td style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);">' + (startIndex + idx + 1) + '</td>' +
+          '<td>' +
+            '<div class="mono-cell">' + escapeHtml(n.name || 'AI Node') + '</div>' +
+            (n.email ? '<div style="font-size: 11px; color: var(--text-muted);">' + escapeHtml(n.email) + '</div>' : '') +
+          '</td>' +
+          '<td><code>' + escapeHtml(n.maskedKey || '••••••••') + '</code></td>' +
+          '<td><span class="status-badge status-active">' + escapeHtml(n.status || 'active') + '</span></td>' +
+        '</tr>').join('');
       } catch (err) {
         console.error(err);
       }
     }
 
+    function debounceSearchNodes() {
+      clearTimeout(searchDebounceTimer);
+      searchDebounceTimer = setTimeout(() => {
+        previewPackage(currentPreviewPkgId, currentPreviewPkgName, 1);
+      }, 300);
+    }
+
+    function changePreviewPage(delta) {
+      previewPackage(currentPreviewPkgId, currentPreviewPkgName, previewPage + delta);
+    }
+
+    async function exportPackage(id, filename) {
+      try {
+        const res = await fetch('/api/admin?action=exportPackage&id=' + id, { headers: authHeaders() });
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename || ('nodes-' + id + '.json');
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+      } catch (err) {
+        alert('Lỗi khi tải file: ' + err.message);
+      }
+    }
+
+    async function deletePackage(id) {
+      if (!confirm('Bạn có chắc muốn xóa gói Node này? Các Key đang dùng gói này sẽ chuyển về dùng Gói Mặc Định.')) return;
+      try {
+        const res = await fetch('/api/admin?action=deleteNodePackage&id=' + id, {
+          method: 'DELETE',
+          headers: authHeaders()
+        });
+        const data = await res.json();
+        if (res.ok) {
+          await loadAllData();
+        } else {
+          alert(data.error || 'Lỗi khi xóa gói');
+        }
+      } catch (err) {
+        alert('Lỗi kết nối: ' + err.message);
+      }
+    }
+
+    // 2. File Upload & Processing
+    function handleDragOver(e) {
+      e.preventDefault();
+      document.getElementById('fileDropzone').classList.add('dragover');
+    }
+    function handleDragLeave(e) {
+      e.preventDefault();
+      document.getElementById('fileDropzone').classList.remove('dragover');
+    }
+    function handleFileDrop(e) {
+      e.preventDefault();
+      document.getElementById('fileDropzone').classList.remove('dragover');
+      const files = e.dataTransfer.files;
+      if (files && files.length > 0) {
+        processSelectedFile(files[0]);
+      }
+    }
+    function handleFileInputChange(input) {
+      if (input.files && input.files.length > 0) {
+        processSelectedFile(input.files[0]);
+      }
+    }
+
+    function processSelectedFile(file) {
+      if (!file.name.toLowerCase().endsWith('.json')) {
+        alert('Vui lòng chọn file định dạng .json');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          let rawNodes = [];
+          if (Array.isArray(parsed)) {
+            rawNodes = parsed;
+          } else if (parsed && Array.isArray(parsed.accounts)) {
+            rawNodes = parsed.accounts;
+          } else if (parsed && Array.isArray(parsed.nodes)) {
+            rawNodes = parsed.nodes;
+          } else {
+            alert('File JSON không chứa danh sách Node hợp lệ (cần là mảng danh sách account).');
+            return;
+          }
+
+          const validNodes = rawNodes.filter(n => n && (n.ssoToken || n.apiKey || n.token));
+          if (validNodes.length === 0) {
+            alert('Không tìm thấy node nào có ssoToken hoặc apiKey trong file.');
+            return;
+          }
+
+          currentUploadNodes = validNodes;
+          currentUploadFilename = file.name;
+
+          // Open and populate Upload Modal
+          document.getElementById('uploadModalFileName').textContent = file.name;
+          document.getElementById('uploadModalNodeCount').textContent = validNodes.length.toLocaleString('vi-VN') + ' Node';
+          document.getElementById('newPkgNameInput').value = file.name.replace(/\.json$/i, '');
+
+          // Populate Key Selects for both options
+          populateKeyTargetSelects();
+
+          selectUploadOption('overwrite');
+          document.getElementById('uploadPackageModal').style.display = 'flex';
+        } catch (err) {
+          alert('Không thể đọc file JSON: ' + err.message);
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function populateKeyTargetSelects() {
+      const overwriteKeySelect = document.getElementById('overwriteTargetKeySelect');
+      const newPkgKeySelect = document.getElementById('newPkgKeySelect');
+
+      let optionsHtml = '<option value="">Chưa gán / Giữ nguyên</option>';
+      (keysData || []).forEach(k => {
+        optionsHtml += '<option value="' + k.id + '">' + escapeHtml(k.key) + ' (' + escapeHtml(k.label) + ')</option>';
+      });
+
+      if (overwriteKeySelect) overwriteKeySelect.innerHTML = optionsHtml;
+      if (newPkgKeySelect) newPkgKeySelect.innerHTML = optionsHtml;
+    }
+
+    function selectUploadOption(opt) {
+      const cardOverwrite = document.getElementById('optCardOverwrite');
+      const cardNew = document.getElementById('optCardNew');
+      const radioOverwrite = document.getElementById('radioOverwrite');
+      const radioNew = document.getElementById('radioNew');
+      const overwriteFields = document.getElementById('overwriteFields');
+      const newPkgFields = document.getElementById('newPkgFields');
+
+      if (opt === 'overwrite') {
+        cardOverwrite.classList.add('selected');
+        cardNew.classList.remove('selected');
+        radioOverwrite.checked = true;
+        overwriteFields.style.display = 'grid';
+        newPkgFields.style.display = 'none';
+      } else {
+        cardNew.classList.add('selected');
+        cardOverwrite.classList.remove('selected');
+        radioNew.checked = true;
+        newPkgFields.style.display = 'grid';
+        overwriteFields.style.display = 'none';
+      }
+    }
+
+    async function submitUploadPackage() {
+      const mode = document.querySelector('input[name="uploadOption"]:checked').value;
+      const targetPackageId = document.getElementById('overwriteTargetPkgSelect').value;
+      const overwriteKeyId = document.getElementById('overwriteTargetKeySelect').value;
+      const newName = document.getElementById('newPkgNameInput').value.trim();
+      const newKeyId = document.getElementById('newPkgKeySelect').value;
+
+      const targetKeyId = mode === 'overwrite' ? (overwriteKeyId || null) : (newKeyId || null);
+
+      const btn = document.getElementById('submitUploadBtn');
+      btn.disabled = true;
+      btn.textContent = 'Đang nạp dữ liệu...';
+
+      const minifiedNodes = currentUploadNodes.map(n => ({
+        id: n.id,
+        name: n.name || n.email || 'AI Node',
+        email: n.email || '',
+        ssoToken: n.ssoToken || n.apiKey || n.token,
+        refreshToken: n.refreshToken || '',
+        status: n.status || 'active'
+      }));
+
+      try {
+        const res = await fetch('/api/admin?action=uploadNodePackage', {
+          method: 'POST',
+          headers: authHeaders(),
+          body: JSON.stringify({
+            mode,
+            targetPackageId,
+            targetKeyId,
+            name: newName,
+            filename: currentUploadFilename,
+            nodes: minifiedNodes
+          })
+        });
+
+        const data = await res.json();
+        if (res.ok && data.ok) {
+          alert('Đã nạp thành công ' + data.nodeCount.toLocaleString('vi-VN') + ' node vào hệ thống!');
+          closeModal('uploadPackageModal');
+          document.getElementById('jsonFileInput').value = '';
+          await loadAllData();
+          if (data.package && data.package.id) {
+            previewPackage(data.package.id, data.package.name, 1);
+          }
+        } else {
+          alert(data.error || 'Lỗi khi nạp node');
+        }
+      } catch (err) {
+        alert('Lỗi kết nối máy chủ: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Xác nhận Nạp Node';
+      }
+    }
+
+    // 3. License Keys Data & Management
     async function fetchKeys() {
       try {
         const res = await fetch('/api/admin?action=getKeys', { headers: authHeaders() });
         const data = await res.json();
         if (!res.ok) return;
 
-        document.getElementById('statKeysCount').textContent = data.keys.length;
+        keysData = data.keys || [];
+        document.getElementById('statKeysCount').textContent = keysData.length;
+
         let totalDevices = 0;
-        data.keys.forEach(k => { totalDevices += (k.devices || []).length; });
+        keysData.forEach(k => { totalDevices += (k.devices || []).length; });
         document.getElementById('statDevicesCount').textContent = totalDevices;
 
-        const tbody = document.getElementById('keysTableBody');
-        if (data.keys.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 24px; color: var(--text-muted);">Chưa có mã License nào. Bấm "+ Tạo Mã License" để cấp cho khách.</td></tr>';
-          return;
-        }
-
-        tbody.innerHTML = data.keys.map(k => {
-          const deviceCount = (k.devices || []).length;
-          const maxAllowed = k.maxDevices >= 999 ? '∞' : k.maxDevices;
-          const isFull = deviceCount >= k.maxDevices;
-          const expireStr = k.expireAt ? new Date(k.expireAt).toLocaleDateString('vi-VN') : 'Vĩnh viễn';
-
-          return `
-            <tr>
-              <td>
-                <div style="display: flex; align-items: center; gap: 8px;">
-                  <span class="mono-cell">${escapeHtml(k.key)}</span>
-                  <button class="btn-sm" onclick="copyText('${escapeHtml(k.key)}')">Sao chép</button>
-                </div>
-              </td>
-              <td>${escapeHtml(k.label)}</td>
-              <td>
-                <span style="font-family: var(--font-mono); font-weight: 600; color: ${isFull ? 'var(--danger-red)' : 'var(--text-primary)'}">
-                  ${deviceCount} / ${maxAllowed} máy
-                </span>
-              </td>
-              <td>${expireStr}</td>
-              <td>
-                <span class="status-badge ${k.active ? 'status-active' : 'status-disabled'}">
-                  ${k.active ? 'Hoạt động' : 'Đã khóa'}
-                </span>
-              </td>
-              <td style="text-align: right;">
-                <div style="display: inline-flex; gap: 6px;">
-                  <button class="btn-sm" onclick="toggleKey('${k.id}')">${k.active ? 'Khóa' : 'Mở'}</button>
-                  <button class="btn-sm" onclick="resetKeyDevices('${k.id}')" title="Xóa các máy đã gán để user đổi sang máy khác">Reset máy</button>
-                  <button class="btn-sm btn-danger" onclick="deleteKey('${k.id}')">Xóa</button>
-                </div>
-              </td>
-            </tr>
-          `;
-        }).join('');
+        renderKeysTable();
       } catch (err) {
         console.error(err);
       }
     }
 
-    // Key actions
+    function renderKeysTable() {
+      const tbody = document.getElementById('keysTableBody');
+      if (keysData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 24px; color: var(--text-muted);">Chưa có mã License nào. Bấm "+ Tạo Mã License" để cấp cho khách.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = keysData.map(k => {
+        const deviceCount = (k.devices || []).length;
+        const maxAllowed = k.maxDevices >= 999 ? '∞' : k.maxDevices;
+        const isFull = deviceCount >= k.maxDevices;
+        const expireStr = k.expireAt ? new Date(k.expireAt).toLocaleDateString('vi-VN') : 'Vĩnh viễn';
+
+        const assignedPkg = packagesData.find(p => p.id === (k.packageId || 'default'));
+        const pkgName = assignedPkg ? assignedPkg.name : 'Kho Mặc Định';
+        const pkgNodeCount = assignedPkg ? (assignedPkg.nodeCount || 0).toLocaleString('vi-VN') : '0';
+
+        return '<tr>' +
+          '<td>' +
+            '<div style="display: flex; align-items: center; gap: 8px;">' +
+              '<span class="mono-cell">' + escapeHtml(k.key) + '</span>' +
+              '<button class="btn-sm" onclick="copyText(\'' + escapeHtml(k.key) + '\')">Sao chép</button>' +
+            '</div>' +
+          '</td>' +
+          '<td>' + escapeHtml(k.label) + '</td>' +
+          '<td>' +
+            '<div style="display: inline-flex; align-items: center; gap: 6px;">' +
+              '<span class="node-badge-count" style="font-size: 11px;">' +
+                '📦 ' + escapeHtml(pkgName) + ' (' + pkgNodeCount + ' Node)' +
+              '</span>' +
+              '<button class="btn-sm" onclick="openAssignModal(\'' + k.id + '\', \'' + (k.packageId || 'default') + '\', \'' + escapeHtml(k.key) + '\')">Đổi</button>' +
+            '</div>' +
+          '</td>' +
+          '<td>' +
+            '<span style="font-family: var(--font-mono); font-weight: 600; color: ' + (isFull ? 'var(--danger-red)' : 'var(--text-primary)') + '">' +
+              deviceCount + ' / ' + maxAllowed + ' máy' +
+            '</span>' +
+          '</td>' +
+          '<td>' + expireStr + '</td>' +
+          '<td>' +
+            '<span class="status-badge ' + (k.active ? 'status-active' : 'status-disabled') + '">' +
+              (k.active ? 'Hoạt động' : 'Đã khóa') +
+            '</span>' +
+          '</td>' +
+          '<td style="text-align: right;">' +
+            '<div style="display: inline-flex; gap: 6px;">' +
+              '<button class="btn-sm" onclick="toggleKey(\'' + k.id + '\')">' + (k.active ? 'Khóa' : 'Mở') + '</button>' +
+              '<button class="btn-sm" onclick="resetKeyDevices(\'' + k.id + '\')" title="Xóa các máy đã gán để user đổi sang máy khác">Reset máy</button>' +
+              '<button class="btn-sm btn-danger" onclick="deleteKey(\'' + k.id + '\')">Xóa</button>' +
+            '</div>' +
+          '</td>' +
+        '</tr>';
+      }).join('');
+    }
+
+    function openAssignModal(keyId, currentPkgId, keyString) {
+      currentAssignKeyId = keyId;
+      document.getElementById('assignModalKeyString').textContent = keyString;
+      document.getElementById('assignModalPackageSelect').value = currentPkgId;
+      document.getElementById('assignPackageModal').style.display = 'flex';
+    }
+
+    async function submitAssignPackage() {
+      if (!currentAssignKeyId) return;
+      const packageId = document.getElementById('assignModalPackageSelect').value;
+      try {
+        const res = await fetch('/api/admin?action=assignKeyPackage', {
+          method: 'POST',
+          headers: authHeaders(),
+          body: JSON.stringify({ keyId: currentAssignKeyId, packageId })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          closeModal('assignPackageModal');
+          await loadAllData();
+        } else {
+          alert(data.error || 'Lỗi khi đổi gói node');
+        }
+      } catch (err) {
+        alert('Lỗi kết nối: ' + err.message);
+      }
+    }
+
     async function submitCreateKey(e) {
       e.preventDefault();
       const label = document.getElementById('newKeyLabel').value;
       const keyString = document.getElementById('newKeyString').value;
+      const packageId = document.getElementById('newKeyPackage').value;
       const maxDevices = document.getElementById('newKeyMaxDevices').value;
       const expireDays = document.getElementById('newKeyExpireDays').value;
 
       const res = await fetch('/api/admin?action=createKey', {
         method: 'POST',
         headers: authHeaders(),
-        body: JSON.stringify({ label, keyString, maxDevices, expireDays })
+        body: JSON.stringify({ label, keyString, packageId, maxDevices, expireDays })
       });
       const data = await res.json();
       if (res.ok) {
         closeModal('createKeyModal');
-        fetchKeys();
+        await loadAllData();
       } else {
         alert(data.error || 'Lỗi khi tạo key');
       }
@@ -788,14 +1403,14 @@
 
     async function deleteKey(id) {
       if (!confirm('Xóa mã License này vĩnh viễn?')) return;
-      await fetch(`/api/admin?action=deleteKey&id=${id}`, {
+      await fetch('/api/admin?action=deleteKey&id=' + id, {
         method: 'DELETE',
         headers: authHeaders()
       });
-      fetchKeys();
+      await loadAllData();
     }
 
-    // Node actions
+    // 4. Single / Bulk Node (Legacy compatibility)
     async function submitAddNode(e) {
       e.preventDefault();
       const name = document.getElementById('nodeNameInput').value;
@@ -808,7 +1423,7 @@
       });
       if (res.ok) {
         closeModal('addNodeModal');
-        fetchNodes();
+        await loadAllData();
       } else {
         alert('Lỗi khi thêm node');
       }
@@ -825,23 +1440,14 @@
       const data = await res.json();
       if (res.ok) {
         closeModal('bulkImportModal');
-        alert(`Đã nạp thành công ${data.addedCount} node mới vào kho!`);
-        fetchNodes();
+        alert('Đã nạp thành công ' + data.addedCount + ' node mới vào kho mặc định!');
+        await loadAllData();
       } else {
         alert(data.error || 'Lỗi khi nạp node');
       }
     }
 
-    async function deleteNode(id) {
-      if (!confirm('Xóa node này khỏi kho?')) return;
-      await fetch(`/api/admin?action=deleteNode&id=${id}`, {
-        method: 'DELETE',
-        headers: authHeaders()
-      });
-      fetchNodes();
-    }
-
-    // Helpers
+    // 5. Navigation & UI Helpers
     function switchAdminTab(tabId, btn) {
       document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
       btn.classList.add('active');
@@ -851,6 +1457,7 @@
 
     function openCreateKeyModal() {
       document.getElementById('newKeyString').value = 'KEY-' + Math.random().toString(36).substring(2, 6).toUpperCase() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
+      populatePackageDropdowns();
       document.getElementById('createKeyModal').style.display = 'flex';
     }
     function openBulkImportModal() { document.getElementById('bulkImportModal').style.display = 'flex'; }
@@ -858,7 +1465,7 @@
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
     function copyText(txt) {
-      navigator.clipboard.writeText(txt).then(() => alert(`Đã sao chép mã: ${txt}`));
+      navigator.clipboard.writeText(txt).then(() => alert('Đã sao chép mã: ' + txt));
     }
 
     function escapeHtml(s) {
@@ -872,9 +1479,9 @@
       document.documentElement.setAttribute('data-theme', t);
       localStorage.setItem('theme', t);
       if (t === 'dark') {
-        themeIcon.innerHTML = `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>`;
+        themeIcon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
       } else {
-        themeIcon.innerHTML = `<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>`;
+        themeIcon.innerHTML = '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>';
       }
     }
     applyTheme(localStorage.getItem('theme') || 'dark');

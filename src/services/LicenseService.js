@@ -10,7 +10,7 @@ export class LicenseService {
     this.storage = storage;
     this.config = config;
     this.dataDir = config.DATA_DIR || path.join(os.homedir(), '.grok-router');
-    this.licenseFile = 'license.json';
+    this.licenseFile = path.join(this.dataDir, 'license.json');
     this.machineId = this._initMachineId();
     this.defaultServerUrl = process.env.LICENSE_SERVER_URL || 'https://grok-router-mini.vercel.app';
   }
@@ -81,10 +81,12 @@ export class LicenseService {
       // Nạp các node mới được cấp vào AccountPool
       const newAccounts = (data.nodes || []).map(n => new Account({
         id: `lic-${n.id || crypto.randomUUID().slice(0, 8)}`,
-        name: n.name || 'Cloud Node',
-        ssoToken: n.apiKey,
+        name: n.name || n.email || 'Cloud Node',
+        email: n.email || '',
+        ssoToken: n.ssoToken || n.apiKey || n.token,
+        refreshToken: n.refreshToken || '',
         source: 'license',
-        status: 'active'
+        status: n.status || 'active'
       }));
 
       this.accountPool.accounts.push(...newAccounts);
