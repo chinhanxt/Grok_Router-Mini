@@ -1457,7 +1457,11 @@
         const res = await fetch('/api/auth/users', {
           headers: { 'Authorization': 'Bearer ' + currentToken }
         });
-        if (!res.ok) return;
+        if (!res.ok) {
+          usersList = [{ id: currentUser.id, email: currentUser.email, role: currentUser.role, createdAt: Date.now() }];
+          renderUsersPage();
+          return;
+        }
         usersList = await res.json();
         renderUsersPage();
       } catch (err) {
