@@ -175,3 +175,19 @@ test('startServer initializes services, listens on port, and terminates cleanly'
     fs.rmSync(tmpDir, { recursive: true, force: true });
   }
 });
+
+test('adminGuard fails closed on /api/logs if authMiddleware is missing', async () => {
+  const app = createApp({});
+  const server = app.listen(0);
+  const port = server.address().port;
+
+  try {
+    const getRes = await fetch(`http://127.0.0.1:${port}/api/logs`);
+    assert.equal(getRes.status, 403);
+    const delRes = await fetch(`http://127.0.0.1:${port}/api/logs`, { method: 'DELETE' });
+    assert.equal(delRes.status, 403);
+  } finally {
+    server.close();
+  }
+});
+

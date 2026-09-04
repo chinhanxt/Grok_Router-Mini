@@ -69,7 +69,7 @@ export function createApp(options = {}) {
   const setupRouter = createSetupRouter(config);
   app.use('/', setupRouter);
 
-  const adminGuard = authMiddleware?.requireAdmin || ((req, res, next) => next());
+  const adminGuard = authMiddleware?.requireAdmin || ((req, res) => res.status(403).json({ error: 'Chỉ Admin mới có quyền truy cập.' }));
   app.get('/api/logs', adminGuard, (req, res) => res.json(activityLogs));
   app.delete('/api/logs', adminGuard, (req, res) => {
     activityLogs.length = 0;
