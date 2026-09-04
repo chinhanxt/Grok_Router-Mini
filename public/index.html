@@ -1089,142 +1089,121 @@
       margin-top: 1.25rem;
     }
 
-    /* Batch Import Modal Styles */
-    .modal-panel-wide {
-      max-width: 680px;
+    /* Compact Batch Import Modal */
+    .modal-panel-compact {
+      max-width: 480px;
+      padding: 1.25rem;
     }
 
-    .import-method-tabs {
+    .import-seg-control {
       display: flex;
-      gap: 0.5rem;
-      margin-bottom: 1rem;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 0.75rem;
+      background: #f1f5f9;
+      padding: 3px;
+      border-radius: var(--radius-md);
+      margin-bottom: 0.75rem;
+      gap: 3px;
     }
 
-    .btn-import-tab {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      padding: 0.4rem 0.85rem;
-      font-size: 0.8125rem;
+    .seg-btn {
+      flex: 1;
+      border: none;
+      background: transparent;
+      padding: 6px 12px;
+      font-size: 12px;
       font-weight: 500;
-      border-radius: var(--radius-md);
-      border: 1px solid var(--border);
-      background: var(--background);
-      color: var(--muted-foreground);
+      color: #64748b;
+      border-radius: var(--radius-sm);
       cursor: pointer;
       transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
     }
 
-    .btn-import-tab:hover {
-      color: var(--foreground);
-      border-color: #cbd5e1;
+    .seg-btn:hover {
+      color: #0f172a;
     }
 
-    .btn-import-tab.active {
-      background: #eff6ff;
-      border-color: #93c5fd;
-      color: #1d4ed8;
+    .seg-btn.active {
+      background: #ffffff;
+      color: #0f172a;
       font-weight: 600;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
     }
 
-    .import-dropzone {
-      border: 2px dashed var(--border);
-      border-radius: var(--radius-lg);
-      padding: 1.5rem;
+    .import-dropzone-compact {
+      border: 1.5px dashed #cbd5e1;
+      border-radius: var(--radius-md);
+      padding: 1rem 0.75rem;
       text-align: center;
       background: #f8fafc;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.35rem;
     }
 
-    .import-dropzone:hover, .import-dropzone.dragover {
+    .import-dropzone-compact:hover, .import-dropzone-compact.dragover {
       border-color: #3b82f6;
       background: #eff6ff;
     }
 
-    .import-textarea {
+    .import-textarea-compact {
       width: 100%;
-      height: 120px;
+      height: 80px;
       font-family: var(--font-mono);
-      font-size: 0.75rem;
-      padding: 0.75rem;
+      font-size: 11px;
+      padding: 0.5rem 0.65rem;
       border: 1px solid var(--border);
       border-radius: var(--radius-md);
       background: #f8fafc;
-      resize: vertical;
+      resize: none;
       color: var(--foreground);
       box-sizing: border-box;
     }
 
-    .import-textarea:focus {
+    .import-textarea-compact:focus {
       outline: none;
       border-color: #3b82f6;
       background: #fff;
     }
 
-    .import-strategy-card {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.75rem;
-      margin: 0.85rem 0;
-    }
-
-    .import-strategy-option {
-      display: flex;
-      align-items: flex-start;
-      gap: 0.5rem;
-      padding: 0.65rem 0.85rem;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      background: #fff;
-      cursor: pointer;
-      font-size: 0.775rem;
-      transition: border-color 0.15s ease;
-    }
-
-    .import-strategy-option:hover {
-      border-color: #93c5fd;
-    }
-
-    .import-strategy-option input[type="radio"] {
-      margin-top: 2px;
-    }
-
-    .import-preview-shell {
+    .import-preview-box {
       border: 1px solid var(--border);
       border-radius: var(--radius-md);
       overflow: hidden;
-      margin-top: 0.5rem;
+      margin-top: 0.4rem;
     }
 
-    .import-preview-header {
+    .import-preview-bar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0.45rem 0.75rem;
+      padding: 0.35rem 0.65rem;
       background: #f8fafc;
       border-bottom: 1px solid var(--border);
-      font-size: 0.75rem;
+      font-size: 11px;
       font-weight: 600;
     }
 
-    .import-preview-list {
-      max-height: 150px;
+    .import-preview-rows {
+      max-height: 130px;
       overflow-y: auto;
-      font-size: 0.75rem;
+      font-size: 11px;
     }
 
-    .import-preview-row {
+    .import-preview-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0.4rem 0.75rem;
+      padding: 0.35rem 0.65rem;
       border-bottom: 1px solid #f1f5f9;
     }
 
-    .import-preview-row:last-child {
+    .import-preview-item:last-child {
       border-bottom: none;
     }
 
@@ -1562,13 +1541,13 @@
                 </svg>
                 <span>Làm mới</span>
               </button>
-              <button class="btn btn-outline btn-sm" onclick="openBatchImportModal()" title="Nhập hàng loạt Node từ File JSON hoặc Text">
+              <button class="btn btn-outline btn-sm" onclick="openBatchImportModal()" title="Nhập nhiều Node từ File JSON hoặc Text">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                   <polyline points="7 10 12 15 17 10"></polyline>
                   <line x1="12" y1="15" x2="12" y2="3"></line>
                 </svg>
-                <span>Nhập hàng loạt</span>
+                <span>Nhập nhiều</span>
               </button>
               <button class="btn btn-primary btn-sm" onclick="openAddAccountModal()">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1810,111 +1789,79 @@
     </div>
   </div>
 
-  <!-- BATCH IMPORT MODAL -->
+  <!-- BATCH IMPORT MODAL (TINH GỌN) -->
   <div class="modal-backdrop hidden" id="batchImportModal">
-    <div class="modal-panel modal-panel-wide">
-      <div class="modal-header">
-        <div style="display:flex; align-items:center; gap:0.5rem;">
-          <div style="width:28px; height:28px; border-radius:6px; background:#eff6ff; display:flex; align-items:center; justify-content:center; color:#2563eb;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-              <polyline points="7 10 12 15 17 10"></polyline>
-              <line x1="12" y1="15" x2="12" y2="3"></line>
-            </svg>
-          </div>
-          <div>
-            <h2 style="font-size: 1rem; font-weight: 600; margin:0;">Nhập Node hàng loạt</h2>
-          </div>
+    <div class="modal-panel modal-panel-compact">
+      <div class="modal-header" style="margin-bottom: 0.75rem;">
+        <div>
+          <h2 style="font-size: 0.9375rem; font-weight: 600; margin: 0; color: #0f172a;">Nhập nhiều Node</h2>
+          <div style="font-size: 11px; color: #64748b; margin-top: 2px;">Nạp nhanh nhiều tài khoản từ file hoặc văn bản</div>
         </div>
-        <button type="button" class="btn btn-outline btn-sm" onclick="closeBatchImportModal()" style="border:none; padding:2px 6px;">✕</button>
+        <button type="button" class="btn btn-outline btn-sm" onclick="closeBatchImportModal()" style="border:none; padding:2px 6px; font-size:14px; color:#64748b;">✕</button>
       </div>
 
-      <!-- Tab Switcher: File or Paste -->
-      <div class="import-method-tabs">
-        <button type="button" class="btn-import-tab active" id="btnTabImportFile" onclick="switchImportTab('file')">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-          <span>Chọn file JSON / TXT</span>
+      <!-- Segmented Control -->
+      <div class="import-seg-control">
+        <button type="button" class="seg-btn active" id="btnTabImportFile" onclick="switchImportTab('file')">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+          <span>Tải file</span>
         </button>
-        <button type="button" class="btn-import-tab" id="btnTabImportPaste" onclick="switchImportTab('paste')">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
-          <span>Dán dữ liệu</span>
+        <button type="button" class="seg-btn" id="btnTabImportPaste" onclick="switchImportTab('paste')">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+          <span>Dán văn bản</span>
         </button>
       </div>
 
-      <!-- Section 1: File Dropzone -->
+      <!-- Section 1: Compact File Dropzone -->
       <div class="import-section" id="importFileSection">
         <input type="file" id="importFileInput" accept=".json,.txt" style="display:none;" onchange="handleImportFileSelect(event)">
-        <div class="import-dropzone" id="importDropZone" onclick="document.getElementById('importFileInput').click()">
-          <div style="display:flex; flex-direction:column; align-items:center; gap:0.4rem;">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-              <polyline points="17 8 12 3 7 8"></polyline>
-              <line x1="12" y1="3" x2="12" y2="15"></line>
-            </svg>
-            <div style="font-size:0.875rem; font-weight:500; color:var(--foreground);">Kéo thả file vào đây hoặc nhấp để chọn</div>
-            <div style="font-size:0.75rem; color:var(--muted-foreground);">Hỗ trợ file JSON (.json) hoặc danh sách (.txt)</div>
-            <div id="importSelectedFileName" style="display:none; margin-top:0.4rem; font-size:0.75rem; font-weight:600; color:#1d4ed8; background:#eff6ff; padding:2px 8px; border-radius:4px;"></div>
+        <div class="import-dropzone-compact" id="importDropZone" onclick="document.getElementById('importFileInput').click()">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          <div style="font-size:12px; color:#475569;">
+            Kéo thả hoặc <span style="color:#2563eb; font-weight:600; text-decoration:underline;">chọn file</span> (.json, .txt)
           </div>
+          <div id="importSelectedFileName" style="display:none; font-size:11px; font-weight:600; color:#1d4ed8; background:#eff6ff; padding:2px 8px; border-radius:4px; margin-top:2px;"></div>
         </div>
       </div>
 
-      <!-- Section 2: Paste Area -->
+      <!-- Section 2: Compact Paste Area -->
       <div class="import-section hidden" id="importPasteSection">
-        <textarea id="importPasteTextarea" class="import-textarea" placeholder="Dán mảng JSON:&#10;[&#10;  { &quot;email&quot;: &quot;node1@example.com&quot;, &quot;ssoToken&quot;: &quot;...&quot; }&#10;]&#10;&#10;hoặc từng dòng: email|token hoặc email|password|token" oninput="handleImportPaste(this.value)"></textarea>
+        <textarea id="importPasteTextarea" class="import-textarea-compact" placeholder="Dán mảng JSON hoặc định dạng dòng:&#10;email|sso_token hoặc email|password|cookie" oninput="handleImportPaste(this.value)"></textarea>
       </div>
 
-      <!-- Strategy: Overwrite or Skip -->
-      <div class="import-strategy-card">
-        <label class="import-strategy-option">
-          <input type="radio" name="importDuplicateStrategy" value="overwrite" id="strategyOverwrite" checked onchange="updateImportPreview()">
-          <div>
-            <div style="font-weight:600; color:#020817;">Cập nhật mới (Khuyên dùng)</div>
-            <div style="font-size:0.7rem; color:#64748b;">Ghi đè token, giữ nguyên dữ liệu đã có</div>
-          </div>
+      <!-- Settings & Stats Row (Super Compact!) -->
+      <div style="display:flex; align-items:center; justify-content:space-between; margin:0.65rem 0 0.4rem; font-size:12px;">
+        <label style="display:flex; align-items:center; gap:0.4rem; cursor:pointer; color:#334155; user-select:none;">
+          <input type="checkbox" id="importOverwriteCheck" checked onchange="updateImportPreview()" style="accent-color:#2563eb; margin:0;">
+          <span style="font-weight:500;">Ghi đè nếu đã tồn tại</span>
         </label>
-        <label class="import-strategy-option">
-          <input type="radio" name="importDuplicateStrategy" value="skip" id="strategySkip" onchange="updateImportPreview()">
-          <div>
-            <div style="font-weight:600; color:#020817;">Bỏ qua</div>
-            <div style="font-size:0.7rem; color:#64748b;">Chỉ thêm Node mới, bỏ qua Node đã có</div>
-          </div>
-        </label>
-      </div>
-
-      <!-- Preview Summary Grid -->
-      <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:0.5rem; margin-bottom:0.75rem;">
-        <div style="background:#f8fafc; border:1px solid var(--border); border-radius:var(--radius-md); padding:0.45rem 0.65rem; text-align:center;">
-          <div style="font-size:0.7rem; color:#64748b;">Tổng nhận diện</div>
-          <div style="font-size:1.1rem; font-weight:700; color:#020817;" id="importMetricTotal">0</div>
-        </div>
-        <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:var(--radius-md); padding:0.45rem 0.65rem; text-align:center;">
-          <div style="font-size:0.7rem; color:#15803d;">Mới</div>
-          <div style="font-size:1.1rem; font-weight:700; color:#16a34a;" id="importMetricNew">0</div>
-        </div>
-        <div style="background:#fefce8; border:1px solid #fef08a; border-radius:var(--radius-md); padding:0.45rem 0.65rem; text-align:center;">
-          <div style="font-size:0.7rem; color:#a16207;">Đã có</div>
-          <div style="font-size:1.1rem; font-weight:700; color:#ca8a04;" id="importMetricExisting">0</div>
+        <div id="importLiveStatus" style="font-size:11px; color:#64748b;">
+          0 Node
         </div>
       </div>
 
       <!-- Preview List Container -->
-      <div class="import-preview-shell">
-        <div class="import-preview-header">
-          <span>Danh sách xem trước</span>
+      <div class="import-preview-box">
+        <div class="import-preview-bar">
+          <span style="color:#475569;">Xem trước (<span id="importPreviewCount">0</span>)</span>
           <div style="display:flex; gap:0.4rem;">
-            <button type="button" class="btn btn-outline btn-sm" style="height:22px; font-size:11px; padding:0 6px;" onclick="setAllImportSelection(true)">Chọn tất cả</button>
-            <button type="button" class="btn btn-outline btn-sm" style="height:22px; font-size:11px; padding:0 6px;" onclick="setAllImportSelection(false)">Bỏ chọn</button>
+            <button type="button" class="btn btn-outline btn-sm" style="height:20px; font-size:10px; padding:0 5px;" onclick="setAllImportSelection(true)">Chọn tất cả</button>
+            <button type="button" class="btn btn-outline btn-sm" style="height:20px; font-size:10px; padding:0 5px;" onclick="setAllImportSelection(false)">Bỏ chọn</button>
           </div>
         </div>
-        <div class="import-preview-list" id="importPreviewList">
-          <div style="text-align:center; padding:1.5rem; color:#94a3b8;">Chưa có dữ liệu xem trước</div>
+        <div class="import-preview-rows" id="importPreviewList">
+          <div style="text-align:center; padding:1rem; font-size:11px; color:#94a3b8;">Chưa có dữ liệu xem trước</div>
         </div>
       </div>
 
-      <div class="modal-footer">
-        <button type="button" class="btn btn-outline" onclick="closeBatchImportModal()">Hủy</button>
-        <button type="button" class="btn btn-primary" id="btnSubmitBatchImport" disabled onclick="submitBatchImport()">
-          <span id="btnSubmitBatchImportText">Xác nhận nạp (0 Node)</span>
+      <div class="modal-footer" style="margin-top: 0.85rem;">
+        <button type="button" class="btn btn-outline btn-sm" onclick="closeBatchImportModal()">Hủy</button>
+        <button type="button" class="btn btn-primary btn-sm" id="btnSubmitBatchImport" disabled onclick="submitBatchImport()">
+          <span id="btnSubmitBatchImportText">Nhập 0 Node</span>
         </button>
       </div>
     </div>
@@ -2809,37 +2756,42 @@
       const newCount = importParsedAccounts.filter(a => !a.isExisting).length;
       const existingCount = importParsedAccounts.filter(a => a.isExisting).length;
 
-      const mTotal = document.getElementById('importMetricTotal');
-      const mNew = document.getElementById('importMetricNew');
-      const mExist = document.getElementById('importMetricExisting');
+      const pCount = document.getElementById('importPreviewCount');
+      if (pCount) pCount.textContent = total;
 
-      if (mTotal) mTotal.textContent = total;
-      if (mNew) mNew.textContent = newCount;
-      if (mExist) mExist.textContent = existingCount;
+      const liveStatus = document.getElementById('importLiveStatus');
+      if (liveStatus) {
+        if (total === 0) {
+          liveStatus.textContent = '0 Node';
+        } else {
+          liveStatus.innerHTML = `<span style="color:#16a34a; font-weight:600;">+${newCount} mới</span>` +
+            (existingCount > 0 ? ` <span style="color:#ca8a04; font-weight:600;">• ${existingCount} trùng</span>` : '');
+        }
+      }
 
       const listContainer = document.getElementById('importPreviewList');
       if (!listContainer) return;
 
       if (total === 0) {
-        listContainer.innerHTML = '<div style="text-align:center; padding:1.5rem; color:#94a3b8;">Chưa có dữ liệu xem trước</div>';
+        listContainer.innerHTML = '<div style="text-align:center; padding:1rem; font-size:11px; color:#94a3b8;">Chưa có dữ liệu xem trước</div>';
       } else {
         listContainer.innerHTML = '';
         importParsedAccounts.forEach((acc, idx) => {
           const badge = acc.isExisting
-            ? '<span class="status-badge-chart badge-chart-amber" style="font-size:10px; padding:1px 6px;">Đã có</span>'
-            : '<span class="status-badge-chart badge-chart-emerald" style="font-size:10px; padding:1px 6px;">Mới</span>';
+            ? '<span class="status-badge-chart badge-chart-amber" style="font-size:10px; padding:1px 5px;">Trùng</span>'
+            : '<span class="status-badge-chart badge-chart-emerald" style="font-size:10px; padding:1px 5px;">Mới</span>';
 
           const row = document.createElement('div');
-          row.className = 'import-preview-row';
-          const maskedToken = acc.ssoToken ? (acc.ssoToken.slice(0, 8) + '...' + acc.ssoToken.slice(-4)) : 'Không có token';
+          row.className = 'import-preview-item';
+          const maskedToken = acc.ssoToken ? (acc.ssoToken.slice(0, 6) + '...' + acc.ssoToken.slice(-4)) : 'Không có token';
 
           row.innerHTML = `
-            <div style="display:flex; align-items:center; gap:0.5rem;">
-              <input type="checkbox" ${acc.selected ? 'checked' : ''} onchange="toggleImportItemSelection(${idx}, this.checked)" style="margin:0;">
-              <span style="font-weight:600; color:#020817;">${escapeHtml(acc.email)}</span>
+            <div style="display:flex; align-items:center; gap:0.4rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:260px;">
+              <input type="checkbox" ${acc.selected ? 'checked' : ''} onchange="toggleImportItemSelection(${idx}, this.checked)" style="margin:0; accent-color:#2563eb;">
+              <span style="font-weight:600; color:#0f172a; font-size:11px; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(acc.email)}</span>
             </div>
-            <div style="display:flex; align-items:center; gap:0.6rem;">
-              <span style="font-family:var(--font-mono); font-size:11px; color:#64748b;">${maskedToken}</span>
+            <div style="display:flex; align-items:center; gap:0.4rem;">
+              <span style="font-family:var(--font-mono); font-size:10px; color:#94a3b8;">${maskedToken}</span>
               ${badge}
             </div>
           `;
@@ -2871,8 +2823,8 @@
       }
       if (btnText) {
         btnText.textContent = selectedCount > 0
-          ? `Xác nhận nạp (${selectedCount} Node)`
-          : 'Xác nhận nạp (0 Node)';
+          ? `Nhập ${selectedCount} Node`
+          : 'Nhập 0 Node';
       }
     }
 
@@ -2883,7 +2835,7 @@
         return;
       }
 
-      const overwrite = document.getElementById('strategyOverwrite')?.checked !== false;
+      const overwrite = document.getElementById('importOverwriteCheck')?.checked !== false;
       const btn = document.getElementById('btnSubmitBatchImport');
       if (btn) btn.disabled = true;
 
@@ -2899,7 +2851,7 @@
 
         if (!res.ok) {
           const err = await res.json();
-          throw new Error(err.error || 'Lỗi khi nhập hàng loạt.');
+          throw new Error(err.error || 'Lỗi khi nhập nhiều Node.');
         }
 
         const result = await res.json();
