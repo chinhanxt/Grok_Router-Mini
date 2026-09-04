@@ -447,6 +447,37 @@ test('accountRoutes DELETE /api/accounts/disabled deletes only disabled accounts
   }
 });
 
+test('accountRoutes GET /api/accounts/export exports all accounts with credentials for backup', async () => {
+  const tmpAccounts = path.join(os.tmpdir(), 'test-export-accounts-' + Date.now() + '.json');
+  const pool = new AccountPool(new JsonStorage(), { ACCOUNTS_FILE: tmpAccounts });
+  await pool.addAccount({ email: 'node1@test.com', ssoToken: 'sso_secret_123', refreshToken: 'ref_secret_456' });
+
+  const app = express();
+  app.use(express.json());
+  const dummyAuth = { requireAdmin: (req, res, next) => next() };
+  app.use('/api/accounts', createAccountRouter(pool, dummyAuth));
+
+  const server = app.listen(0);
+  const port = server.address().port;
+  const baseUrl = `http://127.0.0.1:${port}`;
+
+  try {
+    const res = await fetch(`${baseUrl}/api/accounts/export`);
+    assert.equal(res.status, 200);
+    assert.ok(res.headers.get('content-disposition')?.includes('attachment'));
+    const data = await res.json();
+    assert.ok(Array.isArray(data));
+    assert.equal(data.length, 1);
+    assert.equal(data[0].email, 'node1@test.com');
+    assert.equal(data[0].ssoToken, 'sso_secret_123');
+    assert.equal(data[0].refreshToken, 'ref_secret_456');
+  } finally {
+    server.close();
+    if (fs.existsSync(tmpAccounts)) fs.unlinkSync(tmpAccounts);
+  }
+});
+
+
 
 
 

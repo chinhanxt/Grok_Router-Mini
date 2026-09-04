@@ -52,6 +52,21 @@ export function createAccountRouter(accountPool, authMiddleware, nodeHealthServi
     }
   });
 
+  // Export accounts (full credentials for backup & sharing)
+  router.get(['/export', '/api/accounts/export'], guard, async (req, res) => {
+    try {
+      const rawAccounts = accountPool.getAccounts().map(acc => {
+        return typeof acc.toJSON === 'function' ? acc.toJSON() : { ...acc };
+      });
+      const filename = `ai-router-nodes-${new Date().toISOString().slice(0, 10)}.json`;
+      res.setHeader('Content-Type', 'application/json');
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      res.json(rawAccounts);
+    } catch (err) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
   // Create account
   router.post(['/', '/api/accounts'], guard, async (req, res) => {
     try {

@@ -1615,6 +1615,14 @@
                 </svg>
                 <span>Nhập nhiều</span>
               </button>
+              <button class="btn btn-outline btn-xs" id="btnExportNodes" onclick="exportNodesToJson()" title="Xuất toàn bộ Node ra file JSON để sao lưu hoặc gửi cho khách">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="17 8 12 3 7 8"></polyline>
+                  <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                <span>Xuất Node</span>
+              </button>
               <button class="btn btn-outline btn-xs" id="btnReviveNodes" onclick="triggerNodeHealthCheck()" title="Quét kiểm tra và hồi sinh toàn bộ token gần hết hạn">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
@@ -2465,6 +2473,42 @@
         showToast(`Đã xóa thành công ${result.deleted || 0} Node bị vô hiệu hóa!`, 'success');
       } catch (err) {
         showToast(err.message, 'error');
+      }
+    }
+
+    async function exportNodesToJson() {
+      const btn = document.getElementById('btnExportNodes');
+      if (btn) btn.disabled = true;
+      try {
+        const res = await fetch('/api/accounts/export', {
+          headers: { 'Authorization': 'Bearer ' + currentToken }
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({ error: 'Lỗi tải danh sách Node' }));
+          throw new Error(err.error || 'Lỗi xuất Node');
+        }
+        const accountsData = await res.json();
+        if (!Array.isArray(accountsData) || accountsData.length === 0) {
+          showToast('Hiện tại chưa có Node nào để xuất.', 'info');
+          return;
+        }
+
+        const dataBlob = new Blob([JSON.stringify(accountsData, null, 2)], { type: 'application/json' });
+        const blobUrl = URL.createObjectURL(dataBlob);
+        const downloadAnchor = document.createElement('a');
+        const dateStr = new Date().toISOString().slice(0, 10);
+        downloadAnchor.href = blobUrl;
+        downloadAnchor.download = `ai-router-nodes-${dateStr}.json`;
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+        URL.revokeObjectURL(blobUrl);
+
+        showToast(`Đã xuất thành công ${accountsData.length.toLocaleString('vi-VN')} Node ra file JSON!`, 'success');
+      } catch (err) {
+        showToast(err.message, 'error');
+      } finally {
+        if (btn) btn.disabled = false;
       }
     }
 
