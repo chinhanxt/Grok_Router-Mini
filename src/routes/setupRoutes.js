@@ -80,7 +80,7 @@ if [ -n "$RC_FILE" ]; then
   echo 'export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC="1"' >> "$RC_FILE"
 fi
 
-echo "🚀 Khởi động Claude Code qua AI Router (${baseUrl})..."
+echo "🚀 Khởi động Claude Code qua AI Gateway (${baseUrl})..."
 if command -v claude >/dev/null 2>&1; then
   exec claude "$@"
 else
@@ -138,7 +138,7 @@ $jsonConfig = @"
 Set-Content $settingsFile -Value $jsonConfig -Encoding UTF8
 
 Write-Host "✅ Đã lưu cấu hình vĩnh viễn vào User Environment Variables!" -ForegroundColor Green
-Write-Host "🚀 Đang mở Claude Code qua AI Router ($baseUrl)..." -ForegroundColor Cyan
+Write-Host "🚀 Đang mở Claude Code qua AI Gateway ($baseUrl)..." -ForegroundColor Cyan
 
 if (Get-Command claude -ErrorAction SilentlyContinue) {
   claude $args
@@ -157,7 +157,7 @@ if (Get-Command claude -ErrorAction SilentlyContinue) {
     const baseUrl = getBaseUrl(req);
 
     const script = `@echo off
-rem AI Router - 1-Click Auto Setup for Claude Code (CMD)
+rem AI Gateway - 1-Click Auto Setup for Claude Code (CMD)
 set "BASE_URL=${baseUrl}"
 set "API_KEY=${key}"
 

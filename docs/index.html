@@ -585,6 +585,10 @@
               Sao chép
             </button>
           </div>
+          <div style="margin-top: 12px; font-size: 13px; color: var(--text-secondary); display: flex; align-items: center; gap: 6px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+            <span>Sau lần đầu chạy npx, các lần sau bạn chỉ cần gõ: <code style="color: var(--text-primary); font-weight: 600; background: var(--bg-code); padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border);">aiclaude</code></span>
+          </div>
         </div>
 
         <!-- Cột Phải: Màn Terminal Thực Tế -->
@@ -626,9 +630,10 @@
       <div class="tab-module">
         <div class="tab-bar">
           <div class="tab-nav">
-            <button class="tab-btn active" onclick="pickTab('cmd', 0, this)">NPX (Khuyên dùng)</button>
-            <button class="tab-btn" onclick="pickTab('cmd', 1, this)">Cài đặt toàn cục</button>
-            <button class="tab-btn" onclick="pickTab('cmd', 2, this)">Chỉ định Cổng (Port)</button>
+            <button class="tab-btn active" onclick="pickTab('cmd', 0, this)">Lần đầu (NPX)</button>
+            <button class="tab-btn" onclick="pickTab('cmd', 1, this)">Từ lần sau (aiclaude)</button>
+            <button class="tab-btn" onclick="pickTab('cmd', 2, this)">Cài đặt toàn cục</button>
+            <button class="tab-btn" onclick="pickTab('cmd', 3, this)">Chỉ định Cổng (Port)</button>
           </div>
           <button class="btn-copy" onclick="copyCurrentTab('cmdWrap')">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
@@ -637,11 +642,16 @@
         </div>
         <div class="tab-pane-wrap" id="cmdWrap">
           <pre class="tab-content" style="display: block;"><code>npx ai-claude-keyapi</code></pre>
+          <pre class="tab-content" style="display: none;"><code>aiclaude</code></pre>
           <pre class="tab-content" style="display: none;"><code>npm install -g ai-claude-keyapi
-ai-claude-keyapi</code></pre>
-          <pre class="tab-content" style="display: none;"><code>npx ai-claude-keyapi --port 3006</code></pre>
+aiclaude</code></pre>
+          <pre class="tab-content" style="display: none;"><code>aiclaude --port 3006</code></pre>
         </div>
       </div>
+
+      <p style="font-size: 13px; color: var(--text-secondary); margin-top: 8px;">
+        * Chạy lần đầu bằng <code>npx ai-claude-keyapi</code> sẽ tự động tạo phím tắt <code>aiclaude</code>. Các lần sau bạn chỉ cần gõ <code>aiclaude</code> để khởi động.
+      </p>
 
       <p style="font-size: 13px; color: var(--text-secondary);">
         Web Dashboard cục bộ: <a href="http://localhost:3005" target="_blank" style="text-decoration: underline; color: var(--text-primary);">http://localhost:3005</a>

@@ -11,12 +11,13 @@ if (!fs.existsSync(distDir)) {
   fs.mkdirSync(distDir, { recursive: true });
 }
 
-console.log('📦 Building & obfuscating grok-router-mini backend...');
+console.log('📦 Building & obfuscating ai-claude-keyapi backend...');
 
 await esbuild.build({
   entryPoints: [
     path.join(rootDir, 'src/server.js'),
-    path.join(rootDir, 'src/utils/updateNotifier.js')
+    path.join(rootDir, 'src/utils/updateNotifier.js'),
+    path.join(rootDir, 'src/utils/shortcut.js')
   ],
   outdir: distDir,
   bundle: true,

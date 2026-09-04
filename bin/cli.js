@@ -16,7 +16,11 @@ const distNotifier = path.join(__dirname, '../dist/utils/updateNotifier.js');
 const notifierPath = fs.existsSync(distNotifier) ? distNotifier : path.join(__dirname, '../src/utils/updateNotifier.js');
 const { checkUpdate, formatUpdateBanner } = await import(notifierPath);
 
-let pkg = { name: 'grok-router-mini', version: '1.0.0' };
+const distShortcut = path.join(__dirname, '../dist/utils/shortcut.js');
+const shortcutPath = fs.existsSync(distShortcut) ? distShortcut : path.join(__dirname, '../src/utils/shortcut.js');
+const { setupShortcut } = await import(shortcutPath);
+
+let pkg = { name: 'ai-claude-keyapi', version: '1.0.2' };
 try {
   const rawPkg = fs.readFileSync(path.join(__dirname, '../package.json'), 'utf8');
   pkg = JSON.parse(rawPkg);
@@ -32,43 +36,31 @@ function parseArgs(args) {
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
-    if (arg === '--help' || arg === '-help') {
-      options.help = true;
-    } else if (arg === '-h') {
-      if (args[i + 1] && !args[i + 1].startsWith('-')) {
-        options.host = args[++i];
-      } else {
-        options.help = true;
-      }
+    if (arg === '--help' || arg === '-help') options.help = true;
+    else if (arg === '-h') {
+      if (args[i + 1] && !args[i + 1].startsWith('-')) options.host = args[++i];
+      else options.help = true;
     } else if (arg === '--host' || arg === '-H') {
       if (args[i + 1]) options.host = args[++i];
-    } else if (arg.startsWith('--host=')) {
-      options.host = arg.split('=')[1];
-    } else if (arg === '--port' || arg === '-p') {
-      if (args[i + 1]) {
-        options.port = parseInt(args[++i], 10);
-        options.portExplicit = true;
-      }
+    } else if (arg.startsWith('--host=')) options.host = arg.split('=')[1];
+    else if (arg === '--port' || arg === '-p') {
+      if (args[i + 1]) { options.port = parseInt(args[++i], 10); options.portExplicit = true; }
     } else if (arg.startsWith('--port=') || arg.startsWith('-p=')) {
-      options.port = parseInt(arg.split('=')[1], 10);
-      options.portExplicit = true;
+      options.port = parseInt(arg.split('=')[1], 10); options.portExplicit = true;
     } else if (arg === '--license' || arg === '-l') {
       if (args[i + 1]) options.license = args[++i];
-    } else if (arg.startsWith('--license=')) {
-      options.license = arg.split('=')[1];
-    }
+    } else if (arg.startsWith('--license=')) options.license = arg.split('=')[1];
   }
-
   return options;
 }
 
 function showHelp() {
   console.log(`
-AI Router Mini - Ultra-lightweight Local AI Gateway for Claude & LLMs
+AI Claude KeyAPI - Ultra-lightweight Local AI Gateway for Claude & LLMs
 
 Usage:
-  ai-router-mini [options]
-  npm start -- [options]
+  aiclaude [options]
+  npx ai-claude-keyapi [options]
 
 Options:
   -p, --port <number>    Port to listen on (default: 3005 or $PORT, auto-increments if busy)
@@ -80,16 +72,12 @@ Options:
 
 function printBanner(port, host) {
   const localUrl = `http://localhost:${port}`;
-  const cReset = '\x1b[0m';
-  const cBold = '\x1b[1m';
-  const cCyan = '\x1b[36m';
-  const cGreen = '\x1b[32m';
-  const cYellow = '\x1b[33m';
-  const cDim = '\x1b[2m';
+  const cReset = '\x1b[0m', cBold = '\x1b[1m', cCyan = '\x1b[36m';
+  const cGreen = '\x1b[32m', cYellow = '\x1b[33m', cDim = '\x1b[2m';
 
   console.log(`
 ${cCyan}┌─────────────────────────────────────────────────────────────┐
-│  ${cBold}⚡ AI Router Mini v${pkg.version || '1.0.0'} ⚡${cReset}${cCyan}                                 │
+│  ${cBold}⚡ AI Claude KeyAPI v${pkg.version || '1.0.2'} ⚡${cReset}${cCyan}                              │
 │  ${cDim}Ultra-lightweight local AI gateway for Claude Code${cReset}${cCyan}           │
 └─────────────────────────────────────────────────────────────┘${cReset}
 
@@ -97,6 +85,9 @@ ${cCyan}┌───────────────────────
      • Local Web UI:           ${cGreen}${localUrl}${cReset}
      • Claude Code Base URL:   ${cGreen}${localUrl}${cReset}
      • Host binding:           ${cDim}${host}:${port}${cReset}
+
+  ${cBold}⚡ Lệnh gọi nhanh từ lần sau:${cReset}
+     ${cGreen}aiclaude${cReset}  ${cDim}(hoặc: npx ai-claude-keyapi)${cReset}
 
   ${cBold}🚀 1-Click Claude Code Setup:${cReset}
      ${cYellow}macOS / Linux (Bash):${cReset}
@@ -115,7 +106,6 @@ ${cCyan}┌───────────────────────
 async function startWithPortFallback(options) {
   let currentPort = options.port;
   const maxAttempts = options.portExplicit ? 1 : 10;
-
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     try {
       const server = await startServer({ port: currentPort, host: options.host });
@@ -133,17 +123,16 @@ async function startWithPortFallback(options) {
 
 async function main() {
   const options = parseArgs(process.argv.slice(2));
-
-  if (options.help) {
-    showHelp();
-    process.exit(0);
-  }
+  if (options.help) { showHelp(); process.exit(0); }
 
   try {
     const { server, port: boundPort } = await startWithPortFallback(options);
     const addr = server.address();
     const resolvedPort = addr?.port || boundPort;
     const resolvedHost = addr?.address || options.host;
+
+    // Ensure `aiclaude` quick shortcut is set up for subsequent runs
+    setupShortcut();
 
     printBanner(resolvedPort, resolvedHost);
 
@@ -157,12 +146,8 @@ async function main() {
       }
     }
 
-    // Check for updates in background (non-blocking)
-    checkUpdate({
-      packageName: pkg.name,
-      currentVersion: pkg.version
-    }).then(res => {
-      if (res && res.hasUpdate && res.latestVersion) {
+    checkUpdate({ packageName: pkg.name, currentVersion: pkg.version }).then(res => {
+      if (res?.hasUpdate && res?.latestVersion) {
         console.log(formatUpdateBanner({
           packageName: pkg.name,
           currentVersion: pkg.version,
@@ -172,10 +157,8 @@ async function main() {
     }).catch(() => {});
 
     const cleanup = () => {
-      console.log('\nGracefully shutting down AI Router Mini...');
-      server.close(() => {
-        process.exit(0);
-      });
+      console.log('\nGracefully shutting down AI Claude KeyAPI...');
+      server.close(() => process.exit(0));
       setTimeout(() => process.exit(0), 1000).unref();
     };
 
@@ -185,10 +168,10 @@ async function main() {
     if (err.code === 'EADDRINUSE') {
       console.error(`\x1b[31m❌ Error: Port ${options.port} is already in use by another program.\x1b[0m`);
       console.error(`👉 You can run on a different port using:`);
-      console.error(`   npm start -- --port ${options.port + 1}`);
+      console.error(`   aiclaude --port ${options.port + 1}`);
       console.error(`   node bin/cli.js --port ${options.port + 1}\n`);
     } else {
-      console.error('Failed to start AI Router Mini:', err);
+      console.error('Failed to start AI Claude KeyAPI:', err);
     }
     process.exit(1);
   }

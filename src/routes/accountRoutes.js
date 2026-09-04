@@ -58,7 +58,7 @@ export function createAccountRouter(accountPool, authMiddleware, nodeHealthServi
       const rawAccounts = accountPool.getAccounts().map(acc => {
         return typeof acc.toJSON === 'function' ? acc.toJSON() : { ...acc };
       });
-      const filename = `ai-router-nodes-${new Date().toISOString().slice(0, 10)}.json`;
+      const filename = `ai-nodes-${new Date().toISOString().slice(0, 10)}.json`;
       res.setHeader('Content-Type', 'application/json');
       res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
       res.json(rawAccounts);
