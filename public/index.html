@@ -975,10 +975,8 @@
       document.getElementById('authView').classList.add('hidden');
       document.getElementById('appShell').classList.remove('hidden');
 
-      const email = currentUser?.email || 'admin';
-      const displayEmail = email === 'admin@local.com' ? 'admin' : email;
-      document.getElementById('currentUserEmail').textContent = displayEmail;
-      document.getElementById('avatarInitial').textContent = displayEmail.charAt(0).toUpperCase();
+      document.getElementById('currentUserEmail').textContent = 'admin';
+      document.getElementById('avatarInitial').textContent = 'A';
 
       const roleBadge = document.getElementById('currentUserRoleBadge');
       if (roleBadge) {

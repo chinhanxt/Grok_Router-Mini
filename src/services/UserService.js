@@ -66,7 +66,7 @@ export class UserService {
     let cleanEmail = (email || '').trim().toLowerCase();
     if (cleanEmail === 'admin') cleanEmail = 'admin@local.com';
     const user = this.users.find(u => u.email === cleanEmail);
-    const valid = user && (user.verifyPassword(password) || (password === 'admin' && user.verifyPassword('admin123')));
+    const valid = user && user.verifyPassword(password);
     if (!valid) {
       throw new Error('Sai tài khoản hoặc mật khẩu.');
     }
