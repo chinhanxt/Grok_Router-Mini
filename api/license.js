@@ -60,6 +60,19 @@ export default async function handler(req, res) {
         return res.status(403).json({ ok: false, error: `Mã License đã hết hạn vào ${exp}` });
       }
 
+      if (machineId) {
+        targetKey.devices = targetKey.devices || [];
+        const device = targetKey.devices.find(d => d.id === machineId);
+        if (!device) {
+          return res.status(403).json({ ok: false, valid: false, error: 'Thiết bị này đã bị ngắt kết nối hoặc xóa khỏi License Key' });
+        }
+        device.lastSeen = new Date().toISOString();
+        if (deviceName && deviceName !== device.name) {
+          device.name = deviceName;
+        }
+        await kvSet('keys', keys);
+      }
+
       const packageId = targetKey.packageId || 'default';
       let rawNodes = await kvGet(`package_${packageId}`);
       if ((!rawNodes || (Array.isArray(rawNodes) && rawNodes.length === 0)) && packageId === 'default') {

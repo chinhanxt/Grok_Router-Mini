@@ -19,7 +19,7 @@ export class AccountPool {
   }
 
   async save() {
-    await this.storage.write(this.config.ACCOUNTS_FILE, this.accounts.map(a => a.toJSON()));
+    await this.storage.write(this.config.ACCOUNTS_FILE, this.accounts.map(a => (typeof a?.toJSON === 'function' ? a.toJSON() : a)));
   }
 
   async addAccount(data) {

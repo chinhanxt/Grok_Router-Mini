@@ -9,6 +9,7 @@ import { createAuthMiddleware } from './middlewares/AuthMiddleware.js';
 
 import { NodeHealthService } from './services/NodeHealthService.js';
 import { LicenseService } from './services/LicenseService.js';
+import { LicenseHeartbeat } from './services/LicenseHeartbeat.js';
 
 export async function startServer(portOrOptions = {}, maybeHost = null) {
   let port;
@@ -46,6 +47,7 @@ export async function startServer(portOrOptions = {}, maybeHost = null) {
   const authMiddleware = createAuthMiddleware(userService);
   const licenseService = new LicenseService(pool, storage, config);
   await licenseService.syncOnStartup();
+  const licenseHeartbeat = new LicenseHeartbeat(licenseService, pool, storage, config);
 
   const app = createApp({ config, pool, userService, proxyService, authMiddleware, storage, nodeHealthService, licenseService });
 
@@ -57,13 +59,16 @@ export async function startServer(portOrOptions = {}, maybeHost = null) {
       server.proxyService = proxyService;
       server.nodeHealthService = nodeHealthService;
       server.licenseService = licenseService;
+      server.licenseHeartbeat = licenseHeartbeat;
       server.config = config;
 
       nodeHealthService.startBackgroundWorker();
+      licenseHeartbeat.startBackgroundWorker();
 
       const origClose = server.close.bind(server);
       server.close = function(cb) {
         nodeHealthService.stopBackgroundWorker();
+        licenseHeartbeat.stopBackgroundWorker();
         return origClose(cb);
       };
 
