@@ -12,7 +12,7 @@ export class LicenseService {
     this.dataDir = config.DATA_DIR || path.join(os.homedir(), '.grok-router');
     this.licenseFile = path.join(this.dataDir, 'license.json');
     this.machineId = this._initMachineId();
-    this.defaultServerUrl = process.env.LICENSE_SERVER_URL || 'https://grok-router-mini.vercel.app';
+    this.defaultServerUrl = process.env.LICENSE_SERVER_URL || 'https://aiclaude.freepro.online';
   }
 
   _initMachineId() {
