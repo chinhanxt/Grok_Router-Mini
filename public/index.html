@@ -606,10 +606,136 @@
       font-size: 0.835rem;
       font-weight: 600;
       line-height: 1.55;
-      color: #16a34a;
+      color: #0284c7; /* Màu xanh biển */
       white-space: pre-wrap;
       word-break: break-all;
       text-align: left;
+    }
+
+    /* Custom Designed Dropdown */
+    .custom-dropdown {
+      position: relative;
+      display: inline-block;
+      min-width: 220px;
+    }
+
+    .custom-dropdown-trigger {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.65rem;
+      width: 100%;
+      height: 38px;
+      padding: 0 0.85rem;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--input);
+      background-color: #ffffff;
+      color: var(--foreground);
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+
+    .custom-dropdown-trigger:hover {
+      border-color: #94a3b8;
+      background-color: #f8fafc;
+    }
+
+    .custom-dropdown-trigger:focus,
+    .custom-dropdown.open .custom-dropdown-trigger {
+      border-color: #16a34a;
+      box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.15);
+      background-color: #ffffff;
+      outline: none;
+    }
+
+    .custom-dropdown-indicator {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background-color: #16a34a;
+      flex-shrink: 0;
+      box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.15);
+    }
+
+    .custom-dropdown-arrow {
+      color: #64748b;
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      flex-shrink: 0;
+    }
+
+    .custom-dropdown.open .custom-dropdown-arrow {
+      transform: rotate(180deg);
+    }
+
+    .custom-dropdown-menu {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      width: 100%;
+      min-width: 230px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+      padding: 5px;
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      animation: slideRightStraight 0.16s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .custom-dropdown-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 13.5px;
+      color: #334155;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+
+    .custom-dropdown-item:hover {
+      background-color: #f0fdf4;
+      color: #15803d;
+    }
+
+    .custom-dropdown-item.selected {
+      background-color: #f0fdf4;
+      color: #15803d;
+      font-weight: 600;
+    }
+
+    .custom-dropdown-item .model-opt-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .custom-dropdown-item .model-opt-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: #16a34a;
+      flex-shrink: 0;
+    }
+
+    .custom-dropdown-item .model-opt-check {
+      color: #16a34a;
+      opacity: 0;
+      transform: scale(0.8);
+      transition: all 0.15s ease;
+    }
+
+    .custom-dropdown-item.selected .model-opt-check {
+      opacity: 1;
+      transform: scale(1);
     }
 
     /* DataTable */
@@ -952,7 +1078,7 @@
             </div>
             <div style="margin-top: 1rem; display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: var(--muted-foreground);">
               <span>Base URL:</span>
-              <code style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--primary); background: var(--secondary); padding: 2px 8px; border-radius: var(--radius-sm); border: 1px solid var(--border);" id="manualBaseUrl">http://localhost:3005</code>
+              <code style="font-family: var(--font-mono); font-size: 0.8rem; color: #0284c7; background: #f0f9ff; padding: 2px 8px; border-radius: var(--radius-sm); border: 1px solid #bae6fd; font-weight: 600;" id="manualBaseUrl">http://localhost:3005</code>
             </div>
           </div>
 
@@ -991,12 +1117,64 @@
               <textarea id="aiTestPrompt" rows="2" placeholder="Nhập câu hỏi...">Xin chào!</textarea>
             </div>
             <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
-              <select id="aiTestModel" style="width: auto; min-width: 200px;">
+              <select id="aiTestModel" class="hidden">
                 <option value="claude-fable-5-1">Claude Fable 5.1</option>
                 <option value="claude-opus-5">Claude Opus 5</option>
                 <option value="claude-sonnet-5" selected>Claude Sonnet 5</option>
                 <option value="claude-haiku-4-5">Claude Haiku 4.5</option>
               </select>
+
+              <!-- Custom Designed Dropdown -->
+              <div class="custom-dropdown" id="modelCustomDropdown">
+                <button type="button" class="custom-dropdown-trigger" id="modelDropdownBtn" onclick="toggleModelDropdown(event)">
+                  <span style="display: flex; align-items: center; gap: 8px;">
+                    <span class="custom-dropdown-indicator"></span>
+                    <span id="selectedModelLabel">Claude Sonnet 5</span>
+                  </span>
+                  <svg class="custom-dropdown-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </button>
+                <div class="custom-dropdown-menu hidden" id="modelDropdownMenu">
+                  <div class="custom-dropdown-item" onclick="selectModelOption('claude-fable-5-1', 'Claude Fable 5.1')">
+                    <div class="model-opt-left">
+                      <span class="model-opt-dot"></span>
+                      <span>Claude Fable 5.1</span>
+                    </div>
+                    <svg class="model-opt-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                  </div>
+                  <div class="custom-dropdown-item" onclick="selectModelOption('claude-opus-5', 'Claude Opus 5')">
+                    <div class="model-opt-left">
+                      <span class="model-opt-dot"></span>
+                      <span>Claude Opus 5</span>
+                    </div>
+                    <svg class="model-opt-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                  </div>
+                  <div class="custom-dropdown-item selected" onclick="selectModelOption('claude-sonnet-5', 'Claude Sonnet 5')">
+                    <div class="model-opt-left">
+                      <span class="model-opt-dot"></span>
+                      <span>Claude Sonnet 5</span>
+                    </div>
+                    <svg class="model-opt-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                  </div>
+                  <div class="custom-dropdown-item" onclick="selectModelOption('claude-haiku-4-5', 'Claude Haiku 4.5')">
+                    <div class="model-opt-left">
+                      <span class="model-opt-dot"></span>
+                      <span>Claude Haiku 4.5</span>
+                    </div>
+                    <svg class="model-opt-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
               <button class="btn btn-primary" id="aiTestBtn" onclick="sendAITest()">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <line x1="22" y1="2" x2="11" y2="13"></line>
@@ -1107,6 +1285,25 @@
             <div class="logs-terminal-view" id="logsTerminal">
               <div style="color: var(--muted-foreground); text-align: center; padding: 1.5rem;">Không có nhật ký.</div>
             </div>
+
+            <!-- Logs Pagination -->
+            <div class="pagination-bar" id="logsPaginationBar" style="border-top: 1px solid var(--border); margin-top: 0.75rem; padding-top: 0.75rem;">
+              <span id="logsPaginationInfo">Trang 1 / 1 (0 nhật ký)</span>
+              <div class="pagination-controls">
+                <button class="btn btn-outline btn-sm" id="logsPrevBtn" onclick="prevLogsPage()">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                  </svg>
+                  <span>Trước</span>
+                </button>
+                <button class="btn btn-outline btn-sm" id="logsNextBtn" onclick="nextLogsPage()">
+                  <span>Sau</span>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                </button>
+              </div>
+            </div>
           </div>
         </section>
       </main>
@@ -1156,6 +1353,11 @@
     let accounts = [];
     let accountsPage = 1;
     const ACCOUNTS_PER_PAGE = 5;
+
+    // Logs data & pagination
+    let allLogs = [];
+    let logsPage = 1;
+    const LOGS_PER_PAGE = 8;
 
     const TAB_TITLES = {
       setup: 'Thiết lập',
@@ -1367,6 +1569,54 @@
       });
     }
 
+    // Custom Model Dropdown
+    function toggleModelDropdown(e) {
+      if (e) e.stopPropagation();
+      const dd = document.getElementById('modelCustomDropdown');
+      const menu = document.getElementById('modelDropdownMenu');
+      if (!dd || !menu) return;
+      const isOpen = dd.classList.contains('open');
+      if (isOpen) {
+        dd.classList.remove('open');
+        menu.classList.add('hidden');
+      } else {
+        dd.classList.add('open');
+        menu.classList.remove('hidden');
+      }
+    }
+
+    function selectModelOption(val, label) {
+      const selectElem = document.getElementById('aiTestModel');
+      if (selectElem) selectElem.value = val;
+      const labelElem = document.getElementById('selectedModelLabel');
+      if (labelElem) labelElem.textContent = label;
+
+      const items = document.querySelectorAll('#modelDropdownMenu .custom-dropdown-item');
+      items.forEach(item => {
+        if (item.getAttribute('onclick')?.includes(`'${val}'`)) {
+          item.classList.add('selected');
+        } else {
+          item.classList.remove('selected');
+        }
+      });
+
+      const dd = document.getElementById('modelCustomDropdown');
+      const menu = document.getElementById('modelDropdownMenu');
+      if (dd && menu) {
+        dd.classList.remove('open');
+        menu.classList.add('hidden');
+      }
+    }
+
+    document.addEventListener('click', function(e) {
+      const dd = document.getElementById('modelCustomDropdown');
+      const menu = document.getElementById('modelDropdownMenu');
+      if (dd && menu && !dd.contains(e.target)) {
+        dd.classList.remove('open');
+        menu.classList.add('hidden');
+      }
+    });
+
     // AI Playground
     async function sendAITest() {
       const prompt = document.getElementById('aiTestPrompt').value.trim();
@@ -1565,7 +1815,7 @@
       }
     }
 
-    // Logs
+    // Logs & Pagination
     async function loadLogs() {
       if (!currentUser) return;
       try {
@@ -1573,16 +1823,30 @@
           headers: { 'Authorization': 'Bearer ' + currentToken }
         });
         if (!res.ok) return;
-        const logs = await res.json();
-        const term = document.getElementById('logsTerminal');
-        term.innerHTML = '';
+        allLogs = (await res.json()) || [];
+        renderLogsPage();
+      } catch (err) {
+        console.error(err);
+      }
+    }
 
-        if (!logs || logs.length === 0) {
-          term.innerHTML = '<div style="color:var(--muted-foreground); text-align:center; padding:1.5rem;">Không có nhật ký.</div>';
-          return;
-        }
+    function renderLogsPage() {
+      const term = document.getElementById('logsTerminal');
+      if (!term) return;
+      term.innerHTML = '';
 
-        logs.forEach(l => {
+      const total = allLogs.length;
+      const totalPages = Math.max(1, Math.ceil(total / LOGS_PER_PAGE));
+      if (logsPage > totalPages) logsPage = totalPages;
+      if (logsPage < 1) logsPage = 1;
+
+      const start = (logsPage - 1) * LOGS_PER_PAGE;
+      const pageLogs = allLogs.slice(start, start + LOGS_PER_PAGE);
+
+      if (total === 0) {
+        term.innerHTML = '<div style="color:var(--muted-foreground); text-align:center; padding:1.5rem;">Không có nhật ký.</div>';
+      } else {
+        pageLogs.forEach(l => {
           const row = document.createElement('div');
           row.className = 'log-entry';
           let statusClass = 'log-status-200';
@@ -1598,8 +1862,30 @@
           `;
           term.appendChild(row);
         });
-      } catch (err) {
-        console.error(err);
+      }
+
+      const infoElem = document.getElementById('logsPaginationInfo');
+      if (infoElem) {
+        infoElem.textContent = 'Trang ' + logsPage + ' / ' + totalPages + ' (' + total + ' nhật ký)';
+      }
+      const prevBtn = document.getElementById('logsPrevBtn');
+      const nextBtn = document.getElementById('logsNextBtn');
+      if (prevBtn) prevBtn.disabled = logsPage <= 1;
+      if (nextBtn) nextBtn.disabled = logsPage >= totalPages;
+    }
+
+    function prevLogsPage() {
+      if (logsPage > 1) {
+        logsPage--;
+        renderLogsPage();
+      }
+    }
+
+    function nextLogsPage() {
+      const totalPages = Math.ceil(allLogs.length / LOGS_PER_PAGE);
+      if (logsPage < totalPages) {
+        logsPage++;
+        renderLogsPage();
       }
     }
 
@@ -1609,7 +1895,9 @@
           method: 'DELETE',
           headers: { 'Authorization': 'Bearer ' + currentToken }
         });
-        loadLogs();
+        allLogs = [];
+        logsPage = 1;
+        renderLogsPage();
       } catch (err) {
         console.error(err);
       }
