@@ -12,11 +12,12 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
-  const { searchParams } = new URL(req.url, `http://${req.headers.host}`);
-  const action = searchParams.get('action') || '';
-  const body = req.method !== 'GET' ? await parseRequestBody(req) : {};
+  try {
+    const { searchParams } = new URL(req.url, `http://${req.headers.host}`);
+    const action = searchParams.get('action') || '';
+    const body = req.method !== 'GET' ? await parseRequestBody(req) : {};
 
-  // 1. Admin Login
+    // 1. Admin Login
   if (action === 'login' && req.method === 'POST') {
     const { password } = body;
     const configuredPassword = process.env.ADMIN_PASSWORD || 'admin123';
@@ -203,5 +204,9 @@ export default async function handler(req, res) {
     return res.status(200).json({ ok: true, totalKeys: keys.length });
   }
 
-  return res.status(400).json({ error: `Action ${action} không hợp lệ` });
+    return res.status(400).json({ error: `Action ${action} không hợp lệ` });
+  } catch (err) {
+    console.error('Admin API error:', err.message);
+    return res.status(500).json({ error: err.message });
+  }
 }

@@ -29,11 +29,16 @@ export async function kvGet(key) {
     if (!res.ok) return memoryStore[key] ?? null;
     const data = await res.json();
     if (data.result === null || data.result === undefined) return null;
-    try {
-      return typeof data.result === 'string' ? JSON.parse(data.result) : data.result;
-    } catch {
-      return data.result;
+    let result = data.result;
+    while (typeof result === 'string') {
+      try {
+        const parsed = JSON.parse(result);
+        result = parsed;
+      } catch {
+        break;
+      }
     }
+    return result;
   } catch (err) {
     console.error(`KV GET error for ${key}:`, err.message);
     return memoryStore[key] ?? null;
@@ -58,7 +63,7 @@ export async function kvSet(key, value) {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(payload)
+      body: payload
     });
     return res.ok;
   } catch (err) {

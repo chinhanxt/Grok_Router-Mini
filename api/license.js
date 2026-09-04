@@ -15,20 +15,22 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Chỉ chấp nhận phương thức POST' });
   }
 
-  const body = await parseRequestBody(req);
-  const { licenseKey, machineId, deviceName } = body || {};
+  try {
+    const body = await parseRequestBody(req);
+    const { licenseKey, machineId, deviceName } = body || {};
 
-  if (!licenseKey || typeof licenseKey !== 'string') {
-    return res.status(400).json({ ok: false, error: 'Vui lòng nhập mã kích hoạt (License Key)' });
-  }
+    if (!licenseKey || typeof licenseKey !== 'string') {
+      return res.status(400).json({ ok: false, error: 'Vui lòng nhập mã kích hoạt (License Key)' });
+    }
 
-  if (!machineId || typeof machineId !== 'string') {
-    return res.status(400).json({ ok: false, error: 'Thiếu định danh thiết bị (Machine ID)' });
-  }
+    if (!machineId || typeof machineId !== 'string') {
+      return res.status(400).json({ ok: false, error: 'Thiếu định danh thiết bị (Machine ID)' });
+    }
 
-  const cleanKey = licenseKey.trim().toUpperCase();
-  const keys = (await kvGet('keys')) || [];
-  const targetKey = keys.find(k => k.key.toUpperCase() === cleanKey);
+    const cleanKey = licenseKey.trim().toUpperCase();
+    const rawKeys = await kvGet('keys');
+    const keys = Array.isArray(rawKeys) ? rawKeys : [];
+    const targetKey = keys.find(k => k && k.key && k.key.toUpperCase() === cleanKey);
 
   // 1. Kiểm tra tồn tại
   if (!targetKey) {
@@ -78,40 +80,45 @@ export default async function handler(req, res) {
   // Cập nhật trạng thái thiết bị vào KV
   await kvSet('keys', keys);
 
-  // 5. Cung cấp Node cho client
-  const allNodes = (await kvGet('nodes')) || [];
-  const activeNodes = allNodes.filter(n => n.status !== 'disabled');
+    // 5. Cung cấp Node cho client
+    const rawNodes = await kvGet('nodes');
+    const allNodes = Array.isArray(rawNodes) ? rawNodes : [];
+    const activeNodes = allNodes.filter(n => n && n.status !== 'disabled');
 
-  let grantedNodes = [];
-  if (targetKey.assignedNodeIds === 'all' || !targetKey.assignedNodeIds) {
-    grantedNodes = activeNodes;
-  } else if (Array.isArray(targetKey.assignedNodeIds)) {
-    const allowedSet = new Set(targetKey.assignedNodeIds);
-    grantedNodes = activeNodes.filter(n => allowedSet.has(n.id));
-  }
+    let grantedNodes = [];
+    if (targetKey.assignedNodeIds === 'all' || !targetKey.assignedNodeIds) {
+      grantedNodes = activeNodes;
+    } else if (Array.isArray(targetKey.assignedNodeIds)) {
+      const allowedSet = new Set(targetKey.assignedNodeIds);
+      grantedNodes = activeNodes.filter(n => allowedSet.has(n.id));
+    }
 
-  if (grantedNodes.length === 0) {
+    if (grantedNodes.length === 0) {
+      return res.status(200).json({
+        ok: true,
+        licenseKey: targetKey.key,
+        label: targetKey.label,
+        expireAt: targetKey.expireAt,
+        deviceSlot: `${targetKey.devices.length}/${targetKey.maxDevices || 1}`,
+        nodes: [],
+        warning: 'Mã hợp lệ nhưng hiện tại hệ thống chưa gán node nào cho mã này'
+      });
+    }
+
     return res.status(200).json({
       ok: true,
       licenseKey: targetKey.key,
       label: targetKey.label,
       expireAt: targetKey.expireAt,
       deviceSlot: `${targetKey.devices.length}/${targetKey.maxDevices || 1}`,
-      nodes: [],
-      warning: 'Mã hợp lệ nhưng hiện tại hệ thống chưa gán node nào cho mã này'
+      nodes: grantedNodes.map(n => ({
+        id: n.id,
+        name: n.name,
+        apiKey: n.apiKey
+      }))
     });
+  } catch (err) {
+    console.error('License API error:', err.message);
+    return res.status(500).json({ ok: false, error: err.message });
   }
-
-  return res.status(200).json({
-    ok: true,
-    licenseKey: targetKey.key,
-    label: targetKey.label,
-    expireAt: targetKey.expireAt,
-    deviceSlot: `${targetKey.devices.length}/${targetKey.maxDevices || 1}`,
-    nodes: grantedNodes.map(n => ({
-      id: n.id,
-      name: n.name,
-      apiKey: n.apiKey
-    }))
-  });
 }
