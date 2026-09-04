@@ -515,7 +515,7 @@
     /* Inputs */
     .form-group { margin-bottom: 1rem; }
     label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.3rem; }
-    input, select, textarea {
+    input:not([type="checkbox"]):not([type="radio"]), select, textarea {
       width: 100%;
       height: 38px;
       border-radius: var(--radius-lg);
@@ -528,8 +528,18 @@
       outline: none;
       transition: border-color 0.15s;
     }
+    input[type="checkbox"], input[type="radio"] {
+      width: 14px !important;
+      height: 14px !important;
+      min-width: 14px;
+      cursor: pointer;
+      accent-color: var(--primary);
+      margin: 0;
+      flex-shrink: 0;
+      vertical-align: middle;
+    }
     textarea { height: auto; padding: 0.5rem 0.65rem; min-height: 80px; }
-    input:focus, select:focus, textarea:focus {
+    input:not([type="checkbox"]):not([type="radio"]):focus, select:focus, textarea:focus {
       border-color: var(--ring);
       box-shadow: 0 0 0 2px rgba(29, 78, 216, 0.12);
     }
@@ -1842,12 +1852,12 @@
       </div>
 
       <!-- Settings & Stats Row (Super Compact!) -->
-      <div style="display:flex; align-items:center; justify-content:space-between; margin:0.65rem 0 0.4rem; font-size:12px;">
-        <label style="display:flex; align-items:center; gap:0.4rem; cursor:pointer; color:#334155; user-select:none;">
-          <input type="checkbox" id="importOverwriteCheck" checked onchange="updateImportPreview()" style="accent-color:#2563eb; margin:0;">
-          <span style="font-weight:500;">Ghi đè nếu đã tồn tại</span>
+      <div style="display:flex; align-items:center; justify-content:space-between; margin:0.5rem 0 0.35rem; font-size:11.5px;">
+        <label style="display:inline-flex; align-items:center; gap:0.35rem; cursor:pointer; color:#334155; user-select:none; white-space:nowrap;">
+          <input type="checkbox" id="importOverwriteCheck" checked onchange="updateImportPreview()" style="width:13px; height:13px; min-width:13px; margin:0; flex-shrink:0; cursor:pointer; accent-color:#2563eb;">
+          <span style="font-weight:500; font-size:11.5px; line-height:1;">Ghi đè nếu đã tồn tại</span>
         </label>
-        <div id="importLiveStatus" style="font-size:11px; color:#64748b;">
+        <div id="importLiveStatus" style="font-size:11px; color:#64748b; white-space:nowrap;">
           0 Node
         </div>
       </div>
@@ -2795,7 +2805,7 @@
 
           row.innerHTML = `
             <div style="display:flex; align-items:center; gap:0.4rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:260px;">
-              <input type="checkbox" ${acc.selected ? 'checked' : ''} onchange="toggleImportItemSelection(${idx}, this.checked)" style="margin:0; accent-color:#2563eb;">
+              <input type="checkbox" ${acc.selected ? 'checked' : ''} onchange="toggleImportItemSelection(${idx}, this.checked)" style="width:13px; height:13px; min-width:13px; margin:0; flex-shrink:0; cursor:pointer; accent-color:#2563eb;">
               <span style="font-weight:600; color:#0f172a; font-size:11px; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(acc.email)}</span>
             </div>
             <div style="display:flex; align-items:center; gap:0.4rem;">
