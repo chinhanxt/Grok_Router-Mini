@@ -5,3 +5,5 @@ dist/
 .grok-router/
 .env
 .env.*
+.vercel
+.env*
