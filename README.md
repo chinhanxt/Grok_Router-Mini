@@ -101,7 +101,7 @@ These scripts configure `ANTHROPIC_BASE_URL`, `ANTHROPIC_AUTH_TOKEN`, and `~/.cl
 
 | Model | Mã Model ID | Tính năng & Mục đích sử dụng |
 |---|---|---|
-| **Truyện ngụ ngôn Claude 5.1** | `claude-fable-5-1` | Dành cho những người đòi hỏi khả năng suy luận cao và thực hiện công việc mang tính chủ động trong thời gian dài. |
+| **Claude Fable 5.1** | `claude-fable-5-1` | Dành cho những người đòi hỏi khả năng suy luận cao và thực hiện công việc mang tính chủ động trong thời gian dài. |
 | **Claude Opus 5** | `claude-opus-5` | Dành cho lập trình tác nhân phức tạp và công việc cấp doanh nghiệp. |
 | **Claude Sonnet 5** | `claude-sonnet-5` | Sự kết hợp tốt nhất giữa tốc độ và trí thông minh. *(Mặc định)* |
 | **Claude Haiku 4.5** | `claude-haiku-4-5` | Mẫu xe nhanh nhất với trí thông minh gần như vượt trội. |

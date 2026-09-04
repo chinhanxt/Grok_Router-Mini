@@ -14,7 +14,11 @@ export function createAuthRouter(userService, authMiddleware) {
   });
 
   router.get('/me', authMiddleware.requireAuth, (req, res) => {
-    res.json({ user: req.user });
+    const user = userService.users.find(u => u.id === req.user.userId || u.email === req.user.email);
+    if (!user) {
+      return res.status(401).json({ error: 'Tài khoản không tồn tại hoặc đã bị xóa.' });
+    }
+    res.json({ user: { id: user.id, email: user.email, role: user.role } });
   });
 
   router.get('/users', authMiddleware.requireAdmin, (req, res) => {
