@@ -1,218 +1,90 @@
-# Grok Router Mini (`grok-router-mini`)
+# ⚡ AI Router Mini (`grok-router-mini`)
 
-> Ultra-lightweight, zero-database local AI gateway for Grok 4.6 with 1-Click Claude Code Setup for 3 OSes and role-based Web UI. Inspired by the simplicity and developer experience of `9router`.
-
----
-
-## ✨ Features
-
-- **Zero Database Required**: Pure atomic JSON file storage in `~/.grok-router/` (or `$DATA_DIR`). No PostgreSQL, SQLite, or Redis dependencies.
-- **Smart AutoStrategy Failover**: Rotates across Grok accounts by load score (`requestCount * 1000 + totalTokens`) and lifespan. Automatically recovers on HTTP 429 without dropping active Claude CLI connections.
-- **1-Click 3-OS Claude Code Auto-Setup**: Instant configuration scripts for macOS/Linux (Bash), Windows PowerShell, and Windows CMD.
-- **Local Dashboard & Credential Protection**:
-  - Pre-configured single local account (`admin` / `admin123`) running directly on your machine.
-  - Manage accounts (add/toggle/delete), view live terminal logs, copy 1-click setup commands, and test AI playground.
-  - Sensitive tokens are masked in the UI.
-- **Protocol Translation & Brand Masking**: Verbatim Anthropic Messages API translation (SSE streaming, tool calls deltas, multimodal inputs) with Grok brand masking (`sanitizeClaudeText`).
-- **Featherweight Footprint**: Built purely with native Node.js ESM (`node:crypto`, `node:fs`), Express, CORS, and Compression. Unbundled and code-signing ready.
+> **Cổng kết nối AI Router siêu nhẹ (Zero-Database) dành cho Claude Code, Cursor, Codex...**  
+> Tự động cân bằng tải và luân chuyển giữa các node Grok, tự động né lỗi HTTP 429 và hồi sinh token ngầm.
 
 ---
 
-## 🚀 Quick Start
+<p align="center">
+  <img src="./assets/demo.png" alt="Claude Code running with AI Router Mini" width="100%" />
+</p>
 
-### Run with NPX (Zero Install)
+---
 
+## 🎯 Tổng quan dự án
+
+* **🚀 Zero-Database**: Lưu trữ tệp JSON nguyên tử (`~/.grok-router/`), khởi động tức thì, không cần cài PostgreSQL/Redis.
+* **🔄 Smart 429 Failover**: Tự động chuyển đổi tài khoản khác ngay khi bị rate limit (429) mà không làm ngắt kết nối Claude Code.
+* **⚡ Tự động hồi sinh Token**: Worker chạy ngầm tự động phát hiện và gia hạn token sắp hết hạn qua OAuth x.ai.
+* **💻 1-Click OS Setup**: Thiết lập môi trường và cấu hình tự động chỉ bằng 1 dòng lệnh trên macOS, Linux và Windows.
+* **📊 Giao diện Web tinh gọn**: Bảng điều khiển quản lý node, nạp hàng loạt, xóa node lỗi và theo dõi tải trực quan.
+
+---
+
+## 🚀 Hướng dẫn cài đặt & Khởi động
+
+### Cách 1: Chạy ngay không cần cài đặt (Khuyên dùng)
 ```bash
 npx grok-router-mini
 ```
-
-Or specify a custom port:
-
+*Tùy chỉnh cổng nếu muốn:*
 ```bash
-npx grok-router-mini --port 8080
+npx grok-router-mini --port 3006
 ```
 
-### Run from Source
-
+### Cách 2: Cài đặt toàn cục (Global CLI)
 ```bash
-git clone https://github.com/chinhan/grok-router-mini.git
-cd grok-router-mini
+npm install -g grok-router-mini
+grok-router-mini
+```
+
+### Cách 3: Chạy từ mã nguồn
+```bash
+git clone https://github.com/chinhanxt/Grok_Router-Mini.git
+cd Grok_Router-Mini
 npm install
 npm start
 ```
 
-Default Web UI: [http://localhost:3005](http://localhost:3005)
+📍 **Web Dashboard**: [http://localhost:3005](http://localhost:3005)  
+🔑 **Tài khoản Admin mặc định**: `admin` / `admin123`
 
 ---
 
-## 💻 CLI Usage
+## ⚡ Kết nối với Claude Code (1-Click)
 
-```text
-Usage:
-  grok-router-mini [options]
-  npx grok-router-mini [options]
+Khi router đang chạy, mở terminal mới và dán dòng lệnh tương ứng với hệ điều hành của bạn:
 
-Options:
-  -p, --port <number>    Port to listen on (default: 3005 or $PORT)
-  --host <host>          Host to bind to (default: 0.0.0.0 or $HOST)
-  -h, --help             Display this help message
-
-Examples:
-  grok-router-mini --port 3005
-  grok-router-mini -p 8080 --host 127.0.0.1
-```
-
----
-
-## 🔐 Local Authentication
-
-`grok-router-mini` runs locally on your machine with a pre-configured local account:
-
-| Username / Email | Password | Permissions |
-|---|---|---|
-| `admin` (or `admin@local.com`) | `admin123` (or `admin`) | Full local control: Account management, live logs, 1-click setup, playground |
-
----
-
-## ⚡ 1-Click Claude Code Setup
-
-Once `grok-router-mini` is running, configure and launch Claude Code in one command:
-
-### macOS & Linux (Bash / Zsh)
+### 🍎 macOS & 🐧 Linux (Bash / Zsh)
 ```bash
 curl -fsSL http://localhost:3005/claude.sh | bash
 ```
 
-### Windows (PowerShell)
+### 🪟 Windows (PowerShell)
 ```powershell
 irm http://localhost:3005/claude.ps1 | iex
 ```
 
-### Windows (Command Prompt)
+### 🪟 Windows (CMD)
 ```cmd
 curl -fsSL http://localhost:3005/claude.cmd -o setup.cmd && setup.cmd
 ```
 
-These scripts configure `ANTHROPIC_BASE_URL`, `ANTHROPIC_AUTH_TOKEN`, and `~/.claude/settings.json` automatically, then launch `claude`.
+> Lệnh trên sẽ tự động đặt biến môi trường và ghi cấu hình vào `~/.claude/settings.json`, sau đó khởi chạy Claude Code kết nối trực tiếp đến router.
 
 ---
 
-## 🤖 Các mô hình hỗ trợ & Tính năng
+## 🤖 Các mô hình hỗ trợ
 
-| Model | Mã Model ID | Tính năng & Mục đích sử dụng |
+| Model ID | Mô hình | Mục đích sử dụng |
 |---|---|---|
-| **Claude Fable 5.1** | `claude-fable-5-1` | Dành cho những người đòi hỏi khả năng suy luận cao và thực hiện công việc mang tính chủ động trong thời gian dài. |
-| **Claude Opus 5** | `claude-opus-5` | Dành cho lập trình tác nhân phức tạp và công việc cấp doanh nghiệp. |
-| **Claude Sonnet 5** | `claude-sonnet-5` | Sự kết hợp tốt nhất giữa tốc độ và trí thông minh. *(Mặc định)* |
-| **Claude Haiku 4.5** | `claude-haiku-4-5` | Mẫu xe nhanh nhất với trí thông minh gần như vượt trội. |
-
-## 🛡️ Code Signing & File Verification
-
-`grok-router-mini` is intentionally designed without bundlers, transpilers, or minification. Every file is modular, self-contained, and kept under 200 lines.
-
-### Verifying SHA-256 Checksums
-Generate and verify file hashes for deployment integrity:
-
-```bash
-# Generate checksum manifest
-find src bin -type f -name "*.js" -exec sha256sum {} + > checksums.sha256
-
-# Verify integrity
-sha256sum -c checksums.sha256
-```
-
-### GPG Signing Individual Files
-To digitally sign any source file:
-
-```bash
-gpg --armor --detach-sign bin/cli.js
-gpg --verify bin/cli.js.asc bin/cli.js
-```
+| `claude-sonnet-5` | **Claude Sonnet 5** | Tối ưu tốt nhất giữa tốc độ và độ thông minh *(Mặc định)* |
+| `claude-fable-5-1` | **Claude Fable 5.1** | Suy luận cao cấp, lập trình tác nhân tự động lâu dài |
+| `claude-opus-5` | **Claude Opus 5** | Giải quyết bài toán lớn, kiến trúc hệ thống doanh nghiệp |
+| `claude-haiku-4-5` | **Claude Haiku 4.5** | Phản hồi siêu tốc, tác vụ phụ trợ |
 
 ---
 
-## 🧪 Testing
+## 📄 Giấy phép
 
-Run the full automated test suite (Unit, Integration & E2E):
-
-```bash
-npm test
-```
-
-Or run via Node.js test runner directly:
-
-```bash
-node --test test/*.test.js
-```
-
----
-
-## 📁 Project Structure
-
-```text
-grok-router-mini/
-├── bin/
-│   └── cli.js                  # CLI runner, argument parser, banner
-├── public/
-│   └── index.html              # Responsive single-page UI with role separation
-├── src/
-│   ├── app.js                  # Express app, security middleware, activity logs
-│   ├── config.js               # AppConfig and environment loader
-│   ├── server.js               # Service orchestration and HTTP listener
-│   ├── core/
-│   │   ├── Account.js          # Grok account entity & status lifecycle
-│   │   ├── AutoStrategy.js     # Load scoring and tie-breaking strategy
-│   │   └── User.js             # User entity, scrypt hashing, timing-safe verify
-│   ├── middlewares/
-│   │   └── AuthMiddleware.js   # JWT authentication & requireAdmin guard
-│   ├── routes/
-│   │   ├── accountRoutes.js    # Account CRUD (Admin only)
-│   │   ├── authRoutes.js       # Login, token check, user management
-│   │   ├── proxyRoutes.js      # Anthropic Messages & OpenAI Chat proxy
-│   │   └── setupRoutes.js      # Dynamic 1-click OS setup scripts
-│   ├── services/
-│   │   ├── AccountPool.js      # Account rotation, cooldown recovery, persistence
-│   │   ├── ProxyService.js     # Protocol injection, streaming translation, failover
-│   │   └── UserService.js      # User management, scrypt passwords, JWT issuance
-│   └── storage/
-│       └── JsonStorage.js      # Atomic, thread-safe JSON file storage
-└── test/                       # Comprehensive node:test suite (100% PASS)
-```
-
----
-
-## 🔒 Private Repository & NPM Distribution Security
-
-To protect your intellectual property when distributing `grok-router-mini` to clients:
-1. **GitHub Repository**: Keep your GitHub repository set to **Private**. NPM publishing works independently and never exposes your git history or source repository.
-2. **Obfuscated Build Bundle (`npm run build`)**:
-   - `npm run build` utilizes `esbuild` to compile, bundle, and minify the entire backend into `dist/server.js`.
-   - All comments, internal variable names, and code structures are mangled and stripped.
-3. **Strict Whitelist Publishing (`package.json: files` & `.npmignore`)**:
-   - The npm package strictly includes only: `bin/`, `dist/`, `public/`, `README.md`, `package.json`.
-   - Raw source code in `src/` and tests in `test/` are **never** published to NPM.
-   - Run `npm pack --dry-run` to preview the exact safe tarball contents.
-
----
-
-## 🔔 Automatic Update Notifier
-
-When installed globally or launched via CLI, `grok-router-mini` automatically checks the NPM registry asynchronously in the background. If a newer release is published:
-- An elegant terminal banner notifies the user:
-  ```text
-  ╭─────────────────────────────────────────────────────────────╮
-  │                                                             │
-  │   🔔 ĐÃ CÓ PHIÊN BẢN MỚI: v1.0.0 → v1.1.0                   │
-  │   Chạy lệnh sau để cập nhật lên bản mới nhất:                │
-  │   npm install -g grok-router-mini                           │
-  │                                                             │
-  ╰─────────────────────────────────────────────────────────────╯
-  ```
-- Cached locally for 12 hours to prevent redundant network requests and ensure instantaneous startup.
-- Completely non-blocking and safe when offline.
-
----
-
-## 📄 License
-
-MIT
+Phát hành theo giấy phép [MIT](LICENSE).
