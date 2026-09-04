@@ -2118,96 +2118,45 @@
     </div>
   </div>
 
+  <!-- LICENSE & DRM NOTIFICATION MODAL -->
+  <div class="modal-backdrop hidden" id="licenseNoticeModal" style="z-index: 99999;">
+    <div class="modal-panel" style="max-width: 460px; padding: 1.5rem; text-align: center;">
+      <div id="licenseNoticeIcon" style="font-size: 42px; margin-bottom: 0.75rem;">⚠️</div>
+      <h2 id="licenseNoticeTitle" style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.5rem; color: #0f172a;">Thông Báo Bản Quyền</h2>
+      <div id="licenseNoticeBody" style="font-size: 13px; color: #475569; line-height: 1.6; margin-bottom: 1.25rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem; text-align: left;">
+      </div>
+      <div style="display: flex; justify-content: center; gap: 0.75rem;">
+        <button type="button" class="btn btn-primary btn-sm" id="licenseNoticeConfirmBtn" onclick="dismissLicenseNotice()">Tôi đã hiểu</button>
+      </div>
+    </div>
+  </div>
 
   <script>
-    // 🛡️ Anti-DevTools & Anti-Inspection Shield
-    (function initSecurityShield() {
-      window.addEventListener('keydown', function(e) {
-        if (
-          e.key === 'F12' ||
-          e.keyCode === 123 ||
-          ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) ||
-          ((e.ctrlKey || e.metaKey) && (e.key === 'U' || e.key === 'u' || e.key === 'S' || e.key === 's'))
-        ) {
-          e.preventDefault();
-          e.stopPropagation();
-          return false;
-        }
-      }, true);
-
-      window.addEventListener('contextmenu', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        return false;
-      }, true);
-
-      let isDevToolsOpen = false;
-      const originalFetch = window.fetch;
-
-      function createLockdownOverlay() {
-        let overlay = document.getElementById('__sec_lockdown');
-        if (!overlay) {
-          overlay = document.createElement('div');
-          overlay.id = '__sec_lockdown';
-          overlay.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background-color:#09090b;color:#ef4444;z-index:99999999;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:system-ui,-apple-system,sans-serif;padding:20px;text-align:center;';
-          overlay.innerHTML = `
-            <div style="font-size:54px;margin-bottom:16px;">🛡️</div>
-            <h1 style="font-size:22px;font-weight:700;margin-bottom:8px;color:#f87171;">BẢO MẬT HỆ THỐNG ĐÃ KÍCH HOẠT</h1>
-            <p style="font-size:14px;color:#a1a1aa;max-width:500px;line-height:1.6;margin-bottom:20px;">
-              Phát hiện công cụ kiểm tra (Developer Tools / F12).<br/>
-              <strong style="color:#fca5a5;">Toàn bộ kết nối API đã bị ngắt tạm thời để bảo vệ hệ thống.</strong><br/>
-              Vui lòng đóng công cụ Developer Tools để tiếp tục sử dụng.
-            </p>
-            <div style="font-size:12px;color:#71717a;border:1px dashed #27272a;padding:6px 12px;border-radius:6px;">
-              Security Shield Active • Zero-Leak Protocol
-            </div>
-          `;
-          document.body.appendChild(overlay);
-        }
-        overlay.style.display = 'flex';
+    // License Notice Modal Controls
+    function showLicenseNoticeModal({ title, message, icon = '⚠️', isError = false }) {
+      const modal = document.getElementById('licenseNoticeModal');
+      if (!modal) return;
+      const iconEl = document.getElementById('licenseNoticeIcon');
+      const titleEl = document.getElementById('licenseNoticeTitle');
+      const bodyEl = document.getElementById('licenseNoticeBody');
+      if (iconEl) iconEl.textContent = icon;
+      if (titleEl) {
+        titleEl.textContent = title;
+        titleEl.style.color = isError ? '#dc2626' : '#0f172a';
       }
+      if (bodyEl) bodyEl.innerHTML = message;
+      modal.classList.remove('hidden');
+    }
 
-      function removeLockdownOverlay() {
-        const overlay = document.getElementById('__sec_lockdown');
-        if (overlay) overlay.style.display = 'none';
-      }
-
-      function activateLockdown() {
-        if (isDevToolsOpen) return;
-        isDevToolsOpen = true;
-        window.fetch = function() {
-          return Promise.reject(new Error('Inspection detected. Network disconnected.'));
-        };
-        createLockdownOverlay();
-      }
-
-      function deactivateLockdown() {
-        if (!isDevToolsOpen) return;
-        isDevToolsOpen = false;
-        window.fetch = originalFetch;
-        removeLockdownOverlay();
-      }
-
-      function checkDebuggerTiming() {
-        const start = performance.now();
-        (function() { Function('debugger')(); })();
-        const duration = performance.now() - start;
-        if (duration > 100) {
-          activateLockdown();
-        } else {
-          const widthThreshold = window.outerWidth - window.innerWidth > 160;
-          const heightThreshold = window.outerHeight - window.innerHeight > 160;
-          if (widthThreshold || heightThreshold) {
-            activateLockdown();
-          } else {
-            deactivateLockdown();
-          }
-        }
-      }
-
-      setInterval(checkDebuggerTiming, 500);
-      window.addEventListener('resize', checkDebuggerTiming);
-    })();
+    async function dismissLicenseNotice() {
+      const modal = document.getElementById('licenseNoticeModal');
+      if (modal) modal.classList.add('hidden');
+      try {
+        await fetch('/api/license/dismiss-notice', { method: 'POST' });
+      } catch {}
+      await loadLicense();
+      if (typeof loadAccounts === 'function') loadAccounts();
+    }
 
     let currentToken = localStorage.getItem('ai_router_token') || '';
     let currentUser = null;
@@ -3642,6 +3591,22 @@
             const span = actBtn.querySelector('span');
             if (span) span.textContent = 'Kích hoạt mã';
           }
+        }
+
+        if (lic.revokeReason) {
+          showLicenseNoticeModal({
+            title: 'Thu Hồi Bản Quyền & Tự Động Xóa Node',
+            icon: '🔒',
+            isError: true,
+            message: `<strong>Lý do:</strong> ${escapeHtml(lic.revokeReason)}<br/><br/><span style="color:#ef4444;font-weight:600;">Hệ thống đã tự động thu hồi và xóa sạch toàn bộ node/token trên máy để bảo vệ dữ liệu bản quyền.</span>`
+          });
+        } else if (lic.packageChangedNotice) {
+          showLicenseNoticeModal({
+            title: 'Cập Nhật Gói Tài Nguyên',
+            icon: '🎉',
+            isError: false,
+            message: `${escapeHtml(lic.packageChangedNotice)}<br/><br/><span style="color:#10b981;font-weight:600;">Hệ thống đã tự động đồng bộ lại toàn bộ node mới nhất vào router.</span>`
+          });
         }
       } catch (err) {
         console.error('Lỗi tải trạng thái license:', err);

@@ -56,8 +56,25 @@ export class LicenseHeartbeat {
         }
 
         raw.lastHeartbeat = new Date().toISOString();
+
+        // Kiểm tra và tự động đồng bộ nếu quản trị viên đổi gói tài nguyên
+        const previousPkg = raw.packageId || 'default';
+        const currentPkg = data.packageId || 'default';
+        if (raw.packageId && currentPkg !== previousPkg) {
+          try {
+            const reSync = await this.licenseService.activate(raw.key, targetUrl);
+            raw.packageId = currentPkg;
+            raw.packageChanged = true;
+            raw.packageChangedNotice = `Quản trị viên vừa cập nhật gói tài nguyên (${previousPkg} ➔ ${currentPkg}). Đã tự động đồng bộ ${reSync.nodeCount || 0} node mới.`;
+          } catch (syncErr) {
+            console.warn('[DRM] Lỗi tự động đồng bộ gói mới:', syncErr.message);
+          }
+        } else if (!raw.packageId && currentPkg) {
+          raw.packageId = currentPkg;
+        }
+
         await this.storage.write(licFile, raw);
-        return { ok: true, lastHeartbeat: raw.lastHeartbeat };
+        return { ok: true, lastHeartbeat: raw.lastHeartbeat, packageId: raw.packageId };
       } catch (networkErr) {
         const lastSyncTime = new Date(raw.lastHeartbeat || raw.lastSync || 0).getTime();
         const elapsed = Date.now() - lastSyncTime;

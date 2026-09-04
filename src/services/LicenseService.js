@@ -56,12 +56,16 @@ export class LicenseService {
       active: Boolean(raw && raw.active),
       key: raw?.key || null,
       label: raw?.label || null,
+      packageId: raw?.packageId || null,
       expireAt: raw?.expireAt || null,
       deviceSlot: raw?.deviceSlot || null,
       nodeCount: raw?.nodeCount || 0,
       lastSync: raw?.lastSync || null,
       machineId: this.machineId,
-      serverUrl: raw?.serverUrl || this.defaultServerUrl
+      serverUrl: raw?.serverUrl || this.defaultServerUrl,
+      revokeReason: raw?.revokeReason || null,
+      revokedAt: raw?.revokedAt || null,
+      packageChangedNotice: raw?.packageChangedNotice || null
     };
   }
 
@@ -129,6 +133,7 @@ export class LicenseService {
         active: true,
         key: cleanKey,
         label: data.label,
+        packageId: data.packageId || 'default',
         expireAt: data.expireAt,
         deviceSlot: data.deviceSlot,
         nodeCount: newAccounts.length,
@@ -141,6 +146,7 @@ export class LicenseService {
         ok: true,
         key: cleanKey,
         label: data.label,
+        packageId: record.packageId,
         expireAt: data.expireAt,
         deviceSlot: data.deviceSlot,
         nodeCount: newAccounts.length
@@ -148,6 +154,17 @@ export class LicenseService {
     } catch (err) {
       return { ok: false, error: `Không thể kết nối đến máy chủ xác thực: ${err.message}` };
     }
+  }
+
+  async dismissNotice() {
+    const raw = await this.storage.read(this.licenseFile, null);
+    if (raw) {
+      delete raw.revokeReason;
+      delete raw.revokedAt;
+      delete raw.packageChangedNotice;
+      await this.storage.write(this.licenseFile, raw);
+    }
+    return { ok: true };
   }
 
   async deactivate() {

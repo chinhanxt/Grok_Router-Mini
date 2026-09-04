@@ -1061,94 +1061,28 @@
       throw new Error('Not found');
     }
 
-    // 🛡️ Anti-DevTools & Anti-Inspection Shield
-    (function initSecurityShield() {
-      window.addEventListener('keydown', function(e) {
-        if (
-          e.key === 'F12' ||
-          e.keyCode === 123 ||
-          ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) ||
-          ((e.ctrlKey || e.metaKey) && (e.key === 'U' || e.key === 'u' || e.key === 'S' || e.key === 's'))
-        ) {
-          e.preventDefault();
-          e.stopPropagation();
-          return false;
-        }
-      }, true);
-
-      window.addEventListener('contextmenu', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        return false;
-      }, true);
-
-      let isDevToolsOpen = false;
-      const originalFetch = window.fetch;
-
-      function createLockdownOverlay() {
-        let overlay = document.getElementById('__sec_lockdown');
-        if (!overlay) {
-          overlay = document.createElement('div');
-          overlay.id = '__sec_lockdown';
-          overlay.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background-color:#09090b;color:#ef4444;z-index:99999999;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:system-ui,-apple-system,sans-serif;padding:20px;text-align:center;';
-          overlay.innerHTML = `
-            <div style="font-size:54px;margin-bottom:16px;">🛡️</div>
-            <h1 style="font-size:22px;font-weight:700;margin-bottom:8px;color:#f87171;">BẢO MẬT HỆ THỐNG ĐÃ KÍCH HOẠT</h1>
-            <p style="font-size:14px;color:#a1a1aa;max-width:500px;line-height:1.6;margin-bottom:20px;">
-              Phát hiện công cụ kiểm tra (Developer Tools / F12).<br/>
-              <strong style="color:#fca5a5;">Toàn bộ kết nối API đã bị ngắt tạm thời để chống dò quét.</strong><br/>
-              Vui lòng đóng công cụ Developer Tools để tiếp tục sử dụng.
-            </p>
-            <div style="font-size:12px;color:#71717a;border:1px dashed #27272a;padding:6px 12px;border-radius:6px;">
-              Security Shield Active • Zero-Leak Protocol
-            </div>
-          `;
-          document.body.appendChild(overlay);
-        }
-        overlay.style.display = 'flex';
+    // Toast Notification System for Admin
+    function showAdminToast(message, type = 'success') {
+      let container = document.getElementById('adminToastContainer');
+      if (!container) {
+        container = document.createElement('div');
+        container.id = 'adminToastContainer';
+        container.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:99999;display:flex;flex-direction:column;gap:10px;pointer-events:none;';
+        document.body.appendChild(container);
       }
-
-      function removeLockdownOverlay() {
-        const overlay = document.getElementById('__sec_lockdown');
-        if (overlay) overlay.style.display = 'none';
-      }
-
-      function activateLockdown() {
-        if (isDevToolsOpen) return;
-        isDevToolsOpen = true;
-        window.fetch = function() {
-          return Promise.reject(new Error('Inspection detected. Network disconnected.'));
-        };
-        createLockdownOverlay();
-      }
-
-      function deactivateLockdown() {
-        if (!isDevToolsOpen) return;
-        isDevToolsOpen = false;
-        window.fetch = originalFetch;
-        removeLockdownOverlay();
-      }
-
-      function checkDebuggerTiming() {
-        const start = performance.now();
-        (function() { Function('debugger')(); })();
-        const duration = performance.now() - start;
-        if (duration > 100) {
-          activateLockdown();
-        } else {
-          const widthThreshold = window.outerWidth - window.innerWidth > 160;
-          const heightThreshold = window.outerHeight - window.innerHeight > 160;
-          if (widthThreshold || heightThreshold) {
-            activateLockdown();
-          } else {
-            deactivateLockdown();
-          }
-        }
-      }
-
-      setInterval(checkDebuggerTiming, 500);
-      window.addEventListener('resize', checkDebuggerTiming);
-    })();
+      const toast = document.createElement('div');
+      const borderColor = type === 'success' ? '#10b981' : (type === 'warning' ? '#f59e0b' : (type === 'error' ? '#ef4444' : '#3b82f6'));
+      const textColor = type === 'success' ? '#34d399' : (type === 'warning' ? '#fbbf24' : (type === 'error' ? '#fca5a5' : '#93c5fd'));
+      const icon = type === 'success' ? '✔' : (type === 'warning' ? '⚠️' : (type === 'error' ? '✖' : 'ℹ'));
+      toast.style.cssText = `background:#18181b;border:1px solid ${borderColor};color:#f4f4f5;padding:12px 18px;border-radius:8px;font-size:13px;box-shadow:0 10px 25px rgba(0,0,0,0.6);display:flex;align-items:center;gap:10px;pointer-events:auto;transition:all 0.3s ease;`;
+      toast.innerHTML = `<span style="font-size:16px;color:${textColor};">${icon}</span><span>${message}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(8px)';
+        setTimeout(() => toast.remove(), 320);
+      }, 4500);
+    }
 
     let packagesData = [];
     let keysData = [];
@@ -1803,6 +1737,8 @@
     async function submitAssignPackage() {
       if (!currentAssignKeyId) return;
       const packageId = document.getElementById('assignModalPackageSelect').value;
+      const selectEl = document.getElementById('assignModalPackageSelect');
+      const pkgName = selectEl.options[selectEl.selectedIndex]?.text || packageId;
       try {
         const res = await fetch('/api/admin?action=assignKeyPackage', {
           method: 'POST',
@@ -1813,11 +1749,12 @@
         if (res.ok) {
           closeModal('assignPackageModal');
           await loadAllData();
+          showAdminToast(`✔ Đã đổi sang "${pkgName}" cho Key! Client sẽ tự động cập nhật trong lần ping tiếp theo.`, 'success');
         } else {
-          alert(data.error || 'Lỗi khi đổi gói node');
+          showAdminToast(data.error || 'Lỗi khi đổi gói node', 'error');
         }
       } catch (err) {
-        alert('Lỗi kết nối: ' + err.message);
+        showAdminToast('Lỗi kết nối: ' + err.message, 'error');
       }
     }
 
@@ -1838,36 +1775,59 @@
       if (res.ok) {
         closeModal('createKeyModal');
         await loadAllData();
+        showAdminToast(`✔ Đã tạo Key mới "${label || keyString}" thành công!`, 'success');
       } else {
-        alert(data.error || 'Lỗi khi tạo key');
+        showAdminToast(data.error || 'Lỗi khi tạo key', 'error');
       }
     }
 
     async function toggleKey(id) {
-      await fetch('/api/admin?action=toggleKey', {
+      const k = keysData.find(item => item.id === id);
+      const willDeactivate = k && k.active !== false;
+      const res = await fetch('/api/admin?action=toggleKey', {
         method: 'POST',
         headers: authHeaders(),
         body: JSON.stringify({ id })
       });
+      const data = await res.json();
+      if (res.ok) {
+        if (willDeactivate) {
+          showAdminToast(`⚠️ Đã thu hồi & tạm khóa Key "${k?.label || id}". Client sẽ tự động xóa sạch toàn bộ node để bảo mật!`, 'warning');
+        } else {
+          showAdminToast(`✔ Đã kích hoạt lại Key "${k?.label || id}".`, 'success');
+        }
+      } else {
+        showAdminToast(data.error || 'Lỗi thay đổi trạng thái Key', 'error');
+      }
       fetchKeys();
     }
 
     async function resetKeyDevices(id) {
       if (!confirm('Bạn có chắc muốn xóa các thiết bị đã đăng ký cho key này? User sẽ có thể kích hoạt lại trên máy mới.')) return;
-      await fetch('/api/admin?action=resetDevices', {
+      const res = await fetch('/api/admin?action=resetDevices', {
         method: 'POST',
         headers: authHeaders(),
         body: JSON.stringify({ id })
       });
+      if (res.ok) {
+        showAdminToast('✔ Đã ngắt kết nối các thiết bị cho Key này thành công!', 'info');
+      } else {
+        showAdminToast('Lỗi khi xóa thiết bị', 'error');
+      }
       fetchKeys();
     }
 
     async function deleteKey(id) {
       if (!confirm('Xóa mã License này vĩnh viễn?')) return;
-      await fetch('/api/admin?action=deleteKey&id=' + id, {
+      const res = await fetch('/api/admin?action=deleteKey&id=' + id, {
         method: 'DELETE',
         headers: authHeaders()
       });
+      if (res.ok) {
+        showAdminToast('🗑️ Đã xóa mã License vĩnh viễn.', 'info');
+      } else {
+        showAdminToast('Lỗi khi xóa Key', 'error');
+      }
       await loadAllData();
     }
 

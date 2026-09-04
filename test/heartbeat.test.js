@@ -100,3 +100,25 @@ test("LicenseHeartbeat: allows offline grace period if under 15 minutes", async 
 
   fs.rmSync(env.tmpDir, { recursive: true, force: true });
 });
+
+test("LicenseService: dismissNotice clears revokeReason and packageChangedNotice", async () => {
+  const env = setupTestEnv();
+  await env.storage.write(env.licService.licenseFile, {
+    active: false,
+    key: "KEY-TEST",
+    revokeReason: "Mất kết nối quá 15 phút",
+    packageChangedNotice: "Đã đổi sang gói VIP"
+  });
+
+  let status = await env.licService.getStatus();
+  assert.equal(status.revokeReason, "Mất kết nối quá 15 phút");
+  assert.equal(status.packageChangedNotice, "Đã đổi sang gói VIP");
+
+  await env.licService.dismissNotice();
+
+  status = await env.licService.getStatus();
+  assert.equal(status.revokeReason, null);
+  assert.equal(status.packageChangedNotice, null);
+
+  fs.rmSync(env.tmpDir, { recursive: true, force: true });
+});

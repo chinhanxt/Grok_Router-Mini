@@ -41,5 +41,15 @@ export function createLicenseRouter(licenseService, authMiddleware = null) {
     }
   });
 
+  // POST /api/license/dismiss-notice - Đánh dấu đã đọc thông báo bản quyền/đổi gói
+  router.post('/dismiss-notice', async (req, res) => {
+    try {
+      await licenseService.dismissNotice();
+      res.json({ ok: true });
+    } catch (err) {
+      res.status(500).json({ ok: false, error: err.message });
+    }
+  });
+
   return router;
 }
