@@ -12,7 +12,7 @@ export class UserService {
     const raw = await this.storage.read(this.config.USERS_FILE, []);
     this.users = raw.map(u => new User(u));
     if (this.users.length === 0) {
-      const { hash, salt } = User.hashPassword('admin123');
+      const { hash, salt } = User.hashPassword(process.env.ADMIN_PASSWORD || 'admin123');
       const defaultAdmin = new User({
         email: 'admin@local.com',
         passwordHash: hash,

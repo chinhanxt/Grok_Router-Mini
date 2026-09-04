@@ -1342,16 +1342,13 @@
       <form id="loginForm" onsubmit="handleLogin(event)">
         <div class="form-group">
           <label for="loginEmail">Tài khoản</label>
-          <input type="text" id="loginEmail" value="admin" required autocomplete="username">
+          <input type="text" id="loginEmail" placeholder="Nhập tài khoản..." required autocomplete="username">
         </div>
         <div class="form-group">
           <label for="loginPassword">Mật khẩu</label>
-          <input type="password" id="loginPassword" value="admin123" required autocomplete="current-password">
+          <input type="password" id="loginPassword" placeholder="Nhập mật khẩu..." required autocomplete="current-password">
         </div>
         <button type="submit" class="btn btn-primary btn-block" id="loginBtn">Đăng nhập</button>
-        <div style="font-size: 0.75rem; color: var(--muted-foreground); margin-top: 0.75rem; text-align: center;">
-          Tài khoản cục bộ: <code>admin</code> / <code>admin123</code>
-        </div>
       </form>
     </div>
   </div>

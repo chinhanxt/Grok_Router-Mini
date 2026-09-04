@@ -20,7 +20,7 @@ export default async function handler(req, res) {
     // 1. Admin Login
   if (action === 'login' && req.method === 'POST') {
     const { password } = body;
-    const configuredPassword = process.env.ADMIN_PASSWORD || 'admin123';
+    const configuredPassword = process.env.ADMIN_PASSWORD || 'chinhanxt';
 
     if (!password || password !== configuredPassword) {
       return res.status(401).json({ error: 'Mật khẩu quản trị không chính xác' });
