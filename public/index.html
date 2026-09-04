@@ -1174,11 +1174,13 @@
       }
     });
 
+    function getTabFromHash() {
+      const clean = (window.location.hash || '').replace(/^#\/?/, '').replace(/^tab\/?/, '');
+      return clean.split('/')[0].toLowerCase() || 'setup';
+    }
+
     function handleHashRouting() {
-      const hash = window.location.hash || '';
-      // Support patterns like #/tab/setup, #tab/setup, /tab/setup
-      const match = hash.match(/(?:#|/)?(?:tab/)?([a-z0-9_-]+)/i);
-      const tabName = match ? match[1].toLowerCase() : '';
+      const tabName = getTabFromHash();
       if (tabName && TAB_TITLES[tabName]) {
         switchTab(tabName, false);
       }
@@ -1232,9 +1234,7 @@
       }
 
       // Initial tab routing based on hash or default to setup
-      const hash = window.location.hash || '';
-      const match = hash.match(/(?:#|/)?(?:tab/)?([a-z0-9_-]+)/i);
-      const targetTab = match ? match[1].toLowerCase() : 'setup';
+      const targetTab = getTabFromHash();
 
       if (currentUser.role !== 'admin' && (targetTab === 'accounts' || targetTab === 'logs' || targetTab === 'users')) {
         switchTab('setup', true);
