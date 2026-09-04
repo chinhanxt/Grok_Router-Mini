@@ -1534,17 +1534,22 @@
 
     function openKeyActionMenu(e, keyId) {
       e.stopPropagation();
+      const btn = e.currentTarget;
+      const menu = document.getElementById('actionDropdownMenu');
+
+      if (currentActionMenuTarget === btn && menu.style.display === 'block') {
+        closeActionMenu();
+        return;
+      }
       closeActionMenu();
 
       const k = keysData.find(item => item.id === keyId);
       if (!k) return;
 
       currentActionKeyId = keyId;
-      const btn = e.currentTarget;
       btn.classList.add('active');
       currentActionMenuTarget = btn;
 
-      const menu = document.getElementById('actionDropdownMenu');
       const lockText = k.active ? 'Khóa mã này' : 'Mở khóa mã';
       const lockIcon = k.active ? SVG_ICONS.lock : SVG_ICONS.unlock;
 
@@ -1563,7 +1568,7 @@
           SVG_ICONS.trash + ' <span>Xóa License Key</span>' +
         '</div>';
 
-      positionDropdown(btn, menu, 175);
+      positionDropdown(btn, menu);
     }
 
     function onMenuAssignClick() {
@@ -1589,17 +1594,21 @@
 
     function openPackageActionMenu(e, pkgId) {
       e.stopPropagation();
+      const btn = e.currentTarget;
+      const menu = document.getElementById('actionDropdownMenu');
+
+      if (currentActionMenuTarget === btn && menu.style.display === 'block') {
+        closeActionMenu();
+        return;
+      }
       closeActionMenu();
 
       const p = packagesData.find(item => item.id === pkgId);
       if (!p) return;
 
       currentActionPackageId = pkgId;
-      const btn = e.currentTarget;
       btn.classList.add('active');
       currentActionMenuTarget = btn;
-
-      const menu = document.getElementById('actionDropdownMenu');
 
       let html = 
         '<div class="action-dropdown-item" onclick="onMenuExportClick()">' +
@@ -1615,7 +1624,7 @@
       }
 
       menu.innerHTML = html;
-      positionDropdown(btn, menu, 160);
+      positionDropdown(btn, menu);
     }
 
     function onMenuExportClick() {
@@ -1629,25 +1638,46 @@
       if (id) deletePackage(id);
     }
 
-    function positionDropdown(btn, menu, menuWidth) {
-      const rect = btn.getBoundingClientRect();
+    function positionDropdown(btn, menu) {
+      menu.style.visibility = 'hidden';
       menu.style.display = 'block';
+
+      const rect = btn.getBoundingClientRect();
+      const menuWidth = menu.offsetWidth || 160;
+      const menuHeight = menu.offsetHeight || 38;
 
       let left = rect.right - menuWidth;
       if (left < 10) left = 10;
-      let top = rect.bottom + 4;
-
-      if (top + 180 > window.innerHeight) {
-        top = Math.max(10, rect.top - 185);
+      if (left + menuWidth > window.innerWidth - 10) {
+        left = window.innerWidth - menuWidth - 10;
       }
 
-      menu.style.left = left + 'px';
-      menu.style.top = top + 'px';
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceAbove = rect.top;
+
+      let top;
+      if (spaceBelow >= menuHeight + 6 || spaceBelow >= spaceAbove) {
+        top = rect.bottom + 4;
+      } else {
+        top = rect.top - menuHeight - 4;
+      }
+
+      if (top < 8) top = 8;
+      if (top + menuHeight > window.innerHeight - 8) {
+        top = window.innerHeight - menuHeight - 8;
+      }
+
+      menu.style.left = Math.round(left) + 'px';
+      menu.style.top = Math.round(top) + 'px';
+      menu.style.visibility = 'visible';
     }
 
     function closeActionMenu() {
       const menu = document.getElementById('actionDropdownMenu');
-      if (menu) menu.style.display = 'none';
+      if (menu) {
+        menu.style.display = 'none';
+        menu.style.visibility = 'visible';
+      }
       if (currentActionMenuTarget) {
         currentActionMenuTarget.classList.remove('active');
         currentActionMenuTarget = null;
