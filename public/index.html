@@ -329,29 +329,32 @@
       font-weight: 600;
     }
 
-    /* Code Box */
+    /* Code Box - White Background & Blue Text */
     .code-box-container {
-      background-color: #0f172a;
+      background-color: #ffffff;
       border-radius: var(--radius-lg);
-      border: 1px solid #1e293b;
+      border: 1px solid var(--border);
       overflow: hidden;
+      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
     }
 
     .code-box-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background-color: #1e293b;
+      background-color: #f8fafc;
+      border-bottom: 1px solid var(--border);
       padding: 0.4rem 0.75rem;
       font-size: 0.75rem;
-      color: #94a3b8;
+      color: var(--muted-foreground);
     }
 
     .code-box-content {
       padding: 0.85rem;
       font-family: var(--font-mono);
-      font-size: 0.8rem;
-      color: #38bdf8;
+      font-size: 0.825rem;
+      color: #1d4ed8;
+      background-color: #ffffff;
       overflow-x: auto;
       white-space: pre-wrap;
       word-break: break-all;
@@ -680,7 +683,7 @@
             <div class="code-box-container">
               <div class="code-box-header">
                 <span id="osCommandLabel">Bash</span>
-                <button class="btn btn-outline btn-sm" id="copySetupBtn" onclick="copyCurrentSetupCmd()" style="height:26px; padding:0 8px; font-size:11px; background:#334155; color:#fff; border-color:#475569;">
+                <button class="btn btn-outline btn-sm" id="copySetupBtn" onclick="copyCurrentSetupCmd()" style="height:26px; padding:0 8px; font-size:11px;">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect>
                     <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
@@ -692,21 +695,9 @@
                 <code id="setupCodeContent">curl -fsSL "http://localhost:3005/claude.sh" | bash</code>
               </div>
             </div>
-          </div>
-
-          <div class="card">
-            <div class="card-header">
-              <h2 class="card-title">Cấu hình</h2>
-            </div>
-            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-              <div style="border: 1px solid var(--border); border-radius: var(--radius-md); padding: 0.65rem 0.85rem; background: var(--secondary);">
-                <div style="font-size: 0.725rem; color: var(--muted-foreground);">Base URL</div>
-                <code style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--primary);" id="manualBaseUrl">http://localhost:3005</code>
-              </div>
-              <div style="border: 1px solid var(--border); border-radius: var(--radius-md); padding: 0.65rem 0.85rem; background: var(--secondary);">
-                <div style="font-size: 0.725rem; color: var(--muted-foreground);">Model</div>
-                <code style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--primary);">claude-sonnet-5 / claude-3-5-sonnet</code>
-              </div>
+            <div style="margin-top: 1rem; display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: var(--muted-foreground);">
+              <span>Base URL:</span>
+              <code style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--primary); background: var(--secondary); padding: 2px 8px; border-radius: var(--radius-sm); border: 1px solid var(--border);" id="manualBaseUrl">http://localhost:3005</code>
             </div>
           </div>
         </section>
