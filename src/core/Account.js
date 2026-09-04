@@ -5,8 +5,9 @@ export class Account {
     this.id = data.id || crypto.randomUUID();
     this.name = data.name || data.email || 'AI Account';
     this.email = data.email || '';
-    this.ssoToken = data.ssoToken || '';
+    this.ssoToken = data.ssoToken || data.apiKey || data.token || '';
     this.refreshToken = data.refreshToken || '';
+    this.source = data.source || 'local'; // 'local' | 'license'
     this.status = data.status || 'active'; // 'active' | 'cooling' | 'disabled'
     this.cooldownUntil = data.cooldownUntil || 0;
     this.requestCount = Number(data.requestCount || 0);
@@ -35,6 +36,7 @@ export class Account {
       email: this.email,
       ssoToken: this.ssoToken,
       refreshToken: this.refreshToken,
+      source: this.source,
       status: this.status,
       cooldownUntil: this.cooldownUntil,
       requestCount: this.requestCount,

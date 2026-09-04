@@ -9,13 +9,14 @@ import { createAuthRouter } from './routes/authRoutes.js';
 import { createAccountRouter } from './routes/accountRoutes.js';
 import { createProxyRouter } from './routes/proxyRoutes.js';
 import { createSetupRouter } from './routes/setupRoutes.js';
+import { createLicenseRouter } from './routes/licenseRoutes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const publicDir = path.resolve(__dirname, '../public');
 
 export function createApp(options = {}) {
-  const { config, pool, userService, proxyService, nodeHealthService } = options;
+  const { config, pool, userService, proxyService, nodeHealthService, licenseService } = options;
   const authMiddleware = options.authMiddleware || (userService ? createAuthMiddleware(userService) : null);
   const app = express();
 
@@ -68,6 +69,11 @@ export function createApp(options = {}) {
 
   const setupRouter = createSetupRouter(config);
   app.use('/', setupRouter);
+
+  if (licenseService) {
+    const licenseRouter = createLicenseRouter(licenseService, authMiddleware);
+    app.use('/api/license', licenseRouter);
+  }
 
   const adminGuard = authMiddleware?.requireAdmin || ((req, res) => res.status(403).json({ error: 'Chỉ Admin mới có quyền truy cập.' }));
   app.get('/api/logs', adminGuard, (req, res) => res.json(activityLogs));

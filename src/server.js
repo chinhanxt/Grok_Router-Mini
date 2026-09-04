@@ -8,6 +8,7 @@ import { ProxyService } from './services/ProxyService.js';
 import { createAuthMiddleware } from './middlewares/AuthMiddleware.js';
 
 import { NodeHealthService } from './services/NodeHealthService.js';
+import { LicenseService } from './services/LicenseService.js';
 
 export async function startServer(portOrOptions = {}, maybeHost = null) {
   let port;
@@ -43,8 +44,10 @@ export async function startServer(portOrOptions = {}, maybeHost = null) {
   const nodeHealthService = new NodeHealthService(pool, config);
   const proxyService = new ProxyService(pool, config, nodeHealthService);
   const authMiddleware = createAuthMiddleware(userService);
+  const licenseService = new LicenseService(pool, storage, config);
+  await licenseService.syncOnStartup();
 
-  const app = createApp({ config, pool, userService, proxyService, authMiddleware, storage, nodeHealthService });
+  const app = createApp({ config, pool, userService, proxyService, authMiddleware, storage, nodeHealthService, licenseService });
 
   return new Promise((resolve, reject) => {
     const server = app.listen(config.PORT, config.HOST, () => {
@@ -53,6 +56,7 @@ export async function startServer(portOrOptions = {}, maybeHost = null) {
       server.userService = userService;
       server.proxyService = proxyService;
       server.nodeHealthService = nodeHealthService;
+      server.licenseService = licenseService;
       server.config = config;
 
       nodeHealthService.startBackgroundWorker();

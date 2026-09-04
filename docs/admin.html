@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Claude KeyAPI — Quản trị Node & License</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600;700&family=Geist:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'Geist Mono', ui-monospace, 'Fira Code', Menlo, Consolas, monospace;
+
+      --bg: #09090b;
+      --bg-surface: #111114;
+      --bg-subtle: #18181b;
+      --bg-code: #000000;
+      --text-primary: #f4f4f5;
+      --text-secondary: #a1a1aa;
+      --text-muted: #71717a;
+      --border: #27272a;
+      --border-subtle: #1f1f23;
+      --accent: #ffffff;
+      --accent-contrast: #000000;
+      --badge-bg: #18181b;
+      --badge-text: #e4e4e7;
+      --header-bg: rgba(9, 9, 11, 0.9);
+      --card-border: #27272a;
+      --table-header-bg: #111114;
+      --success-green: #10b981;
+      --danger-red: #ef4444;
+    }
+
+    [data-theme="light"] {
+      --bg: #ffffff;
+      --bg-surface: #fafafa;
+      --bg-subtle: #f4f4f5;
+      --bg-code: #f9f9fb;
+      --text-primary: #09090b;
+      --text-secondary: #52525b;
+      --text-muted: #71717a;
+      --border: #e4e4e7;
+      --border-subtle: #f4f4f5;
+      --accent: #09090b;
+      --accent-contrast: #ffffff;
+      --badge-bg: #f4f4f5;
+      --badge-text: #18181b;
+      --header-bg: rgba(255, 255, 255, 0.9);
+      --card-border: #e4e4e7;
+      --table-header-bg: #f4f4f5;
+      --success-green: #059669;
+      --danger-red: #dc2626;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { background-color: var(--bg); color: var(--text-primary); }
+    body {
+      font-family: var(--font-sans);
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--text-primary);
+      background-color: var(--bg);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      transition: background-color 0.15s ease, color 0.15s ease;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    .container-wide {
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 0 36px;
+    }
+
+    /* Header */
+    header.site-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: var(--header-bg);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      height: 56px;
+      display: flex;
+      align-items: center;
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .brand-title {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .theme-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      width: 32px;
+      height: 32px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    /* Stats Grid */
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin: 32px 0 24px;
+    }
+
+    .stat-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 18px 24px;
+    }
+
+    .stat-label {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+    }
+
+    .stat-val {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    /* Storage Warning Banner */
+    .storage-banner {
+      background: #18181b;
+      border: 1px solid #3f3f46;
+      border-radius: 6px;
+      padding: 14px 20px;
+      margin-bottom: 24px;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--text-secondary);
+    }
+
+    .storage-banner strong { color: var(--text-primary); }
+
+    /* Action Tabs */
+    .admin-nav {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 24px;
+      gap: 8px;
+    }
+
+    .admin-tab {
+      background: transparent;
+      border: none;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 12px 18px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s ease;
+    }
+
+    .admin-tab:hover { color: var(--text-primary); }
+    .admin-tab.active {
+      color: var(--text-primary);
+      border-bottom-color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .toolbar-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .btn-primary {
+      background: var(--text-primary);
+      color: var(--accent-contrast);
+      border: 1px solid var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: opacity 0.15s ease;
+    }
+    .btn-primary:hover { opacity: 0.9; }
+
+    .btn-secondary {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 8px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+    .btn-secondary:hover { background: var(--bg-subtle); border-color: var(--text-primary); }
+
+    .btn-sm {
+      padding: 4px 8px;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      border-radius: 3px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      background: var(--bg-surface);
+      color: var(--text-primary);
+    }
+    .btn-sm:hover { background: var(--bg-subtle); }
+
+    .btn-danger { color: var(--danger-red); }
+    .btn-danger:hover { background: rgba(239, 68, 68, 0.1); border-color: var(--danger-red); }
+
+    /* Tables */
+    .table-frame {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      background: var(--bg-surface);
+    }
+
+    table.admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13px;
+    }
+
+    table.admin-table th {
+      background: var(--table-header-bg);
+      font-family: var(--font-mono);
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    table.admin-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+    }
+
+    table.admin-table tr:last-child td { border-bottom: none; }
+    table.admin-table tr:hover td { background: var(--bg-subtle); color: var(--text-primary); }
+
+    .mono-cell { font-family: var(--font-mono); font-weight: 600; color: var(--text-primary); }
+
+    .status-badge {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 3px;
+      display: inline-block;
+      border: 1px solid var(--border);
+    }
+    .status-active { background: rgba(16, 185, 129, 0.1); color: var(--success-green); border-color: rgba(16, 185, 129, 0.3); }
+    .status-disabled { background: rgba(239, 68, 68, 0.1); color: var(--danger-red); border-color: rgba(239, 68, 68, 0.3); }
+
+    /* Modal dialogs */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-box {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      width: 100%;
+      max-width: 520px;
+      padding: 24px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    }
+
+    .modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    .modal-title {
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      background: var(--bg-code);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      padding: 10px 12px;
+      border-radius: 4px;
+      outline: none;
+    }
+
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--text-primary);
+    }
+
+    .form-textarea {
+      height: 140px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+
+    .modal-foot {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    /* Password gate overlay */
+    #authOverlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: var(--bg);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Khóa mật khẩu Admin -->
+  <div id="authOverlay">
+    <div class="modal-box" style="max-width: 400px; text-align: center;">
+      <div style="margin-bottom: 16px;">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto;">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+      </div>
+      <h2 style="font-size: 18px; margin-bottom: 8px;">Xác thực Quản trị viên</h2>
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Nhập mật khẩu Admin để truy cập quản trị kho Node và License Key.</p>
+      
+      <form id="loginForm" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <input type="password" id="adminPwdInput" class="form-input" placeholder="Mật khẩu Admin (mặc định: admin123)" required autofocus />
+        </div>
+        <button type="submit" class="btn-primary" style="width: 100%; justify-content: center;">Mở khóa Dashboard</button>
+      </form>
+      <div id="loginErr" style="color: var(--danger-red); font-size: 12px; margin-top: 10px; display: none;"></div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container-wide header-inner">
+      <div class="brand-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+        AI Claude KeyAPI — Quản trị Node & License
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <a href="/" style="font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary);">← Trang chủ</a>
+        <button id="themeToggle" class="theme-btn" title="Toggle Theme">
+          <svg id="themeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container-wide" style="padding-bottom: 60px;">
+    <!-- Thống kê nhanh -->
+    <div class="stats-bar">
+      <div class="stat-card">
+        <div class="stat-label">Tổng số Node trong kho</div>
+        <div class="stat-val" id="statNodesCount">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Tổng số License Key</div>
+        <div class="stat-val" id="statKeysCount">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Thiết bị đang hoạt động</div>
+        <div class="stat-val" id="statDevicesCount">0</div>
+      </div>
+    </div>
+
+    <!-- Thông báo trạng thái Vercel KV -->
+    <div id="kvNotice" class="storage-banner" style="display: none;">
+      <div>
+        <strong>Lưu ý về lưu trữ Vercel:</strong> Chưa phát hiện Vercel KV. Dữ liệu đang được lưu tạm trong bộ nhớ. Hãy vào tab <strong>Storage</strong> trên Dashboard Vercel ➔ Tạo <strong>KV</strong> để dữ liệu được lưu vĩnh viễn 100%.
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="admin-nav">
+      <button class="admin-tab active" onclick="switchAdminTab('keysTab', this)">Quản lý License Keys</button>
+      <button class="admin-tab" onclick="switchAdminTab('nodesTab', this)">Kho Node Tài Khoản</button>
+    </div>
+
+    <!-- TAB 1: LICENSE KEYS -->
+    <section id="keysTab">
+      <div class="toolbar-actions">
+        <h3 style="font-size: 16px; font-weight: 600;">Danh sách Mã sử dụng đã cấp</h3>
+        <button class="btn-primary" onclick="openCreateKeyModal()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          + Tạo Mã License
+        </button>
+      </div>
+
+      <div class="table-frame">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Mã License (Key)</th>
+              <th>Ghi chú / Tên User</th>
+              <th>Thiết bị (Đã dùng / Cho phép)</th>
+              <th>Hạn dùng</th>
+              <th>Trạng thái</th>
+              <th style="text-align: right;">Hành động</th>
+            </tr>
+          </thead>
+          <tbody id="keysTableBody">
+            <tr><td colspan="6" style="text-align: center; padding: 24px; color: var(--text-muted);">Đang tải danh sách key...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- TAB 2: KHO NODE TÀI KHOẢN -->
+    <section id="nodesTab" style="display: none;">
+      <div class="toolbar-actions">
+        <h3 style="font-size: 16px; font-weight: 600;">Kho Token định tuyến tập trung</h3>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn-secondary" onclick="openAddNodeModal()">+ Thêm 1 Node</button>
+          <button class="btn-primary" onclick="openBulkImportModal()">📥 Nhập nhiều Node</button>
+        </div>
+      </div>
+
+      <div class="table-frame">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Tên Node</th>
+              <th>Token (Được che giấu)</th>
+              <th>Ngày tạo</th>
+              <th>Trạng thái</th>
+              <th style="text-align: right;">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody id="nodesTableBody">
+            <tr><td colspan="5" style="text-align: center; padding: 24px; color: var(--text-muted);">Đang tải kho node...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- MODAL: Tạo License Key mới -->
+  <div id="createKeyModal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-head">
+        <div class="modal-title">Tạo Mã License Mới</div>
+        <button class="btn-sm" onclick="closeModal('createKeyModal')">✕</button>
+      </div>
+      <form onsubmit="submitCreateKey(event)">
+        <div class="form-group">
+          <label class="form-label">Tên khách hàng / Ghi chú</label>
+          <input type="text" id="newKeyLabel" class="form-input" placeholder="Ví dụ: Anh Nam Dev / Team Frontend" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mã License (Để trống sẽ tự tạo ngẫu nhiên)</label>
+          <input type="text" id="newKeyString" class="form-input" placeholder="Ví dụ: VIP-NAM-2026" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Số thiết bị cho phép sử dụng đồng thời</label>
+          <select id="newKeyMaxDevices" class="form-select">
+            <option value="1" selected>1 thiết bị (Khuyên dùng - Chống chia sẻ)</option>
+            <option value="2">2 thiết bị (Máy công ty + Laptop cá nhân)</option>
+            <option value="3">3 thiết bị</option>
+            <option value="5">5 thiết bị (Dành cho nhóm)</option>
+            <option value="999">Không giới hạn (Toàn quyền)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Thời hạn sử dụng</label>
+          <select id="newKeyExpireDays" class="form-select">
+            <option value="0" selected>Vĩnh viễn (Không giới hạn ngày)</option>
+            <option value="7">7 ngày (Dùng thử)</option>
+            <option value="30">30 ngày (1 tháng)</option>
+            <option value="90">90 ngày (3 tháng)</option>
+            <option value="365">365 ngày (1 năm)</option>
+          </select>
+        </div>
+        <div class="modal-foot">
+          <button type="button" class="btn-secondary" onclick="closeModal('createKeyModal')">Hủy</button>
+          <button type="submit" class="btn-primary">Tạo Key Ngay</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Nhập nhiều Node (Bulk Import) -->
+  <div id="bulkImportModal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-head">
+        <div class="modal-title">Nhập nhiều Node tài khoản</div>
+        <button class="btn-sm" onclick="closeModal('bulkImportModal')">✕</button>
+      </div>
+      <form onsubmit="submitBulkImport(event)">
+        <div class="form-group">
+          <label class="form-label">Dán danh sách token (Mỗi dòng một token, hoặc tên:token)</label>
+          <textarea id="bulkNodesInput" class="form-textarea" placeholder="gsk_token1&#10;gsk_token2&#10;Node3:gsk_token3" required></textarea>
+        </div>
+        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">
+          * Hệ thống tự động lọc bỏ các token trùng lặp và phân bổ ngay vào kho định tuyến.
+        </p>
+        <div class="modal-foot">
+          <button type="button" class="btn-secondary" onclick="closeModal('bulkImportModal')">Hủy</button>
+          <button type="submit" class="btn-primary">Nạp vào kho</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Thêm 1 Node lẻ -->
+  <div id="addNodeModal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-head">
+        <div class="modal-title">Thêm Node mới</div>
+        <button class="btn-sm" onclick="closeModal('addNodeModal')">✕</button>
+      </div>
+      <form onsubmit="submitAddNode(event)">
+        <div class="form-group">
+          <label class="form-label">Tên gợi nhớ</label>
+          <input type="text" id="nodeNameInput" class="form-input" placeholder="Node-Chính-01" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">API Token</label>
+          <input type="text" id="nodeKeyInput" class="form-input" placeholder="gsk_..." required />
+        </div>
+        <div class="modal-foot">
+          <button type="button" class="btn-secondary" onclick="closeModal('addNodeModal')">Hủy</button>
+          <button type="submit" class="btn-primary">Thêm Node</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    let adminToken = sessionStorage.getItem('admin_token') || '';
+
+    // Check login state on load
+    if (adminToken) {
+      document.getElementById('authOverlay').style.display = 'none';
+      loadAllData();
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const pwd = document.getElementById('adminPwdInput').value.trim();
+      const errBox = document.getElementById('loginErr');
+      errBox.style.display = 'none';
+
+      try {
+        const res = await fetch('/api/admin?action=login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: pwd })
+        });
+        const data = await res.json();
+        if (res.ok && data.ok) {
+          adminToken = data.token;
+          sessionStorage.setItem('admin_token', adminToken);
+          document.getElementById('authOverlay').style.display = 'none';
+          if (!data.hasKv) {
+            document.getElementById('kvNotice').style.display = 'flex';
+          }
+          loadAllData();
+        } else {
+          errBox.textContent = data.error || 'Đăng nhập thất bại';
+          errBox.style.display = 'block';
+        }
+      } catch (err) {
+        errBox.textContent = 'Lỗi kết nối máy chủ';
+        errBox.style.display = 'block';
+      }
+    }
+
+    function authHeaders() {
+      return {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${adminToken}`
+      };
+    }
+
+    async function loadAllData() {
+      await Promise.all([fetchNodes(), fetchKeys()]);
+    }
+
+    async function fetchNodes() {
+      try {
+        const res = await fetch('/api/admin?action=getNodes', { headers: authHeaders() });
+        const data = await res.json();
+        if (!res.ok) return;
+
+        document.getElementById('statNodesCount').textContent = data.nodes.length;
+        if (!data.hasKv) {
+          document.getElementById('kvNotice').style.display = 'flex';
+        }
+
+        const tbody = document.getElementById('nodesTableBody');
+        if (data.nodes.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 24px; color: var(--text-muted);">Kho hiện chưa có Node nào. Bấm "+ Thêm Node" để bắt đầu.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = data.nodes.map(n => `
+          <tr>
+            <td class="mono-cell">${escapeHtml(n.name)}</td>
+            <td><code>${escapeHtml(n.maskedKey)}</code></td>
+            <td>${new Date(n.createdAt).toLocaleDateString('vi-VN')}</td>
+            <td><span class="status-badge status-active">Hoạt động</span></td>
+            <td style="text-align: right;">
+              <button class="btn-sm btn-danger" onclick="deleteNode('${n.id}')">Xóa</button>
+            </td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function fetchKeys() {
+      try {
+        const res = await fetch('/api/admin?action=getKeys', { headers: authHeaders() });
+        const data = await res.json();
+        if (!res.ok) return;
+
+        document.getElementById('statKeysCount').textContent = data.keys.length;
+        let totalDevices = 0;
+        data.keys.forEach(k => { totalDevices += (k.devices || []).length; });
+        document.getElementById('statDevicesCount').textContent = totalDevices;
+
+        const tbody = document.getElementById('keysTableBody');
+        if (data.keys.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 24px; color: var(--text-muted);">Chưa có mã License nào. Bấm "+ Tạo Mã License" để cấp cho khách.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = data.keys.map(k => {
+          const deviceCount = (k.devices || []).length;
+          const maxAllowed = k.maxDevices >= 999 ? '∞' : k.maxDevices;
+          const isFull = deviceCount >= k.maxDevices;
+          const expireStr = k.expireAt ? new Date(k.expireAt).toLocaleDateString('vi-VN') : 'Vĩnh viễn';
+
+          return `
+            <tr>
+              <td>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <span class="mono-cell">${escapeHtml(k.key)}</span>
+                  <button class="btn-sm" onclick="copyText('${escapeHtml(k.key)}')">Sao chép</button>
+                </div>
+              </td>
+              <td>${escapeHtml(k.label)}</td>
+              <td>
+                <span style="font-family: var(--font-mono); font-weight: 600; color: ${isFull ? 'var(--danger-red)' : 'var(--text-primary)'}">
+                  ${deviceCount} / ${maxAllowed} máy
+                </span>
+              </td>
+              <td>${expireStr}</td>
+              <td>
+                <span class="status-badge ${k.active ? 'status-active' : 'status-disabled'}">
+                  ${k.active ? 'Hoạt động' : 'Đã khóa'}
+                </span>
+              </td>
+              <td style="text-align: right;">
+                <div style="display: inline-flex; gap: 6px;">
+                  <button class="btn-sm" onclick="toggleKey('${k.id}')">${k.active ? 'Khóa' : 'Mở'}</button>
+                  <button class="btn-sm" onclick="resetKeyDevices('${k.id}')" title="Xóa các máy đã gán để user đổi sang máy khác">Reset máy</button>
+                  <button class="btn-sm btn-danger" onclick="deleteKey('${k.id}')">Xóa</button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // Key actions
+    async function submitCreateKey(e) {
+      e.preventDefault();
+      const label = document.getElementById('newKeyLabel').value;
+      const keyString = document.getElementById('newKeyString').value;
+      const maxDevices = document.getElementById('newKeyMaxDevices').value;
+      const expireDays = document.getElementById('newKeyExpireDays').value;
+
+      const res = await fetch('/api/admin?action=createKey', {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ label, keyString, maxDevices, expireDays })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        closeModal('createKeyModal');
+        fetchKeys();
+      } else {
+        alert(data.error || 'Lỗi khi tạo key');
+      }
+    }
+
+    async function toggleKey(id) {
+      await fetch('/api/admin?action=toggleKey', {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ id })
+      });
+      fetchKeys();
+    }
+
+    async function resetKeyDevices(id) {
+      if (!confirm('Bạn có chắc muốn xóa các thiết bị đã đăng ký cho key này? User sẽ có thể kích hoạt lại trên máy mới.')) return;
+      await fetch('/api/admin?action=resetDevices', {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ id })
+      });
+      fetchKeys();
+    }
+
+    async function deleteKey(id) {
+      if (!confirm('Xóa mã License này vĩnh viễn?')) return;
+      await fetch(`/api/admin?action=deleteKey&id=${id}`, {
+        method: 'DELETE',
+        headers: authHeaders()
+      });
+      fetchKeys();
+    }
+
+    // Node actions
+    async function submitAddNode(e) {
+      e.preventDefault();
+      const name = document.getElementById('nodeNameInput').value;
+      const apiKey = document.getElementById('nodeKeyInput').value;
+
+      const res = await fetch('/api/admin?action=addNode', {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ name, apiKey })
+      });
+      if (res.ok) {
+        closeModal('addNodeModal');
+        fetchNodes();
+      } else {
+        alert('Lỗi khi thêm node');
+      }
+    }
+
+    async function submitBulkImport(e) {
+      e.preventDefault();
+      const text = document.getElementById('bulkNodesInput').value;
+      const res = await fetch('/api/admin?action=bulkImportNodes', {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ text })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        closeModal('bulkImportModal');
+        alert(`Đã nạp thành công ${data.addedCount} node mới vào kho!`);
+        fetchNodes();
+      } else {
+        alert(data.error || 'Lỗi khi nạp node');
+      }
+    }
+
+    async function deleteNode(id) {
+      if (!confirm('Xóa node này khỏi kho?')) return;
+      await fetch(`/api/admin?action=deleteNode&id=${id}`, {
+        method: 'DELETE',
+        headers: authHeaders()
+      });
+      fetchNodes();
+    }
+
+    // Helpers
+    function switchAdminTab(tabId, btn) {
+      document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('keysTab').style.display = tabId === 'keysTab' ? 'block' : 'none';
+      document.getElementById('nodesTab').style.display = tabId === 'nodesTab' ? 'block' : 'none';
+    }
+
+    function openCreateKeyModal() {
+      document.getElementById('newKeyString').value = 'KEY-' + Math.random().toString(36).substring(2, 6).toUpperCase() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
+      document.getElementById('createKeyModal').style.display = 'flex';
+    }
+    function openBulkImportModal() { document.getElementById('bulkImportModal').style.display = 'flex'; }
+    function openAddNodeModal() { document.getElementById('addNodeModal').style.display = 'flex'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+    function copyText(txt) {
+      navigator.clipboard.writeText(txt).then(() => alert(`Đã sao chép mã: ${txt}`));
+    }
+
+    function escapeHtml(s) {
+      return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // Theme toggle
+    const themeBtn = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    function applyTheme(t) {
+      document.documentElement.setAttribute('data-theme', t);
+      localStorage.setItem('theme', t);
+      if (t === 'dark') {
+        themeIcon.innerHTML = `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>`;
+      } else {
+        themeIcon.innerHTML = `<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>`;
+      }
+    }
+    applyTheme(localStorage.getItem('theme') || 'dark');
+    themeBtn.addEventListener('click', () => {
+      const cur = document.documentElement.getAttribute('data-theme');
+      applyTheme(cur === 'dark' ? 'light' : 'dark');
+    });
+  </script>
+</body>
+</html>

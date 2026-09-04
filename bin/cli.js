@@ -52,6 +52,10 @@ function parseArgs(args) {
     } else if (arg.startsWith('--port=') || arg.startsWith('-p=')) {
       options.port = parseInt(arg.split('=')[1], 10);
       options.portExplicit = true;
+    } else if (arg === '--license' || arg === '-l') {
+      if (args[i + 1]) options.license = args[++i];
+    } else if (arg.startsWith('--license=')) {
+      options.license = arg.split('=')[1];
     }
   }
 
@@ -69,11 +73,8 @@ Usage:
 Options:
   -p, --port <number>    Port to listen on (default: 3005 or $PORT, auto-increments if busy)
   --host <host>          Host to bind to (default: 0.0.0.0 or $HOST)
+  -l, --license <key>    License Key to activate and load AI nodes automatically
   -h, --help             Display this help message
-
-Examples:
-  npm start -- --port 3006
-  node bin/cli.js -p 8080 --host 127.0.0.1
 `);
 }
 
@@ -145,6 +146,16 @@ async function main() {
     const resolvedHost = addr?.address || options.host;
 
     printBanner(resolvedPort, resolvedHost);
+
+    if (options.license && server.licenseService) {
+      console.log(`\x1b[36m🔑 Đang kích hoạt License Key: ${options.license}...\x1b[0m`);
+      const lic = await server.licenseService.activate(options.license);
+      if (lic.ok) {
+        console.log(`\x1b[32m✔ Đã kích hoạt License thành công (${lic.nodeCount} node sẵn sàng)\x1b[0m`);
+      } else {
+        console.warn(`\x1b[31m✖ Kích hoạt thất bại: ${lic.error}\x1b[0m`);
+      }
+    }
 
     // Check for updates in background (non-blocking)
     checkUpdate({
