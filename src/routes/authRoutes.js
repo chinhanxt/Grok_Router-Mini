@@ -17,11 +17,31 @@ export function createAuthRouter(userService, authMiddleware) {
     res.json({ user: req.user });
   });
 
+  router.get('/users', authMiddleware.requireAdmin, (req, res) => {
+    try {
+      res.json(userService.getUsers());
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
   router.post('/users', authMiddleware.requireAdmin, async (req, res) => {
     try {
       const { email, password, role } = req.body;
       const created = await userService.createUser(email, password, role);
       res.json(created);
+    } catch (err) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  router.delete('/users/:id', authMiddleware.requireAdmin, async (req, res) => {
+    try {
+      const deleted = await userService.deleteUser(req.params.id);
+      if (!deleted) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+      res.json({ success: true, id: req.params.id });
     } catch (err) {
       res.status(400).json({ error: err.message });
     }

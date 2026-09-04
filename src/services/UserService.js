@@ -87,4 +87,16 @@ export class UserService {
   async register(email, password) {
     return this.createUser(email, password, 'user');
   }
+
+  getUsers() {
+    return this.users.map(u => u.toJSON());
+  }
+
+  async deleteUser(id) {
+    const idx = this.users.findIndex(u => u.id === id);
+    if (idx === -1) return false;
+    this.users.splice(idx, 1);
+    await this.save();
+    return true;
+  }
 }

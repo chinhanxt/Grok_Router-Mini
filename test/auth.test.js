@@ -194,4 +194,23 @@ test('createAuthRouter sets up /login, /me, and /users endpoints', async () => {
   assert.ok(routes.some(r => r.path === '/login' && r.methods.includes('post')));
   assert.ok(routes.some(r => r.path === '/me' && r.methods.includes('get')));
   assert.ok(routes.some(r => r.path === '/users' && r.methods.includes('post')));
+  assert.ok(routes.some(r => r.path === '/users' && r.methods.includes('get')));
+  assert.ok(routes.some(r => r.path === '/users/:id' && r.methods.includes('delete')));
+});
+
+test('UserService getUsers and deleteUser operate correctly', async () => {
+  const tmpFile = '/tmp/grok-users-crud-' + Date.now() + '.json';
+  const service = new UserService(new JsonStorage(), { USERS_FILE: tmpFile, AUTH_SECRET: 'test-secret' });
+  await service.init();
+
+  const user = await service.createUser('sample@domain.com', 'pass123', 'user');
+  let list = service.getUsers();
+  assert.equal(list.length, 2); // default admin + new user
+  assert.ok(list.some(u => u.email === 'sample@domain.com'));
+
+  const deleted = await service.deleteUser(user.id);
+  assert.equal(deleted, true);
+  list = service.getUsers();
+  assert.equal(list.length, 1);
+  assert.equal(await service.deleteUser('non-existent'), false);
 });
