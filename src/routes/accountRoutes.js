@@ -34,6 +34,20 @@ export function createAccountRouter(accountPool, authMiddleware) {
     }
   });
 
+  // Batch import accounts
+  router.post(['/batch-import', '/api/accounts/batch-import'], guard, async (req, res) => {
+    try {
+      const { accounts, overwrite } = req.body || {};
+      if (!Array.isArray(accounts)) {
+        return res.status(400).json({ success: false, error: 'Dữ liệu tài khoản phải là một mảng (Array).' });
+      }
+      const result = await accountPool.batchImportAccounts(accounts, { overwrite: overwrite !== false });
+      res.json(result);
+    } catch (err) {
+      res.status(400).json({ success: false, error: err.message });
+    }
+  });
+
   // Update account (PUT and PATCH)
   const handleUpdate = async (req, res) => {
     try {

@@ -73,4 +73,73 @@ export class AccountPool {
     const available = this.accounts.filter(a => a.isAvailable());
     return this.strategy.select(available);
   }
+
+  async batchImportAccounts(rawAccounts, { overwrite = true } = {}) {
+    if (!Array.isArray(rawAccounts)) {
+      throw new Error('Danh sách tài khoản phải là một mảng (Array).');
+    }
+
+    let added = 0;
+    let updated = 0;
+    let skipped = 0;
+    const errors = [];
+
+    for (let i = 0; i < rawAccounts.length; i++) {
+      const raw = rawAccounts[i];
+      if (!raw || typeof raw !== 'object') {
+        errors.push(`Mục thứ ${i + 1}: Dữ liệu không hợp lệ.`);
+        continue;
+      }
+
+      const email = (raw.email || raw.username || '').trim().toLowerCase();
+      if (!email) {
+        errors.push(`Mục thứ ${i + 1}: Thiếu email.`);
+        continue;
+      }
+
+      const ssoToken = raw.ssoToken || raw.sso_token || raw.sso_cookie || raw.ssoCookie || raw.cookie || raw.token || raw.accessToken || raw.access_token || '';
+      const refreshToken = raw.refreshToken || raw.refresh_token || raw.ssoRwCookie || raw.sso_rw_cookie || '';
+      const name = raw.name || email.split('@')[0] || `Node ${this.accounts.length + 1}`;
+
+      const existingIndex = this.accounts.findIndex(a =>
+        (a.email && a.email.toLowerCase() === email) || (raw.id && a.id === raw.id)
+      );
+
+      if (existingIndex >= 0) {
+        if (overwrite) {
+          const acc = this.accounts[existingIndex];
+          if (ssoToken) acc.ssoToken = ssoToken;
+          if (refreshToken) acc.refreshToken = refreshToken;
+          if (raw.name) acc.name = raw.name;
+          acc.status = 'active';
+          acc.cooldownUntil = 0;
+          updated++;
+        } else {
+          skipped++;
+        }
+      } else {
+        const newAcc = new Account({
+          id: raw.id,
+          name,
+          email,
+          ssoToken,
+          refreshToken,
+          status: 'active'
+        });
+        this.accounts.push(newAcc);
+        added++;
+      }
+    }
+
+    await this.save();
+
+    return {
+      success: true,
+      added,
+      updated,
+      skipped,
+      total: this.accounts.length,
+      errors
+    };
+  }
 }

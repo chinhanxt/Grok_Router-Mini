@@ -112,3 +112,51 @@ test('AccountPool auto-recovers cooling accounts when cooldown expires', async (
     fs.rmSync(tmpFile, { force: true });
   }
 });
+
+test('AccountPool batchImportAccounts handles array import, updates, and skips', async () => {
+  const tmpFile = '/tmp/grok-pool-batch-test-' + Date.now() + '.json';
+  const pool = new AccountPool(new JsonStorage(), { ACCOUNTS_FILE: tmpFile });
+
+  try {
+    // 1. Initial import of 2 accounts
+    const initialData = [
+      { email: 'user1@test.com', ssoToken: 'tok1', name: 'Node 1' },
+      { email: 'user2@test.com', sso_cookie: 'tok2', refreshToken: 'ref2' }
+    ];
+    const res1 = await pool.batchImportAccounts(initialData);
+    assert.equal(res1.success, true);
+    assert.equal(res1.added, 2);
+    assert.equal(res1.updated, 0);
+    assert.equal(res1.total, 2);
+    assert.equal(pool.getAccounts().length, 2);
+
+    // 2. Import with overwrite = true (updates user1, adds user3)
+    const updateData = [
+      { email: 'user1@test.com', ssoToken: 'tok1_updated' },
+      { email: 'user3@test.com', ssoToken: 'tok3' }
+    ];
+    const res2 = await pool.batchImportAccounts(updateData, { overwrite: true });
+    assert.equal(res2.added, 1);
+    assert.equal(res2.updated, 1);
+    assert.equal(res2.total, 3);
+    const updatedUser1 = pool.getAccounts().find(a => a.email === 'user1@test.com');
+    assert.equal(updatedUser1.ssoToken, 'tok1_updated');
+
+    // 3. Import with overwrite = false (skips user1, adds user4)
+    const skipData = [
+      { email: 'user1@test.com', ssoToken: 'tok1_should_not_update' },
+      { email: 'user4@test.com', ssoToken: 'tok4' }
+    ];
+    const res3 = await pool.batchImportAccounts(skipData, { overwrite: false });
+    assert.equal(res3.added, 1);
+    assert.equal(res3.updated, 0);
+    assert.equal(res3.skipped, 1);
+    assert.equal(res3.total, 4);
+    assert.equal(updatedUser1.ssoToken, 'tok1_updated');
+
+    // 4. Invalid data checks
+    await assert.rejects(() => pool.batchImportAccounts('not-array'), /Array/);
+  } finally {
+    fs.rmSync(tmpFile, { force: true });
+  }
+});

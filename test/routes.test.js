@@ -263,6 +263,26 @@ test('Account routes provide full CRUD for admin', async () => {
     assert.equal(patchRes.status, 200);
     const patched = await patchRes.json();
     assert.equal(patched.status, 'disabled');
+
+    // 8. POST /api/accounts/batch-import
+    const batchRes = await fetch(`${baseUrl}/api/accounts/batch-import`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        accounts: [
+          { email: 'batch1@x.ai', ssoToken: 'tok_b1', name: 'Batch 1' },
+          { email: 'batch2@x.ai', sso_cookie: 'tok_b2', refreshToken: 'ref_b2' }
+        ],
+        overwrite: true
+      })
+    });
+    assert.equal(batchRes.status, 200);
+    const batchResult = await batchRes.json();
+    assert.equal(batchResult.success, true);
+    assert.equal(batchResult.added, 2);
   } finally {
     server.close();
   }
