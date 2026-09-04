@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-export function createAccountRouter(accountPool, authMiddleware) {
+export function createAccountRouter(accountPool, authMiddleware, nodeHealthService = null) {
   const router = Router();
 
   const guard = authMiddleware?.requireAdmin
@@ -8,6 +8,34 @@ export function createAccountRouter(accountPool, authMiddleware) {
     : (typeof authMiddleware === 'function'
         ? authMiddleware
         : (req, res, next) => res.status(403).json({ error: 'Chỉ Admin mới có quyền truy cập.' }));
+
+  // Check health and auto-revive all tokens
+  router.post(['/check-health', '/api/accounts/check-health'], guard, async (req, res) => {
+    try {
+      if (!nodeHealthService) {
+        return res.json({ success: true, message: 'NodeHealthService not mounted' });
+      }
+      const forceRefresh = req.body?.forceRefresh === true;
+      const stats = await nodeHealthService.checkAllNodes({ forceRefresh });
+      res.json(stats);
+    } catch (err) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  // Refresh single account token
+  router.post(['/:id/refresh-token', '/api/accounts/:id/refresh-token'], guard, async (req, res) => {
+    try {
+      const acc = accountPool.getAccounts().find(a => a.id === req.params.id);
+      if (!acc) return res.status(404).json({ error: 'Account not found' });
+      if (!nodeHealthService) return res.status(400).json({ error: 'NodeHealthService not mounted' });
+      const result = await nodeHealthService.refreshAccountToken(acc);
+      if (result.success) await accountPool.save();
+      res.json(result);
+    } catch (err) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
 
   // List accounts
   router.get(['/', '/api/accounts'], guard, async (req, res) => {

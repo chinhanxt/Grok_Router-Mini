@@ -14,6 +14,13 @@ import { Account } from '../src/core/Account.js';
 import { AccountPool } from '../src/services/AccountPool.js';
 import { JsonStorage } from '../src/storage/JsonStorage.js';
 import { AppConfig } from '../src/config.js';
+import path from 'node:path';
+import os from 'node:os';
+
+function createTestConfig() {
+  const tmpDir = path.join(os.tmpdir(), 'grok-proxy-test-' + Date.now() + '-' + Math.random().toString(36).slice(2));
+  return new AppConfig({ DATA_DIR: tmpDir });
+}
 
 class MockResponse {
   constructor() {
@@ -89,7 +96,7 @@ test('Claude mask utilities replace Grok brand with Claude', () => {
 });
 
 test('ProxyService handleChatCompletion non-streaming translates and records usage', async () => {
-  const config = new AppConfig();
+  const config = createTestConfig();
   const pool = new AccountPool(new JsonStorage(), config);
   const acc = await pool.addAccount({ email: 'grok1@test.com', ssoToken: 'sso-tok-1' });
 
@@ -138,7 +145,7 @@ test('ProxyService handleChatCompletion non-streaming translates and records usa
 });
 
 test('ProxyService handleChatCompletion 429 failover to next account', async () => {
-  const config = new AppConfig();
+  const config = createTestConfig();
   const pool = new AccountPool(new JsonStorage(), config);
   const acc1 = await pool.addAccount({ email: 'acc1@test.com', ssoToken: 'tok1' });
   const acc2 = await pool.addAccount({ email: 'acc2@test.com', ssoToken: 'tok2' });
@@ -192,7 +199,7 @@ test('ProxyService handleChatCompletion 429 failover to next account', async () 
 });
 
 test('ProxyService handleAnthropicMessages translates request, injects protocol, and returns Claude format', async () => {
-  const config = new AppConfig();
+  const config = createTestConfig();
   const pool = new AccountPool(new JsonStorage(), config);
   await pool.addAccount({ email: 'anthropic-acc@test.com', ssoToken: 'tok-claude' });
 
@@ -273,7 +280,7 @@ test('ProxyService handleAnthropicMessages translates request, injects protocol,
 });
 
 test('ProxyService handleAnthropicMessages SSE streaming pipes correctly', async () => {
-  const config = new AppConfig();
+  const config = createTestConfig();
   const pool = new AccountPool(new JsonStorage(), config);
   await pool.addAccount({ email: 'stream@test.com', ssoToken: 'tok-stream' });
 
@@ -323,7 +330,7 @@ test('ProxyService handleAnthropicMessages SSE streaming pipes correctly', async
 });
 
 test('ProxyService returns 429 when all accounts in pool are cooling', async () => {
-  const config = new AppConfig();
+  const config = createTestConfig();
   const pool = new AccountPool(new JsonStorage(), config);
   const acc = await pool.addAccount({ email: 'cooled@test.com', ssoToken: 'cooled-tok' });
   await pool.markCooling(acc.id, 600000);
@@ -342,7 +349,7 @@ test('ProxyService returns 429 when all accounts in pool are cooling', async () 
 });
 
 test('createProxyRouter mounts /v1/messages, /messages, /v1/chat/completions, and /v1/models', () => {
-  const config = new AppConfig();
+  const config = createTestConfig();
   const pool = new AccountPool(new JsonStorage(), config);
   const proxy = new ProxyService(pool, config);
 
@@ -364,7 +371,7 @@ test('createProxyRouter mounts /v1/messages, /messages, /v1/chat/completions, an
 });
 
 test('ProxyService handleAnthropicMessages streams tool call deltas correctly', async () => {
-  const config = new AppConfig();
+  const config = createTestConfig();
   const pool = new AccountPool(new JsonStorage(), config);
   await pool.addAccount({ email: 'toolstream@test.com', ssoToken: 'tok-tc-stream' });
 
@@ -410,7 +417,7 @@ test('ProxyService handleAnthropicMessages streams tool call deltas correctly', 
 });
 
 test('ProxyService handleAnthropicMessages recovers from 401 and upstream errors', async () => {
-  const config = new AppConfig();
+  const config = createTestConfig();
   const pool = new AccountPool(new JsonStorage(), config);
   const acc1 = await pool.addAccount({ email: 'auth-fail@test.com', ssoToken: 'tok-bad' });
   const acc2 = await pool.addAccount({ email: 'auth-ok@test.com', ssoToken: 'tok-good' });
@@ -453,7 +460,7 @@ test('ProxyService handleAnthropicMessages recovers from 401 and upstream errors
 });
 
 test('ProxyService forwardChatCompletion and listModels work correctly', async () => {
-  const config = new AppConfig();
+  const config = createTestConfig();
   const pool = new AccountPool(new JsonStorage(), config);
   await pool.addAccount({ email: 'forward@test.com', ssoToken: 'tok-fwd' });
   const proxy = new ProxyService(pool, config);

@@ -15,7 +15,7 @@ const __dirname = path.dirname(__filename);
 const publicDir = path.resolve(__dirname, '../public');
 
 export function createApp(options = {}) {
-  const { config, pool, userService, proxyService } = options;
+  const { config, pool, userService, proxyService, nodeHealthService } = options;
   const authMiddleware = options.authMiddleware || (userService ? createAuthMiddleware(userService) : null);
   const app = express();
 
@@ -56,7 +56,7 @@ export function createApp(options = {}) {
   }
 
   if (pool) {
-    const accountRouter = createAccountRouter(pool, authMiddleware);
+    const accountRouter = createAccountRouter(pool, authMiddleware, nodeHealthService);
     app.use('/api/accounts', accountRouter);
     app.use('/', accountRouter);
   }

@@ -1567,6 +1567,12 @@
                 </svg>
                 <span>Nhập nhiều</span>
               </button>
+              <button class="btn btn-outline btn-xs" id="btnReviveNodes" onclick="triggerNodeHealthCheck()" title="Quét kiểm tra và hồi sinh toàn bộ token gần hết hạn">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                </svg>
+                <span>Hồi sinh Node</span>
+              </button>
               <button class="btn btn-primary btn-sm" onclick="openAddAccountModal()">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -2218,6 +2224,38 @@
         renderAccountsPage();
       } catch (err) {
         console.error(err);
+      }
+    }
+
+    async function triggerNodeHealthCheck() {
+      const btn = document.getElementById('btnReviveNodes');
+      if (!btn) return;
+      const originalHtml = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<span>Đang quét...</span>';
+
+      try {
+        const res = await fetch('/api/accounts/check-health', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + currentToken
+          },
+          body: JSON.stringify({ forceRefresh: false })
+        });
+
+        if (!res.ok) {
+          throw new Error('Lỗi kiểm tra Node.');
+        }
+
+        const stats = await res.json();
+        await loadAccounts();
+        alert(`Kiểm tra hoàn tất!\n• Tổng Node: ${stats.total || accounts.length}\n• Đã hồi sinh Token: ${stats.refreshed || 0}\n• Khôi phục Cooldown: ${stats.recovered || 0}\n• Đang hoạt động: ${stats.active || 0}\n• Đã vô hiệu hóa: ${stats.disabled || 0}`);
+      } catch (err) {
+        alert(err.message || 'Lỗi khi kiểm tra Node');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalHtml;
       }
     }
 

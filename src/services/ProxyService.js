@@ -21,10 +21,11 @@ export {
 };
 
 export class ProxyService {
-  constructor(accountPool, config = {}) {
+  constructor(accountPool, config = {}, nodeHealthService = null) {
     this.accountPool = accountPool;
     this.accountPoolService = accountPool;
     this.config = config;
+    this.nodeHealthService = nodeHealthService;
   }
 
   buildHeaders(account) {
@@ -124,7 +125,15 @@ export class ProxyService {
         }
 
         if (upstreamRes.status === 401) {
-          account.expiresAt = 0;
+          if (account.refreshToken && this.nodeHealthService) {
+            const ref = await this.nodeHealthService.refreshAccountToken(account);
+            if (ref.success) {
+              await this.accountPool.save();
+              continue;
+            }
+          }
+          account.status = 'disabled';
+          await this.accountPool.save();
           continue;
         }
 
@@ -207,7 +216,15 @@ export class ProxyService {
         }
 
         if (upstreamRes.status === 401) {
-          account.expiresAt = 0;
+          if (account.refreshToken && this.nodeHealthService) {
+            const ref = await this.nodeHealthService.refreshAccountToken(account);
+            if (ref.success) {
+              await this.accountPool.save();
+              continue;
+            }
+          }
+          account.status = 'disabled';
+          await this.accountPool.save();
           continue;
         }
 

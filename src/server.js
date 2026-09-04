@@ -7,6 +7,8 @@ import { UserService } from './services/UserService.js';
 import { ProxyService } from './services/ProxyService.js';
 import { createAuthMiddleware } from './middlewares/AuthMiddleware.js';
 
+import { NodeHealthService } from './services/NodeHealthService.js';
+
 export async function startServer(portOrOptions = {}, maybeHost = null) {
   let port;
   let host;
@@ -38,10 +40,11 @@ export async function startServer(portOrOptions = {}, maybeHost = null) {
   const userService = new UserService(storage, config);
   await userService.init();
 
-  const proxyService = new ProxyService(pool, config);
+  const nodeHealthService = new NodeHealthService(pool, config);
+  const proxyService = new ProxyService(pool, config, nodeHealthService);
   const authMiddleware = createAuthMiddleware(userService);
 
-  const app = createApp({ config, pool, userService, proxyService, authMiddleware, storage });
+  const app = createApp({ config, pool, userService, proxyService, authMiddleware, storage, nodeHealthService });
 
   return new Promise((resolve, reject) => {
     const server = app.listen(config.PORT, config.HOST, () => {
@@ -49,7 +52,17 @@ export async function startServer(portOrOptions = {}, maybeHost = null) {
       server.pool = pool;
       server.userService = userService;
       server.proxyService = proxyService;
+      server.nodeHealthService = nodeHealthService;
       server.config = config;
+
+      nodeHealthService.startBackgroundWorker();
+
+      const origClose = server.close.bind(server);
+      server.close = function(cb) {
+        nodeHealthService.stopBackgroundWorker();
+        return origClose(cb);
+      };
+
       resolve(server);
     });
     server.on('error', reject);

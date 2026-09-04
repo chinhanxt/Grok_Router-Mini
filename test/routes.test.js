@@ -1,6 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import express from 'express';
+import path from 'node:path';
+import fs from 'node:fs';
+import os from 'node:os';
 import { createSetupRouter } from '../src/routes/setupRoutes.js';
 import { createAccountRouter } from '../src/routes/accountRoutes.js';
 import { AccountPool } from '../src/services/AccountPool.js';
@@ -373,5 +376,44 @@ test('createSetupRouter strictly sanitizes and rejects malicious ?key= parameter
     server.close();
   }
 });
+
+test('accountRoutes check-health and refresh-token work with NodeHealthService', async () => {
+  const tmpAccounts = path.join(os.tmpdir(), 'test-health-routes-' + Date.now() + '.json');
+  const pool = new AccountPool(new JsonStorage(), { ACCOUNTS_FILE: tmpAccounts });
+  const acc = await pool.addAccount({ email: 'node@test.com', refreshToken: 'ref-test', status: 'cooling' });
+
+  const mockHealthService = {
+    checkAllNodes: async () => ({ total: 1, refreshed: 1, recovered: 1, active: 1 }),
+    refreshAccountToken: async (a) => { a.status = 'active'; return { success: true, account: a }; }
+  };
+
+  const app = express();
+  app.use(express.json());
+  const dummyAuth = { requireAdmin: (req, res, next) => next() };
+  app.use('/api/accounts', createAccountRouter(pool, dummyAuth, mockHealthService));
+
+  const server = app.listen(0);
+  const port = server.address().port;
+  const baseUrl = `http://127.0.0.1:${port}`;
+
+  try {
+    // 1. POST /api/accounts/check-health
+    const checkRes = await fetch(`${baseUrl}/api/accounts/check-health`, { method: 'POST' });
+    assert.equal(checkRes.status, 200);
+    const checkData = await checkRes.json();
+    assert.equal(checkData.total, 1);
+    assert.equal(checkData.refreshed, 1);
+
+    // 2. POST /api/accounts/:id/refresh-token
+    const refRes = await fetch(`${baseUrl}/api/accounts/${acc.id}/refresh-token`, { method: 'POST' });
+    assert.equal(refRes.status, 200);
+    const refData = await refRes.json();
+    assert.equal(refData.success, true);
+  } finally {
+    server.close();
+    if (fs.existsSync(tmpAccounts)) fs.unlinkSync(tmpAccounts);
+  }
+});
+
 
 
