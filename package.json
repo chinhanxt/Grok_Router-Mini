@@ -1,6 +1,6 @@
 {
   "name": "ai-claude-keyapi",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Ultra-lightweight local AI Gateway with 1-Click Claude Code Setup",
   "type": "module",
   "bin": {

@@ -1,95 +1,59 @@
 # AI Claude KeyAPI
 
-> Cổng kết nối AI Gateway nội bộ dành cho Claude Code, Cursor, Codex... hỗ trợ định tuyến và tự động chuyển đổi tài khoản khi gặp giới hạn tần suất.
-
-🌐 **Trang tài liệu trực tuyến (GitHub Pages):** [https://chinhanxt.github.io/Grok_Router-Mini/](https://chinhanxt.github.io/Grok_Router-Mini/)
+> Ultra-lightweight Local AI Gateway CLI for Claude Code & LLMs.
 
 ---
 
-<p align="center">
-  <img src="./assets/demo.png" alt="Claude Code running with AI Claude KeyAPI" width="100%" />
-</p>
+## Cài đặt & Khởi động
 
----
-
-## Tổng quan dự án
-
-Sử dụng AI Claude bằng Key, kết nối trực tiếp với Claude Code CLI và các công cụ lập trình AI. Hệ thống tự động quản lý, cân bằng tải và luân chuyển tài khoản ngầm khi gặp giới hạn tần suất.
-
----
-
-## Hướng dẫn cài đặt & Khởi động
-
-### 🚀 Cách 1: Cài đặt toàn cục (Khuyên dùng - Nhanh nhất)
-Cài đặt một lần duy nhất, sau đó có thể gọi lệnh `aiclaude` ở bất kỳ thư mục nào:
+### Cách 1: Cài đặt toàn cục (Khuyên dùng - Nhanh nhất)
 ```bash
 npm install -g ai-claude-keyapi
 aiclaude
 ```
 
-### ⚡ Cách 2: Chạy trực tiếp qua NPX
+### Cách 2: Chạy trực tiếp qua NPX
 ```bash
 npx ai-claude-keyapi
 ```
-*(Từ các lần sau bạn cũng có thể gõ ngay `aiclaude`)*
-
-### ⚙️ Tùy chọn nâng cao
-- **Chỉ định cổng (Port):**
-  ```bash
-  aiclaude --port 3006
-  ```
-- **Kích hoạt sẵn License Key:**
-  ```bash
-  aiclaude -l KEY-VIP-PRO-2026
-  ```
-
-### Chạy từ mã nguồn
-```bash
-git clone https://github.com/chinhanxt/AI_Router-Mini.git
-cd AI_Router-Mini
-npm install
-npm start
-```
-
-Web Dashboard: http://localhost:3005  
-Tài khoản Admin mặc định: admin / admin123
+*(Từ các lần chạy tiếp theo bạn chỉ cần gõ `aiclaude`)*
 
 ---
 
-## Kết nối với Claude Code (1-Click)
+## Tùy chọn dòng lệnh (CLI Options)
 
-Khi router đang chạy, mở terminal mới và dán dòng lệnh tương ứng với hệ điều hành:
-
-### macOS & Linux (Bash / Zsh)
-```bash
-curl -fsSL http://localhost:3005/claude.sh | bash
-```
-
-### Windows (PowerShell)
-```powershell
-irm http://localhost:3005/claude.ps1 | iex
-```
-
-### Windows (CMD)
-```cmd
-curl -fsSL http://localhost:3005/claude.cmd -o setup.cmd && setup.cmd
-```
-
-Lệnh trên sẽ tự động đặt biến môi trường và ghi cấu hình vào `~/.claude/settings.json`, sau đó khởi chạy Claude Code kết nối trực tiếp đến router.
-
----
-
-## Các mô hình hỗ trợ
-
-| Model ID | Mô hình | Mục đích sử dụng |
+| Tùy chọn | Mô tả | Mặc định |
 |---|---|---|
-| `claude-sonnet-5` | Claude Sonnet 5 | Tối ưu tốt nhất giữa tốc độ và độ thông minh (Mặc định) |
-| `claude-fable-5-1` | Claude Fable 5.1 | Suy luận cao cấp, lập trình tác nhân tự động lâu dài |
-| `claude-opus-5` | Claude Opus 5 | Giải quyết bài toán lớn, kiến trúc hệ thống doanh nghiệp |
-| `claude-haiku-4-5` | Claude Haiku 4.5 | Phản hồi siêu tốc, tác vụ phụ trợ |
+| `-p, --port <cổng>` | Chỉ định cổng lắng nghe | `3005` (tự động tăng nếu bị chiếm) |
+| `--host <host>` | Địa chỉ IP lắng nghe | `0.0.0.0` |
+| `-l, --license <key>` | Tự động kích hoạt License Key khi khởi động | - |
+| `-h, --help` | Xem trợ giúp cú pháp lệnh | - |
+| `-v, --version` | Xem phiên bản hiện tại | - |
 
 ---
 
-## Giấy phép
+## Thiết lập nhanh Claude Code (1-Click)
 
+Khi gateway đang chạy trên máy của bạn, mở một cửa sổ terminal mới và chạy lệnh tương ứng:
+
+- **macOS / Linux (Bash):**
+  ```bash
+  curl -fsSL http://localhost:3005/claude.sh | bash
+  ```
+
+- **Windows (PowerShell):**
+  ```powershell
+  irm http://localhost:3005/claude.ps1 | iex
+  ```
+
+- **Windows (Command Prompt):**
+  ```cmd
+  curl -fsSL http://localhost:3005/claude.cmd -o setup.cmd && setup.cmd
+  ```
+
+Sau đó khởi động `claude` trong terminal để bắt đầu làm việc.
+
+---
+
+## Bản quyền
 Phát hành theo giấy phép MIT.

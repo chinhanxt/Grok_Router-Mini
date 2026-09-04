@@ -76,13 +76,37 @@ export function hashPassword(pwd) {
   return crypto.createHash('sha256').update(pwd).digest('hex');
 }
 
+export function generateAdminToken(pwd) {
+  const configuredPassword = pwd || process.env.ADMIN_PASSWORD || 'chinhanxt';
+  return crypto.createHmac('sha256', configuredPassword).update('aiclaude_admin_portal_session').digest('hex');
+}
+
 export function verifyAdmin(req) {
   const authHeader = req.headers.authorization || '';
   const providedToken = authHeader.replace(/^Bearer\s+/i, '').trim();
   const configuredPassword = process.env.ADMIN_PASSWORD || 'chinhanxt';
 
   if (!providedToken) return false;
-  return providedToken === configuredPassword || providedToken === hashPassword(configuredPassword) || providedToken === 'admin123';
+
+  const validToken = generateAdminToken(configuredPassword);
+  const candidate = Buffer.from(providedToken);
+
+  const target1 = Buffer.from(validToken);
+  if (candidate.length === target1.length && crypto.timingSafeEqual(candidate, target1)) {
+    return true;
+  }
+
+  const target2 = Buffer.from(configuredPassword);
+  if (candidate.length === target2.length && crypto.timingSafeEqual(candidate, target2)) {
+    return true;
+  }
+
+  const target3 = Buffer.from(hashPassword(configuredPassword));
+  if (candidate.length === target3.length && crypto.timingSafeEqual(candidate, target3)) {
+    return true;
+  }
+
+  return false;
 }
 
 export async function parseRequestBody(req) {

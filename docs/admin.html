@@ -1044,7 +1044,112 @@
   <div id="actionDropdownMenu" class="action-dropdown"></div>
 
   <script>
+    // 🛡️ Stealth Gate: Hide admin portal unless accessed with ?portal=chinhan or has valid session
+    const urlParams = new URLSearchParams(window.location.search);
+    const secretKey = urlParams.get('portal') || urlParams.get('key') || urlParams.get('secret');
     let adminToken = sessionStorage.getItem('admin_token') || '';
+
+    if (!adminToken && secretKey !== 'chinhan' && secretKey !== 'chinhanxt') {
+      document.body.innerHTML = `
+        <div style="height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:sans-serif;background:#09090b;color:#f4f4f5;text-align:center;padding:20px;">
+          <h1 style="font-size:72px;font-weight:800;margin-bottom:8px;color:#71717a;">404</h1>
+          <h2 style="font-size:20px;font-weight:600;margin-bottom:12px;">Trang không tồn tại</h2>
+          <p style="color:#a1a1aa;margin-bottom:24px;font-size:14px;">Đường dẫn bạn yêu cầu không khả dụng hoặc đã được di chuyển.</p>
+          <a href="/" style="color:#ffffff;background:#27272a;padding:8px 16px;border-radius:6px;text-decoration:none;font-size:13px;border:1px solid #3f3f46;">Quay lại Trang chủ</a>
+        </div>
+      `;
+      throw new Error('Not found');
+    }
+
+    // 🛡️ Anti-DevTools & Anti-Inspection Shield
+    (function initSecurityShield() {
+      window.addEventListener('keydown', function(e) {
+        if (
+          e.key === 'F12' ||
+          e.keyCode === 123 ||
+          ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) ||
+          ((e.ctrlKey || e.metaKey) && (e.key === 'U' || e.key === 'u' || e.key === 'S' || e.key === 's'))
+        ) {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }
+      }, true);
+
+      window.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }, true);
+
+      let isDevToolsOpen = false;
+      const originalFetch = window.fetch;
+
+      function createLockdownOverlay() {
+        let overlay = document.getElementById('__sec_lockdown');
+        if (!overlay) {
+          overlay = document.createElement('div');
+          overlay.id = '__sec_lockdown';
+          overlay.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background-color:#09090b;color:#ef4444;z-index:99999999;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:system-ui,-apple-system,sans-serif;padding:20px;text-align:center;';
+          overlay.innerHTML = `
+            <div style="font-size:54px;margin-bottom:16px;">🛡️</div>
+            <h1 style="font-size:22px;font-weight:700;margin-bottom:8px;color:#f87171;">BẢO MẬT HỆ THỐNG ĐÃ KÍCH HOẠT</h1>
+            <p style="font-size:14px;color:#a1a1aa;max-width:500px;line-height:1.6;margin-bottom:20px;">
+              Phát hiện công cụ kiểm tra (Developer Tools / F12).<br/>
+              <strong style="color:#fca5a5;">Toàn bộ kết nối API đã bị ngắt tạm thời để chống dò quét.</strong><br/>
+              Vui lòng đóng công cụ Developer Tools để tiếp tục sử dụng.
+            </p>
+            <div style="font-size:12px;color:#71717a;border:1px dashed #27272a;padding:6px 12px;border-radius:6px;">
+              Security Shield Active • Zero-Leak Protocol
+            </div>
+          `;
+          document.body.appendChild(overlay);
+        }
+        overlay.style.display = 'flex';
+      }
+
+      function removeLockdownOverlay() {
+        const overlay = document.getElementById('__sec_lockdown');
+        if (overlay) overlay.style.display = 'none';
+      }
+
+      function activateLockdown() {
+        if (isDevToolsOpen) return;
+        isDevToolsOpen = true;
+        window.fetch = function() {
+          return Promise.reject(new Error('Inspection detected. Network disconnected.'));
+        };
+        createLockdownOverlay();
+      }
+
+      function deactivateLockdown() {
+        if (!isDevToolsOpen) return;
+        isDevToolsOpen = false;
+        window.fetch = originalFetch;
+        removeLockdownOverlay();
+      }
+
+      function checkDebuggerTiming() {
+        const start = performance.now();
+        (function() { Function('debugger')(); })();
+        const duration = performance.now() - start;
+        if (duration > 100) {
+          activateLockdown();
+        } else {
+          const widthThreshold = window.outerWidth - window.innerWidth > 160;
+          const heightThreshold = window.outerHeight - window.innerHeight > 160;
+          if (widthThreshold || heightThreshold) {
+            activateLockdown();
+          } else {
+            deactivateLockdown();
+          }
+        }
+      }
+
+      setInterval(checkDebuggerTiming, 500);
+      window.addEventListener('resize', checkDebuggerTiming);
+    })();
+
     let packagesData = [];
     let keysData = [];
 

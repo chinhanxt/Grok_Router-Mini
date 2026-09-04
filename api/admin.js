@@ -1,6 +1,6 @@
 // api/admin.js - Vercel Serverless Function for License & Node Administration
 import crypto from 'node:crypto';
-import { kvGet, kvSet, verifyAdmin, hasKvConfigured, parseRequestBody } from './lib/kv.js';
+import { kvGet, kvSet, verifyAdmin, hasKvConfigured, parseRequestBody, generateAdminToken } from './lib/kv.js';
 
 export default async function handler(req, res) {
   // Enable CORS
@@ -18,25 +18,27 @@ export default async function handler(req, res) {
     const body = req.method !== 'GET' ? await parseRequestBody(req) : {};
 
     // 1. Admin Login
-  if (action === 'login' && req.method === 'POST') {
-    const { password } = body;
-    const configuredPassword = process.env.ADMIN_PASSWORD || 'chinhanxt';
+    if (action === 'login' && req.method === 'POST') {
+      const { password } = body;
+      const configuredPassword = process.env.ADMIN_PASSWORD || 'chinhanxt';
 
-    if (!password || password !== configuredPassword) {
-      return res.status(401).json({ error: 'Mật khẩu quản trị không chính xác' });
+      const candidatePwd = Buffer.from(password || '');
+      const targetPwd = Buffer.from(configuredPassword);
+      if (candidatePwd.length !== targetPwd.length || !crypto.timingSafeEqual(candidatePwd, targetPwd)) {
+        return res.status(401).json({ error: 'Mật khẩu quản trị không chính xác' });
+      }
+
+      return res.status(200).json({
+        ok: true,
+        token: generateAdminToken(configuredPassword),
+        hasKv: hasKvConfigured()
+      });
     }
 
-    return res.status(200).json({
-      ok: true,
-      token: configuredPassword,
-      hasKv: hasKvConfigured()
-    });
-  }
-
-  // Guard all subsequent actions with verifyAdmin
-  if (!verifyAdmin(req)) {
-    return res.status(403).json({ error: 'Yêu cầu quyền Quản trị viên (Admin)' });
-  }
+    // Guard all subsequent actions with verifyAdmin
+    if (!verifyAdmin(req)) {
+      return res.status(404).json({ error: 'Not Found' });
+    }
 
   // 2. Fetch Nodes
   if (action === 'getNodes' && req.method === 'GET') {

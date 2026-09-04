@@ -4,6 +4,20 @@ import path from 'node:path';
 import fs from 'node:fs';
 import { Account } from '../core/Account.js';
 
+function decryptPayload(payload, licenseKey, machineId) {
+  try {
+    const key = crypto.createHash('sha256').update(`${licenseKey}:${machineId}:AI_CLAUDE_SECURE_PAYLOAD_SALT_2026`).digest();
+    const decipher = crypto.createDecipheriv('aes-256-gcm', key, Buffer.from(payload.iv, 'hex'));
+    decipher.setAuthTag(Buffer.from(payload.tag, 'hex'));
+    let decrypted = decipher.update(payload.data, 'hex', 'utf8');
+    decrypted += decipher.final('utf8');
+    return JSON.parse(decrypted);
+  } catch (err) {
+    console.error('License decrypt error:', err.message);
+    return [];
+  }
+}
+
 export class LicenseService {
   constructor(accountPool, storage, config) {
     this.accountPool = accountPool;
@@ -75,8 +89,15 @@ export class LicenseService {
         return { ok: false, error: data.error || 'Kích hoạt thất bại. Vui lòng kiểm tra lại mã.' };
       }
 
+      let rawNodes = [];
+      if (data.encrypted && data.payload) {
+        rawNodes = decryptPayload(data.payload, cleanKey, this.machineId);
+      } else if (Array.isArray(data.nodes)) {
+        rawNodes = data.nodes;
+      }
+
       // Nạp các node mới được cấp vào AccountPool (thay thế toàn bộ để tránh cộng dồn)
-      const newAccounts = (data.nodes || []).map(n => {
+      const newAccounts = rawNodes.map(n => {
         let expiresAt = n.expiresAt || 0;
         const token = n.ssoToken || n.apiKey || n.token || '';
         if (!expiresAt && token && typeof token === 'string') {

@@ -1,5 +1,21 @@
 // api/license.js - Public endpoint for clients to activate license and receive node pool
+import crypto from 'node:crypto';
 import { kvGet, kvSet, parseRequestBody } from './lib/kv.js';
+
+function encryptPayload(data, licenseKey, machineId) {
+  const key = crypto.createHash('sha256').update(`${licenseKey}:${machineId}:AI_CLAUDE_SECURE_PAYLOAD_SALT_2026`).digest();
+  const iv = crypto.randomBytes(12);
+  const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
+  const jsonStr = JSON.stringify(data);
+  let encrypted = cipher.update(jsonStr, 'utf8', 'hex');
+  encrypted += cipher.final('hex');
+  const tag = cipher.getAuthTag().toString('hex');
+  return {
+    iv: iv.toString('hex'),
+    data: encrypted,
+    tag
+  };
+}
 
 export default async function handler(req, res) {
   // Enable CORS
@@ -149,20 +165,23 @@ export default async function handler(req, res) {
       });
     }
 
+    const safeNodes = grantedNodes.map(n => ({
+      id: n.id,
+      name: n.name,
+      email: n.email || '',
+      apiKey: n.ssoToken || n.apiKey || '',
+      ssoToken: n.ssoToken || n.apiKey || '',
+      refreshToken: n.refreshToken || ''
+    }));
+
     return res.status(200).json({
       ok: true,
       licenseKey: targetKey.key,
       label: targetKey.label,
       expireAt: targetKey.expireAt,
       deviceSlot: `${targetKey.devices.length}/${targetKey.maxDevices || 1}`,
-      nodes: grantedNodes.map(n => ({
-        id: n.id,
-        name: n.name,
-        email: n.email || '',
-        apiKey: n.ssoToken || n.apiKey || '',
-        ssoToken: n.ssoToken || n.apiKey || '',
-        refreshToken: n.refreshToken || ''
-      }))
+      encrypted: true,
+      payload: encryptPayload(safeNodes, targetKey.key, machineId)
     });
   } catch (err) {
     console.error('License API error:', err.message);

@@ -7,6 +7,7 @@ import { JsonStorage } from '../src/storage/JsonStorage.js';
 import { AccountPool } from '../src/services/AccountPool.js';
 import { LicenseService } from '../src/services/LicenseService.js';
 import os from 'node:os';
+import crypto from 'node:crypto';
 import path from 'node:path';
 import fs from 'node:fs';
 
@@ -36,7 +37,7 @@ test('Admin API: Node Package management and Key assignment flow', async () => {
   const createKeyReq = {
     method: 'POST',
     url: 'http://localhost/api/admin?action=createKey',
-    headers: { authorization: 'Bearer admin123' },
+    headers: { authorization: 'Bearer chinhanxt' },
     body: { label: 'Khách hàng VIP 1', keyString: 'VIP-KEY-001', maxDevices: 2 }
   };
   const createKeyRes = createMockRes();
@@ -58,7 +59,7 @@ test('Admin API: Node Package management and Key assignment flow', async () => {
   const uploadReq = {
     method: 'POST',
     url: 'http://localhost/api/admin?action=uploadNodePackage',
-    headers: { authorization: 'Bearer admin123' },
+    headers: { authorization: 'Bearer chinhanxt' },
     body: {
       mode: 'new',
       name: 'Gói VIP 5 Node',
@@ -80,7 +81,7 @@ test('Admin API: Node Package management and Key assignment flow', async () => {
   const getPackagesReq = {
     method: 'GET',
     url: 'http://localhost/api/admin?action=getNodePackages',
-    headers: { authorization: 'Bearer admin123' }
+    headers: { authorization: 'Bearer chinhanxt' }
   };
   const getPackagesRes = createMockRes();
   await adminHandler(getPackagesReq, getPackagesRes);
@@ -91,7 +92,7 @@ test('Admin API: Node Package management and Key assignment flow', async () => {
   const previewReq = {
     method: 'GET',
     url: `http://localhost/api/admin?action=getPackageNodes&id=${newPkg.id}&page=1&limit=2&query=n2`,
-    headers: { authorization: 'Bearer admin123' }
+    headers: { authorization: 'Bearer chinhanxt' }
   };
   const previewRes = createMockRes();
   await adminHandler(previewReq, previewRes);
@@ -108,7 +109,7 @@ test('Admin API: Node Package management and Key assignment flow', async () => {
   const overwriteReq = {
     method: 'POST',
     url: 'http://localhost/api/admin?action=uploadNodePackage',
-    headers: { authorization: 'Bearer admin123' },
+    headers: { authorization: 'Bearer chinhanxt' },
     body: {
       mode: 'overwrite',
       targetPackageId: newPkg.id,
@@ -135,9 +136,18 @@ test('Admin API: Node Package management and Key assignment flow', async () => {
   await licenseHandler(licReq, licRes);
   assert.equal(licRes.statusCode, 200);
   assert.equal(licRes.body.ok, true);
-  assert.equal(licRes.body.nodes.length, 2);
-  assert.equal(licRes.body.nodes[0].email, 'new1@test.com');
-  assert.equal(licRes.body.nodes[0].ssoToken, 'sso-new-1');
+  assert.equal(licRes.body.encrypted, true);
+
+  const encKey = crypto.createHash('sha256').update('VIP-KEY-001:test-machine-01:AI_CLAUDE_SECURE_PAYLOAD_SALT_2026').digest();
+  const decipher = crypto.createDecipheriv('aes-256-gcm', encKey, Buffer.from(licRes.body.payload.iv, 'hex'));
+  decipher.setAuthTag(Buffer.from(licRes.body.payload.tag, 'hex'));
+  let decrypted = decipher.update(licRes.body.payload.data, 'hex', 'utf8');
+  decrypted += decipher.final('utf8');
+  const decryptedNodes = JSON.parse(decrypted);
+
+  assert.equal(decryptedNodes.length, 2);
+  assert.equal(decryptedNodes[0].email, 'new1@test.com');
+  assert.equal(decryptedNodes[0].ssoToken, 'sso-new-1');
 
   // 7. Client LicenseService imports these nodes into AccountPool correctly
   const tmpDir = path.join(os.tmpdir(), `test-lic-pool-${Date.now()}`);
@@ -148,7 +158,7 @@ test('Admin API: Node Package management and Key assignment flow', async () => {
 
   // Directly simulate successful license payload handling
   const accountsBefore = pool.accounts.length;
-  licRes.body.nodes.forEach(n => {
+  decryptedNodes.forEach(n => {
     pool.accounts.push({
       id: `lic-${n.id}`,
       name: n.name || n.email,
