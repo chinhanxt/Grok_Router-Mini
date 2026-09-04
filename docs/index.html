@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Claude KeyAPI — Cổng định tuyến Claude Code</title>
-  <meta name="description" content="Cổng định tuyến Claude Code bằng Key, tự động chuyển tài khoản khi 429, cài đặt 1-click.">
+  <meta name="description" content="Cổng định tuyến Claude Code bằng Key, tự động chuyển tài khoản khi 429.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600;700&family=Geist:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600;700&family=Geist:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     :root {
@@ -30,9 +30,14 @@
       --badge-text: #e4e4e7;
       --header-bg: rgba(9, 9, 11, 0.9);
       --card-border: #27272a;
-      --card-border-hover: #3f3f46;
       --table-header-bg: #111114;
       --success-green: #10b981;
+
+      /* Terminal Colors (Dark) */
+      --terminal-bg: #000000;
+      --terminal-topbar: #0d0d0f;
+      --terminal-text: #e4e4e7;
+      --terminal-dim: #71717a;
     }
 
     [data-theme="light"] {
@@ -51,9 +56,14 @@
       --badge-text: #18181b;
       --header-bg: rgba(255, 255, 255, 0.9);
       --card-border: #e4e4e7;
-      --card-border-hover: #a1a1aa;
       --table-header-bg: #f4f4f5;
       --success-green: #059669;
+
+      /* Terminal Colors (Chuyển sang trắng khi sáng) */
+      --terminal-bg: #ffffff;
+      --terminal-topbar: #f4f4f5;
+      --terminal-text: #09090b;
+      --terminal-dim: #71717a;
     }
 
     * {
@@ -91,7 +101,7 @@
       padding: 0 36px;
     }
 
-    /* Header tối giản: Không icon github/npm */
+    /* Header tối giản */
     header.site-header {
       position: sticky;
       top: 0;
@@ -235,7 +245,6 @@
       align-items: center;
       justify-content: space-between;
       max-width: 540px;
-      margin-bottom: 20px;
     }
 
     .cmd-text {
@@ -287,41 +296,19 @@
       border-color: var(--success-green);
     }
 
-    .meta-pills {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .pill-item {
-      font-family: var(--font-mono);
-      font-size: 12px;
-      color: var(--text-secondary);
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      padding: 4px 10px;
-      border-radius: 4px;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .pill-item svg {
-      color: var(--text-muted);
-    }
-
-    /* Terminal Screen (Giữ nguyên theo yêu cầu) */
+    /* Terminal Screen: Đổi nền trắng khi sang sáng */
     .terminal-card {
-      background: #000000;
+      background: var(--terminal-bg);
       border: 1px solid var(--border);
       border-radius: 6px;
       overflow: hidden;
-      box-shadow: 0 16px 36px -12px rgba(0,0,0,0.6);
+      box-shadow: 0 16px 36px -12px rgba(0,0,0,0.12);
+      transition: background-color 0.15s ease, border-color 0.15s ease;
     }
 
     .terminal-header {
-      background: #0d0d0f;
-      border-bottom: 1px solid #1f1f23;
+      background: var(--terminal-topbar);
+      border-bottom: 1px solid var(--border);
       padding: 10px 14px;
       display: flex;
       align-items: center;
@@ -353,12 +340,13 @@
       font-family: var(--font-mono);
       font-size: 13px;
       line-height: 1.65;
-      color: #e4e4e7;
+      color: var(--terminal-text);
+      transition: color 0.15s ease;
     }
 
-    .c-dim { color: #71717a; }
-    .c-green { color: #10b981; }
-    .c-white { color: #ffffff; font-weight: 600; }
+    .c-dim { color: var(--terminal-dim); }
+    .c-green { color: var(--success-green); }
+    .c-white { color: var(--terminal-text); font-weight: 600; }
 
     /* Layout Sections */
     .content-block {
@@ -552,13 +540,15 @@
     .m-post { background: var(--bg-subtle); color: #3b82f6; }
     .m-get { background: var(--bg-subtle); color: #10b981; }
 
-    /* Khung ảnh demo thực tế */
+    /* Khung ảnh demo: Thu nhỏ nằm gọn trong card ở giữa */
     .demo-window {
+      max-width: 860px;
+      margin: 24px auto 0;
       border: 1px solid var(--border);
-      border-radius: 6px;
+      border-radius: 8px;
       overflow: hidden;
-      background: #000000;
-      margin-top: 16px;
+      background: var(--bg-surface);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
     }
 
     .demo-window img {
@@ -647,7 +637,7 @@
     </div>
   </header>
 
-  <!-- Hero Section: Split 2 Cột Rộng (Giữ nguyên màn hình terminal) -->
+  <!-- Hero Section: Split 2 Cột (Đã xóa 4 pill thừa) -->
   <section class="hero-section">
     <div class="container-wide">
       <div class="hero-split">
@@ -675,28 +665,9 @@
               Sao chép
             </button>
           </div>
-
-          <div class="meta-pills">
-            <span class="pill-item">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
-              Zero-Database
-            </span>
-            <span class="pill-item">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
-              Tự động đổi khi 429
-            </span>
-            <span class="pill-item">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
-              Cài đặt 1-Click
-            </span>
-            <span class="pill-item">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-              Phân quyền Admin
-            </span>
-          </div>
         </div>
 
-        <!-- Cột Phải: Màn Terminal Thực Tế (Giữ đúng màn hình theo yêu cầu) -->
+        <!-- Cột Phải: Màn Terminal Thực Tế (Tự đổi sang nền trắng khi bật sáng) -->
         <div>
           <div class="terminal-card">
             <div class="terminal-header">
@@ -709,7 +680,7 @@
               <span style="width: 36px;"></span>
             </div>
             <div class="terminal-content">
-              <p class="c-dim">$ curl -fsSL http://localhost:3005/claude.sh | bash</p>
+              <p class="c-dim">$ curl -fsSL "http://localhost:3005/claude.sh?key=eyJhbGciOi..." | bash</p>
               <p class="c-green">✓ Environment configured:</p>
               <p class="c-green">ANTHROPIC_BASE_URL=http://localhost:3005</p>
               <p class="c-green">✓ Profile synced: ~/.claude/settings.json</p>
@@ -758,12 +729,12 @@ ai-claude-keyapi</code></pre>
     </div>
   </section>
 
-  <!-- 2. Kết nối Claude Code (1-Click theo OS) -->
+  <!-- 2. Kết nối Claude Code (Đã bỏ từ 1-Click, hiển thị đúng dạng kèm ?key=...) -->
   <section id="claude" class="content-block">
     <div class="container-wide">
       <div class="block-head">
-        <div class="block-tag">02 / KẾT NỐI CLAUDE CODE</div>
-        <h2 class="block-title">Lệnh kết nối 1-Click</h2>
+        <div class="block-tag">02 / KẾT NỐI</div>
+        <h2 class="block-title">Lệnh kết nối Claude Code</h2>
       </div>
 
       <div class="tab-module">
@@ -779,13 +750,17 @@ ai-claude-keyapi</code></pre>
           </button>
         </div>
         <div class="tab-pane-wrap" id="osWrap">
-          <pre class="tab-content" style="display: block;"><code>curl -fsSL http://localhost:3005/claude.sh | bash</code></pre>
-          <pre class="tab-content" style="display: none;"><code>irm http://localhost:3005/claude.ps1 | iex</code></pre>
-          <pre class="tab-content" style="display: none;"><code>curl -fsSL http://localhost:3005/claude.cmd -o setup.cmd && setup.cmd</code></pre>
+          <pre class="tab-content" style="display: block;"><code>curl -fsSL "http://localhost:3005/claude.sh?key=<YOUR_TOKEN>" | bash</code></pre>
+          <pre class="tab-content" style="display: none;"><code>irm "http://localhost:3005/claude.ps1?key=<YOUR_TOKEN>" | iex</code></pre>
+          <pre class="tab-content" style="display: none;"><code>curl -fsSL "http://localhost:3005/claude.cmd?key=<YOUR_TOKEN>" -o setup.cmd && setup.cmd</code></pre>
         </div>
       </div>
 
-      <!-- Demo Terminal Ảnh thực tế -->
+      <p style="font-size: 13px; color: var(--text-secondary); margin-top: 6px;">
+        * Lấy lệnh kèm mã token <code>?key=...</code> đầy đủ trực tiếp tại Web Dashboard (<a href="http://localhost:3005" target="_blank" style="text-decoration: underline; color: var(--text-primary);">http://localhost:3005</a>) sau khi đăng nhập.
+      </p>
+
+      <!-- Demo Terminal Ảnh thực tế: Thu nhỏ gọn trong card ở giữa -->
       <div class="demo-window">
         <img src="./assets/demo.png" alt="Claude Code CLI running with ai-claude-keyapi" loading="lazy">
       </div>
@@ -913,7 +888,7 @@ ai-claude-keyapi</code></pre>
             <tr>
               <td><span class="method-tag m-get">GET</span></td>
               <td class="text-mono">/claude.sh, /claude.ps1, /claude.cmd</td>
-              <td>Tải script cài đặt 1-click tương ứng theo hệ điều hành.</td>
+              <td>Tải script cài đặt kèm <code>?key=...</code> tương ứng theo hệ điều hành.</td>
             </tr>
           </tbody>
         </table>
