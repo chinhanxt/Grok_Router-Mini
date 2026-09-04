@@ -31,12 +31,14 @@ function parseArgs(args) {
     port: process.env.PORT ? parseInt(process.env.PORT, 10) : 3005,
     host: process.env.HOST || '0.0.0.0',
     help: false,
+    version: false,
     portExplicit: Boolean(process.env.PORT)
   };
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
     if (arg === '--help' || arg === '-help') options.help = true;
+    else if (arg === '--version' || arg === '-v') options.version = true;
     else if (arg === '-h') {
       if (args[i + 1] && !args[i + 1].startsWith('-')) options.host = args[++i];
       else options.help = true;
@@ -124,6 +126,7 @@ async function startWithPortFallback(options) {
 async function main() {
   const options = parseArgs(process.argv.slice(2));
   if (options.help) { showHelp(); process.exit(0); }
+  if (options.version) { console.log(pkg.version || '1.0.2'); process.exit(0); }
 
   try {
     const { server, port: boundPort } = await startWithPortFallback(options);
