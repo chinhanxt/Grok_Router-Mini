@@ -181,6 +181,38 @@ grok-router-mini/
 
 ---
 
+## 🔒 Private Repository & NPM Distribution Security
+
+To protect your intellectual property when distributing `grok-router-mini` to clients:
+1. **GitHub Repository**: Keep your GitHub repository set to **Private**. NPM publishing works independently and never exposes your git history or source repository.
+2. **Obfuscated Build Bundle (`npm run build`)**:
+   - `npm run build` utilizes `esbuild` to compile, bundle, and minify the entire backend into `dist/server.js`.
+   - All comments, internal variable names, and code structures are mangled and stripped.
+3. **Strict Whitelist Publishing (`package.json: files` & `.npmignore`)**:
+   - The npm package strictly includes only: `bin/`, `dist/`, `public/`, `README.md`, `package.json`.
+   - Raw source code in `src/` and tests in `test/` are **never** published to NPM.
+   - Run `npm pack --dry-run` to preview the exact safe tarball contents.
+
+---
+
+## 🔔 Automatic Update Notifier
+
+When installed globally or launched via CLI, `grok-router-mini` automatically checks the NPM registry asynchronously in the background. If a newer release is published:
+- An elegant terminal banner notifies the user:
+  ```text
+  ╭─────────────────────────────────────────────────────────────╮
+  │                                                             │
+  │   🔔 ĐÃ CÓ PHIÊN BẢN MỚI: v1.0.0 → v1.1.0                   │
+  │   Chạy lệnh sau để cập nhật lên bản mới nhất:                │
+  │   npm install -g grok-router-mini                           │
+  │                                                             │
+  ╰─────────────────────────────────────────────────────────────╯
+  ```
+- Cached locally for 12 hours to prevent redundant network requests and ensure instantaneous startup.
+- Completely non-blocking and safe when offline.
+
+---
+
 ## 📄 License
 
 MIT

@@ -1,6 +1,26 @@
 #!/usr/bin/env node
 
-import { startServer } from '../src/server.js';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Fallback loader: use dist/ if built for production, otherwise src/
+const distServer = path.join(__dirname, '../dist/server.js');
+const serverPath = fs.existsSync(distServer) ? distServer : path.join(__dirname, '../src/server.js');
+const { startServer } = await import(serverPath);
+
+const distNotifier = path.join(__dirname, '../dist/utils/updateNotifier.js');
+const notifierPath = fs.existsSync(distNotifier) ? distNotifier : path.join(__dirname, '../src/utils/updateNotifier.js');
+const { checkUpdate, formatUpdateBanner } = await import(notifierPath);
+
+let pkg = { name: 'grok-router-mini', version: '1.0.0' };
+try {
+  const rawPkg = fs.readFileSync(path.join(__dirname, '../package.json'), 'utf8');
+  pkg = JSON.parse(rawPkg);
+} catch {}
 
 function parseArgs(args) {
   const options = {
@@ -68,7 +88,7 @@ function printBanner(port, host) {
 
   console.log(`
 ${cCyan}┌─────────────────────────────────────────────────────────────┐
-│  ${cBold}⚡ AI Router Mini v1.0.0 ⚡${cReset}${cCyan}                                 │
+│  ${cBold}⚡ AI Router Mini v${pkg.version || '1.0.0'} ⚡${cReset}${cCyan}                                 │
 │  ${cDim}Ultra-lightweight local AI gateway for Claude Code${cReset}${cCyan}           │
 └─────────────────────────────────────────────────────────────┘${cReset}
 
@@ -125,6 +145,20 @@ async function main() {
     const resolvedHost = addr?.address || options.host;
 
     printBanner(resolvedPort, resolvedHost);
+
+    // Check for updates in background (non-blocking)
+    checkUpdate({
+      packageName: pkg.name,
+      currentVersion: pkg.version
+    }).then(res => {
+      if (res && res.hasUpdate && res.latestVersion) {
+        console.log(formatUpdateBanner({
+          packageName: pkg.name,
+          currentVersion: pkg.version,
+          latestVersion: res.latestVersion
+        }));
+      }
+    }).catch(() => {});
 
     const cleanup = () => {
       console.log('\nGracefully shutting down AI Router Mini...');

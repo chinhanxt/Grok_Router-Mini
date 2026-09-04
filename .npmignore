@@ -1,0 +1,11 @@
+src/
+test/
+scripts/
+.github/
+.superpowers/
+docs/
+*.test.js
+.env*
+.DS_Store
+.git
+.gitignore

@@ -1,3 +1,7 @@
 node_modules/
+dist/
 *.log
 .DS_Store
+.grok-router/
+.env
+.env.*

@@ -6,13 +6,25 @@
   "bin": {
     "grok-router-mini": "./bin/cli.js"
   },
+  "files": [
+    "bin",
+    "dist",
+    "public",
+    "README.md",
+    "package.json"
+  ],
   "scripts": {
     "start": "node bin/cli.js",
+    "build": "node scripts/build.js",
+    "prepublishOnly": "npm run build && npm test",
     "test": "node --test test/*.test.js"
   },
   "dependencies": {
     "compression": "^1.8.1",
     "cors": "^2.8.5",
     "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
   }
 }
