@@ -29,7 +29,7 @@ export function createSetupRouter(config = {}) {
 
     const script = `#!/usr/bin/env bash
 # ==========================================================
-# Grok Router - 1-Click Auto Setup for Claude Code (macOS/Linux)
+# AI Router - 1-Click Auto Setup for Claude Code (macOS/Linux)
 # ==========================================================
 
 export ANTHROPIC_BASE_URL="${baseUrl}"
@@ -85,7 +85,7 @@ if [ -n "$RC_FILE" ]; then
   echo 'export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC="1"' >> "$RC_FILE"
 fi
 
-echo "🚀 Khởi động Claude Code qua Grok Router (${baseUrl})..."
+echo "🚀 Khởi động Claude Code qua AI Router (${baseUrl})..."
 if command -v claude >/dev/null 2>&1; then
   exec claude "$@"
 else
@@ -103,7 +103,7 @@ fi
     const baseUrl = getBaseUrl(req);
 
     const script = `# ==========================================================
-# Grok Router - 1-Click Auto Setup for Claude Code (PowerShell)
+# AI Router - 1-Click Auto Setup for Claude Code (PowerShell)
 # ==========================================================
 
 $baseUrl = "${baseUrl}"
@@ -144,7 +144,7 @@ $jsonConfig = @"
 Set-Content $settingsFile -Value $jsonConfig -Encoding UTF8
 
 Write-Host "✅ Đã lưu cấu hình vĩnh viễn vào User Environment Variables!" -ForegroundColor Green
-Write-Host "🚀 Đang mở Claude Code qua Grok Router ($baseUrl)..." -ForegroundColor Cyan
+Write-Host "🚀 Đang mở Claude Code qua AI Router ($baseUrl)..." -ForegroundColor Cyan
 
 if (Get-Command claude -ErrorAction SilentlyContinue) {
   claude $args
@@ -164,7 +164,7 @@ if (Get-Command claude -ErrorAction SilentlyContinue) {
 
     const script = `@echo off
 rem ==========================================================
-rem Grok Router - 1-Click Auto Setup for Claude Code (CMD)
+rem AI Router - 1-Click Auto Setup for Claude Code (CMD)
 rem ==========================================================
 
 set "BASE_URL=${baseUrl}"

@@ -3,88 +3,446 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Grok Router Mini — Local AI Gateway</title>
+  <title>AI Router Mini — Local Gateway</title>
   <style>
     :root {
-      --bg: #0b0f19;
-      --card-bg: #111827;
-      --card-border: #1f2937;
-      --text: #f3f4f6;
-      --text-muted: #9ca3af;
-      --primary: #6366f1;
-      --primary-hover: #4f46e5;
-      --primary-rgb: 99, 102, 241;
-      --success: #10b981;
-      --warning: #f59e0b;
-      --danger: #ef4444;
-      --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --primary: #1d4ed8;
+      --primary-hover: #1e40af;
+      --primary-foreground: #ffffff;
+      --background: #f8fafc;
+      --foreground: #020817;
+      --card: #ffffff;
+      --card-foreground: #020817;
+      --secondary: #f1f5f9;
+      --muted: #f1f5f9;
+      --muted-foreground: #64748b;
+      --accent: #e2e8f0;
+      --border: #e2e8f0;
+      --input: #e2e8f0;
+      --ring: #1d4ed8;
+      --sidebar: #f1f5f9;
+      --sidebar-foreground: #334155;
+      --sidebar-accent: #e2e8f0;
+      --destructive: #ef4444;
+      --destructive-foreground: #ffffff;
+      --success: #22c55e;
+      --warning: #eab308;
+      --brand: #004b93;
+      --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --radius-sm: 0.25rem;
+      --radius-md: 0.375rem;
+      --radius-lg: 0.5rem;
+      --radius-xl: 0.75rem;
+      --radius-2xl: 1rem;
+      --radius-full: 9999px;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      background-color: var(--bg);
-      color: var(--text);
+      background-color: var(--background);
+      color: var(--foreground);
       font-family: var(--font-sans);
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
       line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
     }
 
     .hidden { display: none !important; }
 
-    /* Auth View */
-    .auth-container {
-      min-height: 100vh;
+    /* Layout & AppShell */
+    .app-shell {
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+      background-color: var(--background);
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      min-width: 260px;
+      background-color: var(--sidebar);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.3s ease-in-out;
+      z-index: 20;
+    }
+
+    .sidebar-header {
+      height: 64px;
+      padding: 0 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+    }
+
+    .brand-logo-icon {
+      width: 32px;
+      height: 32px;
+      background: #1d4ed8;
+      border-radius: var(--radius-lg);
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 1.5rem;
+      color: #fff;
+      box-shadow: 0 2px 4px rgba(29, 78, 216, 0.2);
     }
 
-    .auth-card {
-      width: 100%;
-      max-width: 420px;
-      background-color: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 2.25rem 2rem;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    .brand-name {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--brand);
+      letter-spacing: -0.01em;
     }
 
-    .auth-header {
-      text-align: center;
-      margin-bottom: 2rem;
+    .sidebar-nav {
+      flex: 1;
+      padding: 1rem 0.75rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
     }
 
-    .logo-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.35rem 0.85rem;
-      background: rgba(var(--primary-rgb), 0.12);
-      border: 1px solid rgba(var(--primary-rgb), 0.25);
-      border-radius: 9999px;
-      color: #a5b4fc;
-      font-size: 0.82rem;
+    .nav-label {
+      font-size: 0.725rem;
       font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted-foreground);
+      padding: 0.75rem 0.75rem 0.25rem 0.75rem;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.65rem 0.85rem;
+      border-radius: var(--radius-lg);
+      font-size: 14.5px;
+      font-weight: 500;
+      color: var(--sidebar-foreground);
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      width: 100%;
+      text-align: left;
+      transition: background-color 0.15s, color 0.15s;
+    }
+
+    .nav-item:hover {
+      background-color: var(--sidebar-accent);
+      color: var(--foreground);
+    }
+
+    .nav-item.active {
+      background-color: rgba(29, 78, 216, 0.1);
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .nav-item svg {
+      flex-shrink: 0;
+      color: currentColor;
+    }
+
+    .sidebar-footer {
+      padding: 1rem;
+      border-top: 1px solid var(--border);
+      background: var(--sidebar);
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
       margin-bottom: 0.75rem;
     }
 
-    .auth-header h1 {
-      font-size: 1.5rem;
+    .avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: var(--radius-full);
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+      font-size: 13px;
       font-weight: 700;
-      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
     }
 
-    .auth-header p {
-      color: var(--text-muted);
+    .user-meta {
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .user-email-label {
+      font-size: 0.825rem;
+      font-weight: 600;
+      color: var(--foreground);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .user-role-text {
+      font-size: 0.725rem;
+      color: var(--muted-foreground);
+    }
+
+    /* Main Content Area */
+    .main-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background-color: var(--background);
+    }
+
+    .topbar {
+      height: 64px;
+      padding: 0 1.75rem;
+      border-bottom: 1px solid var(--border);
+      background-color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
       font-size: 0.875rem;
+    }
+
+    .breadcrumb-root { color: var(--muted-foreground); }
+    .breadcrumb-sep { color: var(--muted-foreground); }
+    .breadcrumb-current { font-weight: 600; color: var(--foreground); }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .main-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.75rem;
+    }
+
+    /* Tab Screens */
+    .tab-screen {
+      display: none;
+      animation: fadeIn 0.2s ease-in-out;
+    }
+
+    .tab-screen.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(3px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .page-header {
+      margin-bottom: 1.5rem;
+    }
+
+    .page-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--foreground);
+      letter-spacing: -0.02em;
+    }
+
+    .page-subtitle {
+      font-size: 0.875rem;
+      color: var(--muted-foreground);
       margin-top: 0.25rem;
     }
 
+    /* Cards */
+    .card {
+      background-color: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 1.5rem;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+      margin-bottom: 1.5rem;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+    }
+
+    .card-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--card-foreground);
+    }
+
+    .card-subtitle {
+      font-size: 0.85rem;
+      color: var(--muted-foreground);
+      margin-top: 0.2rem;
+    }
+
+    /* Status Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
+      background-color: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 1.25rem 1.5rem;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+    }
+
+    .stat-label {
+      font-size: 0.775rem;
+      font-weight: 500;
+      color: var(--muted-foreground);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--foreground);
+      margin-top: 0.35rem;
+    }
+
+    /* Status Badges */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      border-radius: var(--radius-full);
+      padding: 0.125rem 0.625rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      border: 1px solid transparent;
+    }
+
+    .badge-success {
+      background-color: #f0fdf4;
+      color: #15803d;
+      border-color: #bbf7d0;
+    }
+
+    .badge-warning {
+      background-color: #fefce8;
+      color: #a16207;
+      border-color: #fef08a;
+    }
+
+    .badge-danger {
+      background-color: #fef2f2;
+      color: #b91c1c;
+      border-color: #fecaca;
+    }
+
+    .badge-muted {
+      background-color: #f1f5f9;
+      color: #475569;
+      border-color: #cbd5e1;
+    }
+
+    .badge-admin {
+      background-color: rgba(29, 78, 216, 0.08);
+      color: #1d4ed8;
+      border-color: rgba(29, 78, 216, 0.2);
+    }
+
+    .badge-user {
+      background-color: #f1f5f9;
+      color: #334155;
+      border-color: #e2e8f0;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      border-radius: var(--radius-lg);
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s ease-in-out;
+      text-decoration: none;
+      font-family: inherit;
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+    }
+    .btn-primary:hover:not(:disabled) {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-outline {
+      border: 1px solid var(--border);
+      background-color: #ffffff;
+      color: var(--foreground);
+    }
+    .btn-outline:hover:not(:disabled) {
+      background-color: var(--accent);
+    }
+
+    .btn-destructive {
+      background-color: var(--destructive);
+      color: var(--destructive-foreground);
+    }
+    .btn-destructive:hover:not(:disabled) {
+      background-color: #dc2626;
+    }
+
+    .btn-sm {
+      padding: 0.375rem 0.75rem;
+      font-size: 0.8rem;
+    }
+
+    .btn-block {
+      width: 100%;
+    }
+
+    /* Inputs */
     .form-group {
       margin-bottom: 1.25rem;
     }
@@ -92,307 +450,111 @@
     label {
       display: block;
       font-size: 0.825rem;
-      font-weight: 500;
-      color: var(--text-muted);
+      font-weight: 600;
+      color: var(--foreground);
       margin-bottom: 0.375rem;
     }
 
     input, select, textarea {
       width: 100%;
-      background: #1f2937;
-      border: 1px solid #374151;
-      border-radius: 6px;
-      color: #fff;
-      padding: 0.65rem 0.85rem;
-      font-size: 0.9rem;
+      height: 40px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--input);
+      background-color: #ffffff;
+      padding: 0 0.75rem;
+      font-size: 0.875rem;
+      color: var(--foreground);
       font-family: inherit;
       outline: none;
-      transition: border-color 0.15s;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    textarea {
+      height: auto;
+      padding: 0.65rem 0.75rem;
+      min-height: 90px;
+      resize: vertical;
     }
 
     input:focus, select:focus, textarea:focus {
-      border-color: var(--primary);
+      border-color: var(--ring);
+      box-shadow: 0 0 0 2px rgba(29, 78, 216, 0.15);
     }
 
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+    /* OS Tabs */
+    .os-tabs-bar {
+      display: flex;
       gap: 0.5rem;
-      background-color: var(--primary);
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      padding: 0.65rem 1.25rem;
-      font-size: 0.9rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.15s ease-in-out;
-    }
-
-    .btn:hover {
-      background-color: var(--primary-hover);
-    }
-
-    .btn-block { width: 100%; }
-
-    .btn-secondary {
-      background-color: #374151;
-      color: #e5e7eb;
-    }
-    .btn-secondary:hover { background-color: #4b5563; }
-
-    .btn-danger {
-      background-color: rgba(239, 68, 68, 0.15);
-      border: 1px solid rgba(239, 68, 68, 0.35);
-      color: #fca5a5;
-    }
-    .btn-danger:hover {
-      background-color: rgba(239, 68, 68, 0.3);
-    }
-
-    .btn-sm {
-      padding: 0.35rem 0.65rem;
-      font-size: 0.8rem;
-    }
-
-    .alert {
-      padding: 0.75rem;
-      border-radius: 6px;
-      font-size: 0.85rem;
-      margin-bottom: 1.25rem;
-    }
-    .alert-danger {
-      background: rgba(239, 68, 68, 0.15);
-      border: 1px solid rgba(239, 68, 68, 0.3);
-      color: #fca5a5;
-    }
-
-    .auth-hint {
-      text-align: center;
-      margin-top: 1.5rem;
-      font-size: 0.775rem;
-      color: var(--text-muted);
-      background: rgba(255,255,255,0.03);
-      padding: 0.5rem;
-      border-radius: 6px;
-      border: 1px dashed #374151;
-    }
-
-    /* App Header */
-    header {
-      background: var(--card-bg);
-      border-bottom: 1px solid var(--card-border);
-      padding: 0.85rem 1.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 50;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .brand-title {
-      font-weight: 700;
-      font-size: 1.05rem;
-      letter-spacing: -0.01em;
-      color: #fff;
-    }
-
-    .dot-live {
-      width: 8px;
-      height: 8px;
-      background-color: var(--success);
-      border-radius: 50%;
-      box-shadow: 0 0 8px var(--success);
-    }
-
-    .user-nav {
-      display: flex;
-      align-items: center;
-      gap: 0.85rem;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      padding: 0.2rem 0.55rem;
-      border-radius: 9999px;
-      font-size: 0.725rem;
-      font-weight: 600;
-      text-transform: uppercase;
-    }
-    .badge-admin {
-      background: rgba(99, 102, 241, 0.2);
-      color: #a5b4fc;
-      border: 1px solid rgba(99, 102, 241, 0.4);
-    }
-    .badge-user {
-      background: rgba(16, 185, 129, 0.2);
-      color: #6ee7b7;
-      border: 1px solid rgba(16, 185, 129, 0.4);
-    }
-    .badge-active {
-      background: rgba(16, 185, 129, 0.15);
-      color: #34d399;
-      border: 1px solid rgba(16, 185, 129, 0.3);
-    }
-    .badge-cooling {
-      background: rgba(245, 158, 11, 0.15);
-      color: #fbbf24;
-      border: 1px solid rgba(245, 158, 11, 0.3);
-    }
-    .badge-disabled {
-      background: rgba(156, 163, 175, 0.15);
-      color: #9ca3af;
-      border: 1px solid rgba(156, 163, 175, 0.3);
-    }
-
-    /* Main Container */
-    main {
-      flex: 1;
-      max-width: 1200px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-
-    .card {
-      background-color: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 10px;
-      padding: 1.25rem 1.5rem;
-    }
-
-    .card-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
       padding-bottom: 0.75rem;
-      border-bottom: 1px solid #1f2937;
-    }
-
-    .card-title {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: #fff;
-    }
-
-    .card-subtitle {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      margin-top: 0.2rem;
-    }
-
-    /* Status Grid */
-    .status-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1rem;
-    }
-
-    .stat-card {
-      background: rgba(255,255,255,0.02);
-      border: 1px solid var(--card-border);
-      border-radius: 8px;
-      padding: 1rem 1.25rem;
-    }
-
-    .stat-label {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-
-    .stat-val {
-      font-size: 1.6rem;
-      font-weight: 700;
-      color: #fff;
-      margin-top: 0.25rem;
-    }
-
-    /* Setup Tabs */
-    .tabs-nav {
-      display: flex;
-      gap: 0.5rem;
       margin-bottom: 1rem;
-      border-bottom: 1px solid #1f2937;
-      padding-bottom: 0.5rem;
     }
 
-    .tab-btn {
+    .os-tab-btn {
+      padding: 0.45rem 0.85rem;
+      border-radius: var(--radius-md);
+      font-size: 0.825rem;
+      font-weight: 500;
+      color: var(--muted-foreground);
       background: transparent;
       border: none;
-      color: var(--text-muted);
-      padding: 0.5rem 0.9rem;
-      font-size: 0.875rem;
-      font-weight: 500;
-      border-radius: 6px;
       cursor: pointer;
       transition: all 0.15s;
     }
 
-    .tab-btn:hover {
-      color: #fff;
-      background: rgba(255,255,255,0.04);
+    .os-tab-btn:hover {
+      background-color: var(--accent);
+      color: var(--foreground);
     }
 
-    .tab-btn.active {
-      color: #fff;
-      background: var(--primary);
+    .os-tab-btn.active {
+      background-color: rgba(29, 78, 216, 0.1);
+      color: var(--primary);
+      font-weight: 600;
     }
 
-    .code-box-wrapper {
+    /* Code Box */
+    .code-box-container {
       position: relative;
-      background: #060911;
+      background-color: #0f172a;
+      border-radius: var(--radius-xl);
       border: 1px solid #1e293b;
-      border-radius: 8px;
-      padding: 1rem;
-      font-family: var(--font-mono);
-      font-size: 0.875rem;
-      color: #e2e8f0;
-      overflow-x: auto;
+      overflow: hidden;
       margin-top: 0.5rem;
     }
 
-    .copy-btn {
-      position: absolute;
-      top: 0.75rem;
-      right: 0.75rem;
-      background: #1e293b;
-      border: 1px solid #334155;
-      color: #cbd5e1;
+    .code-box-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #1e293b;
+      padding: 0.5rem 1rem;
       font-size: 0.75rem;
-      padding: 0.35rem 0.75rem;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: all 0.15s;
+      color: #94a3b8;
+      border-bottom: 1px solid #334155;
     }
 
-    .copy-btn:hover {
-      background: #334155;
-      color: #fff;
+    .code-box-content {
+      padding: 1.25rem 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: #38bdf8;
+      overflow-x: auto;
+      white-space: pre;
     }
 
-    .copy-btn.copied {
-      background: var(--success);
-      color: #fff;
-      border-color: var(--success);
+    .code-box-content code {
+      color: #e2e8f0;
+      word-break: break-all;
+      white-space: pre-wrap;
     }
 
-    /* Tables */
+    /* DataTable */
     .table-container {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      background-color: #ffffff;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
       overflow-x: auto;
     }
 
@@ -403,67 +565,100 @@
       font-size: 0.875rem;
     }
 
+    thead {
+      background-color: rgba(241, 245, 249, 0.6);
+      border-bottom: 1px solid var(--border);
+    }
+
     th {
       padding: 0.75rem 1rem;
-      background: #161f30;
-      color: var(--text-muted);
+      font-size: 0.775rem;
       font-weight: 600;
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      border-bottom: 1px solid var(--card-border);
+      color: var(--muted-foreground);
+      white-space: nowrap;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background-color 0.15s;
+    }
+
+    tbody tr:last-child {
+      border-bottom: none;
+    }
+
+    tbody tr:hover {
+      background-color: rgba(241, 245, 249, 0.5);
     }
 
     td {
       padding: 0.85rem 1rem;
-      border-bottom: 1px solid #1a2333;
-      color: #e5e7eb;
+      color: var(--foreground);
+      vertical-align: middle;
     }
 
-    tr:hover td {
-      background: rgba(255,255,255,0.015);
-    }
-
-    /* AI Test Box */
-    .test-result-box {
-      margin-top: 1rem;
-      background: #060911;
+    /* Logs Terminal */
+    .logs-terminal-view {
+      background-color: #0f172a;
       border: 1px solid #1e293b;
-      border-radius: 8px;
+      border-radius: var(--radius-xl);
       padding: 1rem;
       font-family: var(--font-mono);
-      font-size: 0.85rem;
-      white-space: pre-wrap;
-      max-height: 250px;
-      overflow-y: auto;
+      font-size: 0.8rem;
       color: #e2e8f0;
+      max-height: 480px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
     }
 
-    .test-result-box.loading { color: #94a3b8; }
-    .test-result-box.error { color: #fca5a5; border-color: rgba(239,68,68,0.4); }
-    .test-result-box.success { color: #6ee7b7; border-color: rgba(16,185,129,0.4); }
+    .log-entry {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.35rem 0.5rem;
+      border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .log-time { color: #64748b; font-size: 0.75rem; flex-shrink: 0; }
+    .log-method { font-weight: 700; color: #93c5fd; flex-shrink: 0; }
+    .log-path { color: #f1f5f9; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .log-status-200 { color: #4ade80; font-weight: 700; flex-shrink: 0; }
+    .log-status-429 { color: #fbbf24; font-weight: 700; flex-shrink: 0; }
+    .log-status-err { color: #f87171; font-weight: 700; flex-shrink: 0; }
+    .log-dur { color: #94a3b8; font-size: 0.75rem; flex-shrink: 0; }
 
     /* Modal */
-    .modal-overlay {
+    .modal-backdrop {
       position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.7);
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.4);
       backdrop-filter: blur(4px);
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 1.5rem;
-      z-index: 100;
+      z-index: 50;
+      padding: 1rem;
     }
 
-    .modal-content {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 10px;
+    .modal-panel {
       width: 100%;
-      max-width: 500px;
-      padding: 1.75rem;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+      max-width: 480px;
+      background-color: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 1.5rem;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      position: relative;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
     }
 
     .modal-footer {
@@ -473,50 +668,99 @@
       margin-top: 1.5rem;
     }
 
-    /* Live Logs */
-    .logs-terminal {
-      background: #060911;
-      border: 1px solid #1e293b;
-      border-radius: 8px;
-      padding: 0.75rem;
-      font-family: var(--font-mono);
+    /* Auth Screen */
+    .auth-viewport {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      background-color: var(--background);
+    }
+
+    .auth-box {
+      width: 100%;
+      max-width: 400px;
+      background-color: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 2.25rem 2rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    .auth-top {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .auth-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: var(--radius-full);
+      background-color: rgba(29, 78, 216, 0.08);
+      color: var(--primary);
       font-size: 0.8rem;
-      max-height: 280px;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+
+    .alert {
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-lg);
+      font-size: 0.85rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .alert-danger {
+      background-color: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #991b1b;
+    }
+
+    .alert-success {
+      background-color: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      color: #166534;
+    }
+
+    /* Playground Output */
+    .playground-result {
+      margin-top: 1rem;
+      padding: 1.25rem;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border);
+      background-color: var(--secondary);
+      font-size: 0.9rem;
+      color: var(--foreground);
+      white-space: pre-wrap;
+      max-height: 360px;
       overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 0.4rem;
+      line-height: 1.6;
     }
 
-    .log-row {
-      display: flex;
-      align-items: baseline;
-      gap: 0.75rem;
-      padding: 0.25rem 0.4rem;
-      border-radius: 4px;
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--success);
+      display: inline-block;
     }
-
-    .log-row:hover { background: #0e1424; }
-    .log-time { color: #64748b; font-size: 0.75rem; }
-    .log-method { font-weight: 700; color: #a5b4fc; }
-    .log-path { color: #e2e8f0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .log-status-200 { color: #34d399; font-weight: 700; }
-    .log-status-429 { color: #fbbf24; font-weight: 700; }
-    .log-status-err { color: #f87171; font-weight: 700; }
-    .log-duration { color: #94a3b8; font-size: 0.75rem; }
   </style>
 </head>
 <body>
 
-  <!-- Auth Screen -->
-  <div class="auth-container" id="authView">
-    <div class="auth-card">
-      <div class="auth-header">
-        <div class="logo-badge">
-          <span>⚡ Grok Router Mini</span>
+  <!-- AUTH VIEW -->
+  <div class="auth-viewport" id="authView">
+    <div class="auth-box">
+      <div class="auth-top">
+        <div class="auth-badge">
+          <span class="live-dot"></span>
+          <span>AI Router Mini</span>
         </div>
-        <h1>Đăng nhập Gateway</h1>
-        <p>Hệ thống điều phối Grok AI & 1-Chạm Claude Code</p>
+        <h1 style="font-size: 1.5rem; font-weight: 700; color: var(--foreground);">Đăng nhập Gateway</h1>
+        <p style="font-size: 0.875rem; color: var(--muted-foreground); margin-top: 0.25rem;">Hệ thống Gateway điều phối AI & 1-Chạm Claude Code</p>
       </div>
 
       <div id="loginAlert" class="alert alert-danger hidden"></div>
@@ -524,210 +768,421 @@
       <form id="loginForm" onsubmit="handleLogin(event)">
         <div class="form-group">
           <label for="loginEmail">Email / Tài khoản</label>
-          <input type="text" id="loginEmail" required placeholder="admin@local.com" autocomplete="username">
+          <input type="text" id="loginEmail" required placeholder="name@domain.com" autocomplete="username">
         </div>
         <div class="form-group">
           <label for="loginPassword">Mật khẩu</label>
           <input type="password" id="loginPassword" required placeholder="••••••••" autocomplete="current-password">
         </div>
-        <button type="submit" class="btn btn-block" id="loginBtn">Đăng nhập</button>
+        <button type="submit" class="btn btn-primary btn-block" id="loginBtn">Đăng nhập</button>
       </form>
-
-      <div class="auth-hint">
-        💡 Admin mặc định: <b>admin@local.com</b> / <b>admin123</b>
-      </div>
     </div>
   </div>
 
-  <!-- App Header -->
-  <header class="hidden" id="appHeader">
-    <div class="brand">
-      <span class="dot-live"></span>
-      <span class="brand-title">Grok Router Mini</span>
+  <!-- MAIN APP SHELL -->
+  <div class="app-shell hidden" id="appShell">
+    <!-- LEFT SIDEBAR -->
+    <aside class="sidebar">
+      <div>
+        <!-- Sidebar Header / Logo -->
+        <div class="sidebar-header">
+          <div class="brand-group">
+            <div class="brand-logo-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+              </svg>
+            </div>
+            <span class="brand-name">AI Router Mini</span>
+          </div>
+          <span class="status-badge badge-success" style="font-size:0.7rem;">
+            <span class="live-dot" style="margin-right:4px;"></span> Online
+          </span>
+        </div>
+
+        <!-- Sidebar Navigation Items (Tabs) -->
+        <nav class="sidebar-nav">
+          <div class="nav-label">Kết nối & Sử dụng</div>
+
+          <!-- Tab: Setup -->
+          <button class="nav-item active" id="nav-setup" onclick="switchTab('setup')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="4 17 10 11 4 5"></polyline>
+              <line x1="12" y1="19" x2="20" y2="19"></line>
+            </svg>
+            <span>Thiết lập kết nối</span>
+          </button>
+
+          <!-- Tab: Playground -->
+          <button class="nav-item" id="nav-playground" onclick="switchTab('playground')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+            <span>Thử nghiệm AI</span>
+          </button>
+
+          <!-- Admin Navigation Group (STRICTLY ADMIN ONLY) -->
+          <div id="adminNavGroup" class="hidden">
+            <div class="nav-label" style="margin-top: 0.5rem;">Quản trị hệ thống</div>
+
+            <!-- Tab: Accounts -->
+            <button class="nav-item" id="nav-accounts" onclick="switchTab('accounts')">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+              <span>Kho tài khoản AI</span>
+            </button>
+
+            <!-- Tab: Logs -->
+            <button class="nav-item" id="nav-logs" onclick="switchTab('logs')">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="20" x2="18" y2="10"></line>
+                <line x1="12" y1="20" x2="12" y2="4"></line>
+                <line x1="6" y1="20" x2="6" y2="14"></line>
+              </svg>
+              <span>Nhật ký lưu lượng</span>
+            </button>
+
+            <!-- Tab: Users -->
+            <button class="nav-item" id="nav-users" onclick="switchTab('users')">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <line x1="19" y1="8" x2="19" y2="14"></line>
+                <line x1="22" y1="11" x2="16" y2="11"></line>
+              </svg>
+              <span>Quản lý thành viên</span>
+            </button>
+          </div>
+        </nav>
+      </div>
+
+      <!-- Sidebar Footer / User Profile & Logout -->
+      <div class="sidebar-footer">
+        <div class="user-profile">
+          <div class="avatar" id="avatarInitial">U</div>
+          <div class="user-meta">
+            <div class="user-email-label" id="currentUserEmail">user@domain.com</div>
+            <div class="user-role-text">
+              <span id="currentUserRoleBadge" class="status-badge badge-user">User</span>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-outline btn-sm btn-block" onclick="handleLogout()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+          <span>Đăng xuất</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- RIGHT MAIN CONTENT WRAPPER -->
+    <div class="main-wrapper">
+      <!-- Topbar -->
+      <header class="topbar">
+        <div class="breadcrumb">
+          <span class="breadcrumb-root">AI Router</span>
+          <span class="breadcrumb-sep">›</span>
+          <span class="breadcrumb-current" id="sectionBreadcrumb">Thiết lập kết nối</span>
+        </div>
+        <div class="topbar-actions" id="adminTopStats">
+          <span class="status-badge badge-muted" id="statServerPill">Cổng 3005</span>
+          <span class="status-badge badge-admin" id="statAccountsPill">0 Tài khoản</span>
+        </div>
+      </header>
+
+      <!-- Scrollable Tab Content Container -->
+      <main class="main-content">
+
+        <!-- ========================================== -->
+        <!-- TAB SCREEN 1: SETUP / CONNECT             -->
+        <!-- ========================================== -->
+        <section class="tab-screen active" id="tab-setup">
+          <div class="page-header">
+            <h1 class="page-title">🚀 1-Chạm Thiết lập Claude Code</h1>
+            <p class="page-subtitle">Sao chép và chạy lệnh phù hợp với hệ điều hành để tự động cấu hình Claude Code kết nối với AI Gateway.</p>
+          </div>
+
+          <div class="card">
+            <div class="os-tabs-bar">
+              <button class="os-tab-btn active" id="osTab-bash" onclick="switchSetupOs('bash')">macOS / Linux (Bash)</button>
+              <button class="os-tab-btn" id="osTab-ps" onclick="switchSetupOs('ps')">Windows PowerShell</button>
+              <button class="os-tab-btn" id="osTab-cmd" onclick="switchSetupOs('cmd')">Windows CMD</button>
+            </div>
+
+            <div class="code-box-container">
+              <div class="code-box-header">
+                <span id="osCommandLabel">Bash / Zsh Command</span>
+                <button class="btn btn-outline btn-sm" id="copySetupBtn" onclick="copyCurrentSetupCmd()" style="height:28px; padding:0 10px; font-size:12px; background:#334155; color:#fff; border-color:#475569;">
+                  Sao chép lệnh
+                </button>
+              </div>
+              <div class="code-box-content">
+                <code id="setupCodeContent">curl -fsSL "http://localhost:3005/claude.sh" | bash</code>
+              </div>
+            </div>
+
+            <div style="margin-top: 1.25rem; font-size: 0.85rem; color: var(--muted-foreground); line-height: 1.6;">
+              💡 <b>Cơ chế hoạt động:</b> Lệnh trên sẽ tự động thiết lập biến môi trường <code>ANTHROPIC_BASE_URL</code>, lưu thông số models vào file <code>~/.claude/settings.json</code> và cấu hình shell profile mà không cần chỉnh sửa thủ công.
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">⚙️ Cấu hình Thủ công (Cursor / Windsurf / Claude CLI)</h2>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+              <div style="border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1rem; background: var(--secondary);">
+                <div style="font-weight: 600; font-size: 0.85rem; margin-bottom: 0.35rem;">Anthropic Base URL</div>
+                <code style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--primary);" id="manualBaseUrl">http://localhost:3005</code>
+              </div>
+              <div style="border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1rem; background: var(--secondary);">
+                <div style="font-weight: 600; font-size: 0.85rem; margin-bottom: 0.35rem;">Khuyên dùng mô hình</div>
+                <code style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--primary);">claude-sonnet-5 / claude-3-5-sonnet</code>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB SCREEN 2: PLAYGROUND                   -->
+        <!-- ========================================== -->
+        <section class="tab-screen" id="tab-playground">
+          <div class="page-header">
+            <h1 class="page-title">💬 Thử nghiệm kết nối AI</h1>
+            <p class="page-subtitle">Gửi prompt trực tiếp qua gateway để kiểm tra khả năng định tuyến và tốc độ phản hồi.</p>
+          </div>
+
+          <div class="card">
+            <div class="form-group">
+              <label for="aiTestPrompt">Prompt / Câu hỏi</label>
+              <textarea id="aiTestPrompt" rows="3" placeholder="Nhập câu hỏi thử nghiệm...">Xin chào! Bạn là mô hình trí tuệ nhân tạo nào?</textarea>
+            </div>
+
+            <div style="display: flex; gap: 0.75rem; align-items: flex-end; flex-wrap: wrap;">
+              <div style="flex: 1; min-width: 220px;">
+                <label for="aiTestModel">Mô hình AI</label>
+                <select id="aiTestModel">
+                  <option value="claude-3-5-sonnet" selected>claude-3-5-sonnet (Khuyên dùng)</option>
+                  <option value="claude-3-7-sonnet">claude-3-7-sonnet</option>
+                  <option value="claude-opus-5">claude-opus-5</option>
+                  <option value="claude-haiku-4-5">claude-haiku-4-5</option>
+                </select>
+              </div>
+              <button class="btn btn-primary" id="aiTestBtn" onclick="sendAITest()" style="height: 40px; min-width: 140px;">
+                Gửi thử nghiệm
+              </button>
+            </div>
+
+            <div class="playground-result" id="aiTestResult">Kết quả kiểm tra kết nối AI sẽ hiển thị ở đây...</div>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB SCREEN 3: ACCOUNTS POOL (ADMIN ONLY)   -->
+        <!-- ========================================== -->
+        <section class="tab-screen" id="tab-accounts">
+          <div class="page-header">
+            <h1 class="page-title">👥 Quản lý Kho tài khoản AI</h1>
+            <p class="page-subtitle">Hệ thống điều phối luân phiên thông minh AutoStrategy, tự cân bằng tải và đổi tài khoản tức thì khi gặp lỗi 429.</p>
+          </div>
+
+          <!-- Stats Overview -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-label">Tổng tài khoản</div>
+              <div class="stat-value" id="accTotalCount">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Đang hoạt động</div>
+              <div class="stat-value" style="color: var(--success);" id="accActiveCount">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Đang hạ nhiệt (429)</div>
+              <div class="stat-value" style="color: var(--warning);" id="accCoolingCount">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Thuật toán</div>
+              <div class="stat-value" style="font-size:1.15rem; color:var(--primary); margin-top:0.6rem;">AutoStrategy</div>
+            </div>
+          </div>
+
+          <!-- Accounts Table Card -->
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">Danh sách tài khoản trong kho</h2>
+              <div style="display: flex; gap: 0.5rem;">
+                <button class="btn btn-outline btn-sm" onclick="loadAccounts()">Làm mới</button>
+                <button class="btn btn-primary btn-sm" onclick="openAddAccountModal()">+ Thêm tài khoản</button>
+              </div>
+            </div>
+
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Tên định danh</th>
+                    <th>Trạng thái</th>
+                    <th>Lượt yêu cầu</th>
+                    <th>Tổng Token</th>
+                    <th>Thời gian hạ nhiệt</th>
+                    <th style="text-align: right;">Hành động</th>
+                  </tr>
+                </thead>
+                <tbody id="accountsTableBody">
+                  <tr>
+                    <td colspan="6" style="text-align: center; color: var(--muted-foreground); padding: 2rem;">
+                      Đang tải danh sách tài khoản...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB SCREEN 4: LOGS (ADMIN ONLY)            -->
+        <!-- ========================================== -->
+        <section class="tab-screen" id="tab-logs">
+          <div class="page-header">
+            <h1 class="page-title">📊 Nhật ký lưu lượng Thời gian thực</h1>
+            <p class="page-subtitle">Theo dõi các lượt gọi API, endpoint, mã trạng thái HTTP và thời gian phản hồi qua Router.</p>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">Live Traffic Logs</h2>
+              <div style="display: flex; gap: 0.5rem;">
+                <button class="btn btn-outline btn-sm" onclick="loadLogs()">Làm mới</button>
+                <button class="btn btn-destructive btn-sm" onclick="clearLogs()">Xóa nhật ký</button>
+              </div>
+            </div>
+
+            <div class="logs-terminal-view" id="logsTerminal">
+              <div style="color: var(--muted-foreground); text-align: center; padding: 2rem;">Chưa có dữ liệu nhật ký.</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB SCREEN 5: USERS (ADMIN ONLY)           -->
+        <!-- ========================================== -->
+        <section class="tab-screen" id="tab-users">
+          <div class="page-header">
+            <h1 class="page-title">🔑 Cấp quyền Người dùng Mới</h1>
+            <p class="page-subtitle">Tạo tài khoản thành viên để sử dụng Claude Code với quyền hạn phân tầng an toàn.</p>
+          </div>
+
+          <div class="card" style="max-width: 640px;">
+            <div class="card-header">
+              <h2 class="card-title">Thêm người dùng mới</h2>
+            </div>
+
+            <div id="createUserAlert" class="alert hidden"></div>
+
+            <form id="createUserForm" onsubmit="handleCreateUser(event)">
+              <div class="form-group">
+                <label for="newUserEmail">Email người dùng</label>
+                <input type="email" id="newUserEmail" required placeholder="user@domain.com">
+              </div>
+              <div class="form-group">
+                <label for="newUserPassword">Mật khẩu</label>
+                <input type="password" id="newUserPassword" required placeholder="••••••••">
+              </div>
+              <div class="form-group">
+                <label for="newUserRole">Phân quyền</label>
+                <select id="newUserRole">
+                  <option value="user" selected>User (Chỉ kết nối & thử nghiệm)</option>
+                  <option value="admin">Admin (Toàn quyền quản trị)</option>
+                </select>
+              </div>
+              <button type="submit" class="btn btn-primary" id="createUserBtn">Tạo người dùng</button>
+            </form>
+
+            <div style="margin-top: 1.25rem; font-size: 0.825rem; color: var(--muted-foreground); line-height: 1.6; border-top: 1px solid var(--border); padding-top: 1rem;">
+              🔒 <b>Bảo vệ an toàn thông tin:</b> Người dùng quyền <code>User</code> chỉ có thể lấy lệnh kết nối Claude Code và thử nghiệm prompt. Danh sách kho tài khoản AI và nhật ký hệ thống bị ẩn hoàn toàn và chặn truy cập ở cả giao diện lẫn API backend.
+            </div>
+          </div>
+        </section>
+
+      </main>
     </div>
-    <div class="user-nav">
-      <span id="currentUserEmail" style="font-size:0.875rem; color:var(--text-muted)"></span>
-      <span id="currentUserRoleBadge" class="badge"></span>
-      <button class="btn btn-secondary btn-sm" onclick="handleLogout()">Đăng xuất</button>
-    </div>
-  </header>
+  </div>
 
-  <!-- App Content -->
-  <main class="hidden" id="appView">
-
-    <!-- Admin Status Bar -->
-    <div class="status-grid hidden" id="adminStatusBar">
-      <div class="stat-card">
-        <div class="stat-label">Cổng & Trạng thái</div>
-        <div class="stat-val" id="statServer">Online</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Tài khoản Grok sẵn sàng</div>
-        <div class="stat-val" id="statAccounts">0</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Thời gian hoạt động</div>
-        <div class="stat-val" id="statUptime">0s</div>
-      </div>
-    </div>
-
-    <!-- Section: 1-Click OS Setup Commands (BOTH Admin and User) -->
-    <section class="card" id="setupSection">
-      <div class="card-header">
-        <div>
-          <h2 class="card-title">🚀 1-Chạm Thiết lập Claude Code</h2>
-          <p class="card-subtitle">Sao chép và chạy lệnh tương ứng với hệ điều hành của bạn để kết nối Claude Code CLI với Router.</p>
-        </div>
+  <!-- ADD ACCOUNT MODAL (ADMIN ONLY) -->
+  <div class="modal-backdrop hidden" id="addAccountModal">
+    <div class="modal-panel">
+      <div class="modal-header">
+        <h2 style="font-size: 1.125rem; font-weight: 700; color: var(--foreground);">Thêm tài khoản AI mới</h2>
+        <button type="button" class="btn btn-outline btn-sm" onclick="closeAddAccountModal()" style="border:none; padding:4px 8px;">✕</button>
       </div>
 
-      <div class="tabs-nav">
-        <button class="tab-btn active" onclick="switchSetupTab('bash', this)">macOS / Linux (Bash)</button>
-        <button class="tab-btn" onclick="switchSetupTab('ps', this)">Windows PowerShell</button>
-        <button class="tab-btn" onclick="switchSetupTab('cmd', this)">Windows CMD</button>
-      </div>
-
-      <div class="code-box-wrapper">
-        <pre><code id="setupCodeContent">curl -fsSL http://localhost:3005/claude.sh | bash</code></pre>
-        <button class="copy-btn" id="copySetupBtn" onclick="copyCurrentSetupCmd()">Sao chép lệnh</button>
-      </div>
-    </section>
-
-    <!-- Section: AI Connection Test Box (BOTH Admin and User) -->
-    <section class="card" id="testAiSection">
-      <div class="card-header">
-        <div>
-          <h2 class="card-title">🧪 Thử nghiệm kết nối AI</h2>
-          <p class="card-subtitle">Gửi truy vấn nhanh qua router để kiểm tra khả năng phản hồi và độ trễ.</p>
-        </div>
-      </div>
-
-      <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 0.75rem;">
-        <input type="text" id="aiTestPrompt" placeholder="Nhập câu hỏi thử nghiệm..." value="Xin chào! Bạn là mô hình AI nào?" style="flex: 1; min-width: 240px;">
-        <select id="aiTestModel" style="width: auto; min-width: 180px;">
-          <option value="claude-3-5-sonnet" selected>claude-3-5-sonnet</option>
-          <option value="claude-3-7-sonnet-20250219">claude-3-7-sonnet</option>
-          <option value="grok-4.6">grok-4.6</option>
-        </select>
-        <button class="btn" id="aiTestBtn" onclick="sendAITest()">Gửi thử nghiệm</button>
-      </div>
-
-      <div class="test-result-box" id="aiTestResult">Kết quả kiểm tra kết nối sẽ xuất hiện tại đây...</div>
-    </section>
-
-    <!-- Section: Grok Accounts Pool (STRICTLY ADMIN ONLY) -->
-    <section class="card hidden" id="adminAccountsSection">
-      <div class="card-header">
-        <div>
-          <h2 class="card-title">👥 Quản lý Kho tài khoản Grok</h2>
-          <p class="card-subtitle">Hệ thống luân phiên thông minh với thuật toán AutoStrategy và tự động hạ nhiệt khi gặp 429.</p>
-        </div>
-        <div style="display: flex; gap: 0.5rem;">
-          <button class="btn btn-secondary btn-sm" onclick="loadAccounts()">Làm mới</button>
-          <button class="btn btn-sm" onclick="openAddAccountModal()">+ Thêm tài khoản</button>
-        </div>
-      </div>
-
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>Tên / Email</th>
-              <th>Trạng thái</th>
-              <th>Lượt gọi</th>
-              <th>Tổng Token</th>
-              <th>Hạ nhiệt</th>
-              <th style="text-align: right;">Thao tác</th>
-            </tr>
-          </thead>
-          <tbody id="accountsTableBody">
-            <tr><td colspan="6" style="text-align: center; color: var(--text-muted);">Đang tải danh sách tài khoản...</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- Section: Live Activity Logs (STRICTLY ADMIN ONLY) -->
-    <section class="card hidden" id="adminLogsSection">
-      <div class="card-header">
-        <div>
-          <h2 class="card-title">📡 Nhật ký Lưu lượng Thời gian thực</h2>
-          <p class="card-subtitle">Theo dõi các lượt gọi API và chuyển tiếp qua Grok Router.</p>
-        </div>
-        <div style="display: flex; gap: 0.5rem;">
-          <button class="btn btn-secondary btn-sm" onclick="loadLogs()">Làm mới</button>
-          <button class="btn btn-danger btn-sm" onclick="clearLogs()">Xóa logs</button>
-        </div>
-      </div>
-
-      <div class="logs-terminal" id="logsTerminal">
-        <div style="color: var(--text-muted); text-align: center; padding: 1rem;">Chưa có dữ liệu nhật ký.</div>
-      </div>
-    </section>
-
-    <!-- Section: Create User Form (STRICTLY ADMIN ONLY) -->
-    <section class="card hidden" id="adminUsersSection">
-      <div class="card-header">
-        <div>
-          <h2 class="card-title">🔑 Cấp quyền Người dùng Mới</h2>
-          <p class="card-subtitle">Tạo tài khoản thành viên để sử dụng Claude Code mà không lộ cấu hình Grok.</p>
-        </div>
-      </div>
-      <form id="createUserForm" onsubmit="handleCreateUser(event)" style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-        <input type="email" id="newUserEmail" required placeholder="user@domain.com" style="flex: 2; min-width: 200px;">
-        <input type="password" id="newUserPassword" required placeholder="Mật khẩu" style="flex: 1.5; min-width: 150px;">
-        <select id="newUserRole" style="flex: 1; min-width: 120px;">
-          <option value="user" selected>User</option>
-          <option value="admin">Admin</option>
-        </select>
-        <button type="submit" class="btn" id="createUserBtn">Tạo User</button>
-      </form>
-      <div id="createUserAlert" class="alert hidden" style="margin-top: 0.75rem;"></div>
-    </section>
-
-  </main>
-
-  <!-- Add Account Modal (ADMIN ONLY) -->
-  <div class="modal-overlay hidden" id="addAccountModal">
-    <div class="modal-content">
-      <h2 style="font-size:1.25rem; font-weight:700; margin-bottom:1rem; color:#fff;">Thêm tài khoản Grok</h2>
       <form id="addAccountForm" onsubmit="handleAddAccount(event)">
         <div class="form-group">
           <label for="accName">Tên nhận diện</label>
-          <input type="text" id="accName" required placeholder="Grok Account #1">
+          <input type="text" id="accName" required placeholder="Tài khoản #1">
         </div>
         <div class="form-group">
           <label for="accEmail">Email tài khoản</label>
-          <input type="email" id="accEmail" required placeholder="name@x.ai">
+          <input type="email" id="accEmail" required placeholder="name@domain.com">
         </div>
         <div class="form-group">
-          <label for="accSso">SSO Token / Cookie (sso=...)</label>
-          <input type="text" id="accSso" required placeholder="sso token hoặc cookie xAI">
+          <label for="accSso">Token / Cookie phiên làm việc</label>
+          <input type="password" id="accSso" required placeholder="Nhập sso token hoặc cookie session">
         </div>
         <div class="form-group">
-          <label for="accRefresh">Refresh Token / Cookie (sso-rw=...)</label>
-          <input type="text" id="accRefresh" placeholder="Tuỳ chọn refresh token">
+          <label for="accRefresh">Refresh Token (Tùy chọn)</label>
+          <input type="password" id="accRefresh" placeholder="Tuỳ chọn refresh token">
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" onclick="closeAddAccountModal()">Hủy</button>
-          <button type="submit" class="btn">Lưu tài khoản</button>
+          <button type="button" class="btn btn-outline" onclick="closeAddAccountModal()">Hủy</button>
+          <button type="submit" class="btn btn-primary">Lưu tài khoản</button>
         </div>
       </form>
     </div>
   </div>
 
   <script>
-    let currentToken = localStorage.getItem('grok_router_token') || '';
+    let currentToken = localStorage.getItem('ai_router_token') || '';
     let currentUser = null;
-    let currentSetupTab = 'bash';
+    let currentTab = 'setup';
+    let currentSetupOs = 'bash';
     let accounts = [];
 
+    const TAB_TITLES = {
+      setup: 'Thiết lập kết nối',
+      playground: 'Thử nghiệm AI',
+      accounts: 'Kho tài khoản AI',
+      logs: 'Nhật ký lưu lượng',
+      users: 'Quản lý thành viên'
+    };
+
     window.addEventListener('DOMContentLoaded', () => {
+      // Listen to URL hash changes for deep linking
+      window.addEventListener('hashchange', handleHashRouting);
+
       if (currentToken) {
         verifySession();
       } else {
         showAuthView();
       }
     });
+
+    function handleHashRouting() {
+      const hash = window.location.hash || '';
+      // Support patterns like #/tab/setup, #tab/setup, /tab/setup
+      const match = hash.match(/(?:#|/)?(?:tab/)?([a-z0-9_-]+)/i);
+      const tabName = match ? match[1].toLowerCase() : '';
+      if (tabName && TAB_TITLES[tabName]) {
+        switchTab(tabName, false);
+      }
+    }
 
     async function verifySession() {
       try {
@@ -737,7 +1192,7 @@
         if (res.ok) {
           const data = await res.json();
           currentUser = data.user;
-          showAppView();
+          showAppShell();
         } else {
           handleLogout();
         }
@@ -748,37 +1203,85 @@
 
     function showAuthView() {
       document.getElementById('authView').classList.remove('hidden');
-      document.getElementById('appHeader').classList.add('hidden');
-      document.getElementById('appView').classList.add('hidden');
+      document.getElementById('appShell').classList.add('hidden');
     }
 
-    function showAppView() {
+    function showAppShell() {
       document.getElementById('authView').classList.add('hidden');
-      document.getElementById('appHeader').classList.remove('hidden');
-      document.getElementById('appView').classList.remove('hidden');
+      document.getElementById('appShell').classList.remove('hidden');
 
-      document.getElementById('currentUserEmail').textContent = currentUser.email;
+      // User Profile Info in Sidebar
+      const email = currentUser.email || 'user';
+      document.getElementById('currentUserEmail').textContent = email;
+      document.getElementById('avatarInitial').textContent = email.charAt(0).toUpperCase();
+
       const roleBadge = document.getElementById('currentUserRoleBadge');
-      roleBadge.textContent = currentUser.role;
-      roleBadge.className = `badge ${currentUser.role === 'admin' ? 'badge-admin' : 'badge-user'}`;
+      roleBadge.textContent = currentUser.role === 'admin' ? 'Admin' : 'User';
+      roleBadge.className = `status-badge ${currentUser.role === 'admin' ? 'badge-admin' : 'badge-user'}`;
 
-      updateSetupCommands();
-
-      // ROLE ISOLATION:
+      // RBAC Controls:
       if (currentUser.role === 'admin') {
-        document.getElementById('adminStatusBar').classList.remove('hidden');
-        document.getElementById('adminAccountsSection').classList.remove('hidden');
-        document.getElementById('adminLogsSection').classList.remove('hidden');
-        document.getElementById('adminUsersSection').classList.remove('hidden');
+        document.getElementById('adminNavGroup').classList.remove('hidden');
+        document.getElementById('adminTopStats').classList.remove('hidden');
         loadStatus();
         loadAccounts();
         loadLogs();
       } else {
-        // STRICTLY HIDE accounts, logs, user management from non-admin
-        document.getElementById('adminStatusBar').classList.add('hidden');
-        document.getElementById('adminAccountsSection').classList.add('hidden');
-        document.getElementById('adminLogsSection').classList.add('hidden');
-        document.getElementById('adminUsersSection').classList.add('hidden');
+        document.getElementById('adminNavGroup').classList.add('hidden');
+        document.getElementById('adminTopStats').classList.add('hidden');
+      }
+
+      // Initial tab routing based on hash or default to setup
+      const hash = window.location.hash || '';
+      const match = hash.match(/(?:#|/)?(?:tab/)?([a-z0-9_-]+)/i);
+      const targetTab = match ? match[1].toLowerCase() : 'setup';
+
+      if (currentUser.role !== 'admin' && (targetTab === 'accounts' || targetTab === 'logs' || targetTab === 'users')) {
+        switchTab('setup', true);
+      } else if (TAB_TITLES[targetTab]) {
+        switchTab(targetTab, true);
+      } else {
+        switchTab('setup', true);
+      }
+
+      updateSetupCommands();
+    }
+
+    function switchTab(tabId, updateHash = true) {
+      // Guard: Non-admin users cannot access admin tabs
+      if (currentUser && currentUser.role !== 'admin' && (tabId === 'accounts' || tabId === 'logs' || tabId === 'users')) {
+        tabId = 'setup';
+      }
+
+      currentTab = tabId;
+
+      // Update sidebar active buttons
+      document.querySelectorAll('.sidebar-nav .nav-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      const activeNavBtn = document.getElementById(`nav-${tabId}`);
+      if (activeNavBtn) activeNavBtn.classList.add('active');
+
+      // Update visible tab screens
+      document.querySelectorAll('.tab-screen').forEach(screen => {
+        screen.classList.remove('active');
+      });
+      const targetScreen = document.getElementById(`tab-${tabId}`);
+      if (targetScreen) targetScreen.classList.add('active');
+
+      // Update breadcrumbs
+      const title = TAB_TITLES[tabId] || 'Thiết lập kết nối';
+      document.getElementById('sectionBreadcrumb').textContent = title;
+
+      if (updateHash) {
+        window.location.hash = `/tab/${tabId}`;
+      }
+
+      // Tab specific refresh
+      if (tabId === 'accounts' && currentUser?.role === 'admin') {
+        loadAccounts();
+      } else if (tabId === 'logs' && currentUser?.role === 'admin') {
+        loadLogs();
       }
     }
 
@@ -805,8 +1308,8 @@
         }
         currentToken = data.token;
         currentUser = data.user;
-        localStorage.setItem('grok_router_token', currentToken);
-        showAppView();
+        localStorage.setItem('ai_router_token', currentToken);
+        showAppShell();
       } catch (err) {
         alertBox.textContent = err.message;
         alertBox.classList.remove('hidden');
@@ -819,15 +1322,22 @@
     function handleLogout() {
       currentToken = '';
       currentUser = null;
-      localStorage.removeItem('grok_router_token');
+      localStorage.removeItem('ai_router_token');
       showAuthView();
     }
 
-    // 1-Click Setup Commands
-    function switchSetupTab(tab, btn) {
-      currentSetupTab = tab;
-      document.querySelectorAll('.tabs-nav .tab-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+    // 1-Click Setup
+    function switchSetupOs(os) {
+      currentSetupOs = os;
+      document.querySelectorAll('.os-tab-btn').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.getElementById(`osTab-${os}`);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      const label = document.getElementById('osCommandLabel');
+      if (os === 'bash') label.textContent = 'macOS / Linux (Bash)';
+      else if (os === 'ps') label.textContent = 'Windows PowerShell';
+      else if (os === 'cmd') label.textContent = 'Windows CMD';
+
       updateSetupCommands();
     }
 
@@ -835,12 +1345,14 @@
       const origin = window.location.origin;
       const keyParam = currentToken ? `?key=${encodeURIComponent(currentToken)}` : '';
       const codeElem = document.getElementById('setupCodeContent');
+      const manualUrl = document.getElementById('manualBaseUrl');
+      if (manualUrl) manualUrl.textContent = origin;
 
-      if (currentSetupTab === 'bash') {
+      if (currentSetupOs === 'bash') {
         codeElem.textContent = `curl -fsSL "${origin}/claude.sh${keyParam}" | bash`;
-      } else if (currentSetupTab === 'ps') {
+      } else if (currentSetupOs === 'ps') {
         codeElem.textContent = `irm "${origin}/claude.ps1${keyParam}" | iex`;
-      } else if (currentSetupTab === 'cmd') {
+      } else if (currentSetupOs === 'cmd') {
         codeElem.textContent = `curl -fsSL "${origin}/claude.cmd${keyParam}" -o setup.cmd && setup.cmd`;
       }
     }
@@ -851,10 +1363,8 @@
       navigator.clipboard.writeText(code).then(() => {
         const oldText = btn.textContent;
         btn.textContent = '✓ Đã sao chép!';
-        btn.classList.add('copied');
         setTimeout(() => {
           btn.textContent = oldText;
-          btn.classList.remove('copied');
         }, 2000);
       });
     }
@@ -869,8 +1379,7 @@
 
       sendBtn.disabled = true;
       sendBtn.textContent = 'Đang gửi...';
-      resultBox.textContent = 'Đang kết nối tới mô hình AI qua Grok Router...';
-      resultBox.className = 'test-result-box loading';
+      resultBox.textContent = 'Đang kết nối tới gateway...';
 
       const startTime = Date.now();
       try {
@@ -891,16 +1400,16 @@
         if (!res.ok) {
           const err = await res.json().catch(() => ({ error: res.statusText }));
           resultBox.textContent = `[HTTP ${res.status}] ${err.error?.message || err.error || JSON.stringify(err)}`;
-          resultBox.className = 'test-result-box error';
+          resultBox.style.color = 'var(--destructive)';
         } else {
           const data = await res.json();
           const content = data.choices?.[0]?.message?.content || JSON.stringify(data);
-          resultBox.textContent = `[Mô hình: ${data.model || model} | Độ trễ: ${elapsed}ms]\n\n${content}`;
-          resultBox.className = 'test-result-box success';
+          resultBox.textContent = `[Phản hồi từ ${data.model || model} | Thời gian: ${elapsed}ms]\n\n${content}`;
+          resultBox.style.color = 'var(--foreground)';
         }
       } catch (err) {
         resultBox.textContent = `Lỗi mạng: ${err.message}`;
-        resultBox.className = 'test-result-box error';
+        resultBox.style.color = 'var(--destructive)';
       } finally {
         sendBtn.disabled = false;
         sendBtn.textContent = 'Gửi thử nghiệm';
@@ -919,43 +1428,57 @@
         const tbody = document.getElementById('accountsTableBody');
         tbody.innerHTML = '';
 
+        const now = Date.now();
+        let activeCount = 0;
+        let coolingCount = 0;
+
         if (accounts.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">Chưa có tài khoản Grok nào trong kho. Hãy thêm tài khoản để bắt đầu!</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--muted-foreground); padding: 2rem;">Chưa có tài khoản nào trong kho. Nhấn "+ Thêm tài khoản" để bắt đầu!</td></tr>';
+          document.getElementById('accTotalCount').textContent = '0';
+          document.getElementById('accActiveCount').textContent = '0';
+          document.getElementById('accCoolingCount').textContent = '0';
           return;
         }
 
-        const now = Date.now();
         accounts.forEach(acc => {
-          const tr = document.createElement('tr');
-          let statusBadge = `<span class="badge badge-active">Hoạt động</span>`;
+          let statusBadge = `<span class="status-badge badge-success">Hoạt động</span>`;
           let cooldownInfo = '-';
 
           if (acc.status === 'disabled') {
-            statusBadge = `<span class="badge badge-disabled">Tạm dừng</span>`;
+            statusBadge = `<span class="status-badge badge-muted">Tạm dừng</span>`;
           } else if (acc.status === 'cooling' && acc.cooldownUntil > now) {
+            coolingCount++;
             const leftSec = Math.ceil((acc.cooldownUntil - now) / 1000);
-            statusBadge = `<span class="badge badge-cooling">Hạ nhiệt</span>`;
+            statusBadge = `<span class="status-badge badge-warning">Hạ nhiệt</span>`;
             cooldownInfo = `${leftSec}s còn lại`;
+          } else {
+            activeCount++;
           }
 
           const toggleLabel = acc.status === 'disabled' ? 'Kích hoạt' : 'Tạm dừng';
 
+          const tr = document.createElement('tr');
           tr.innerHTML = `
             <td>
-              <div style="font-weight:600;">${escapeHtml(acc.name || 'Grok')}</div>
-              <div style="font-size:0.75rem; color:var(--text-muted);">${escapeHtml(acc.email || '-')}</div>
+              <div style="font-weight:600; color:var(--foreground);">${escapeHtml(acc.name || 'Tài khoản')}</div>
+              <div style="font-size:0.75rem; color:var(--muted-foreground);">${escapeHtml(acc.email || '-')}</div>
             </td>
             <td>${statusBadge}</td>
-            <td>${acc.requestCount || 0}</td>
+            <td><b>${acc.requestCount || 0}</b></td>
             <td>${acc.totalTokens || 0}</td>
-            <td>${cooldownInfo}</td>
-            <td style="text-align: right;">
-              <button class="btn btn-secondary btn-sm" onclick="toggleAccountStatus('${acc.id}', '${acc.status}')">${toggleLabel}</button>
-              <button class="btn btn-danger btn-sm" onclick="deleteAccount('${acc.id}')">Xóa</button>
+            <td style="color: ${cooldownInfo !== '-' ? 'var(--warning)' : 'inherit'};">${cooldownInfo}</td>
+            <td style="text-align: right; white-space: nowrap;">
+              <button class="btn btn-outline btn-sm" onclick="toggleAccountStatus('${acc.id}', '${acc.status}')">${toggleLabel}</button>
+              <button class="btn btn-destructive btn-sm" onclick="deleteAccount('${acc.id}')" style="margin-left: 4px;">Xóa</button>
             </td>
           `;
           tbody.appendChild(tr);
         });
+
+        document.getElementById('accTotalCount').textContent = accounts.length;
+        document.getElementById('accActiveCount').textContent = activeCount;
+        document.getElementById('accCoolingCount').textContent = coolingCount;
+        document.getElementById('statAccountsPill').textContent = `${activeCount} / ${accounts.length} Tài khoản`;
       } catch (err) {
         console.error('Error loading accounts:', err);
       }
@@ -1042,13 +1565,13 @@
         term.innerHTML = '';
 
         if (!logs || logs.length === 0) {
-          term.innerHTML = '<div style="color:var(--text-muted); text-align:center; padding:1rem;">Chưa có dữ liệu nhật ký.</div>';
+          term.innerHTML = '<div style="color:var(--muted-foreground); text-align:center; padding:2rem;">Chưa có dữ liệu nhật ký.</div>';
           return;
         }
 
         logs.forEach(l => {
           const row = document.createElement('div');
-          row.className = 'log-row';
+          row.className = 'log-entry';
           let statusClass = 'log-status-200';
           if (l.status === 429) statusClass = 'log-status-429';
           else if (l.status >= 400) statusClass = 'log-status-err';
@@ -1058,7 +1581,7 @@
             <span class="log-method">${l.method}</span>
             <span class="log-path">${escapeHtml(l.path)}</span>
             <span class="${statusClass}">${l.status}</span>
-            <span class="log-duration">${l.duration}ms</span>
+            <span class="log-dur">${l.duration}ms</span>
           `;
           term.appendChild(row);
         });
@@ -1079,18 +1602,16 @@
       }
     }
 
-    // Admin: Status
+    // Admin: Server Status
     async function loadStatus() {
       try {
         const res = await fetch('/api/status');
         if (!res.ok) return;
         const data = await res.json();
-        document.getElementById('statAccounts').textContent = `${data.accountsActive} / ${data.accountsTotal}`;
-        const sec = data.uptime || 0;
-        const h = Math.floor(sec / 3600);
-        const m = Math.floor((sec % 3600) / 60);
-        const s = sec % 60;
-        document.getElementById('statUptime').textContent = h > 0 ? `${h}h ${m}m` : (m > 0 ? `${m}m ${s}s` : `${s}s`);
+        const portPill = document.getElementById('statServerPill');
+        if (portPill && window.location.port) {
+          portPill.textContent = `Cổng ${window.location.port}`;
+        }
       } catch {}
     }
 
@@ -1114,11 +1635,8 @@
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Lỗi tạo người dùng.');
-        alertBox.textContent = `✓ Đã tạo thành công người dùng: ${data.email} (${data.role})`;
-        alertBox.className = 'alert alert-active';
-        alertBox.style.background = 'rgba(16,185,129,0.15)';
-        alertBox.style.color = '#6ee7b7';
-        alertBox.style.border = '1px solid rgba(16,185,129,0.3)';
+        alertBox.textContent = `✓ Đã tạo thành công tài khoản: ${data.email} (${data.role})`;
+        alertBox.className = 'alert alert-success';
         alertBox.classList.remove('hidden');
         document.getElementById('createUserForm').reset();
       } catch (err) {

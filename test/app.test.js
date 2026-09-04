@@ -36,7 +36,7 @@ test('createApp serves public/index.html at GET / and static assets', async () =
     const res = await fetch(`${baseUrl}/`);
     assert.equal(res.status, 200);
     const html = await res.text();
-    assert.ok(html.includes('Grok Router') || html.includes('<!DOCTYPE html>'));
+    assert.ok(html.includes('AI Router') || html.includes('<!DOCTYPE html>'));
   } finally {
     server.close();
     fs.rmSync(tmpDir, { recursive: true, force: true });

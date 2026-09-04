@@ -96,7 +96,7 @@ export class ProxyService {
       if (!account) {
         return clientRes.status(429).json({
           error: {
-            message: 'Tất cả tài khoản Grok đang trong thời gian hạ nhiệt do giới hạn tần suất (429). Vui lòng thử lại sau vài phút.',
+            message: 'Tất cả tài khoản đang trong thời gian hạ nhiệt do giới hạn tần suất (429). Vui lòng thử lại sau vài phút.',
             type: 'rate_limit_error',
             code: 'all_accounts_rate_limited'
           }

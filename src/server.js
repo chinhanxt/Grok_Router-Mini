@@ -60,7 +60,7 @@ if (process.argv[1] && import.meta.url.endsWith(path.basename(process.argv[1])))
   startServer().then(server => {
     const addr = server.address();
     const port = addr?.port || '3005';
-    console.log(`\n🚀 Grok Router Mini running at http://127.0.0.1:${port}`);
+    console.log(`\n🚀 AI Router Mini running at http://127.0.0.1:${port}`);
   }).catch(err => {
     console.error('Failed to start server:', err);
     process.exit(1);

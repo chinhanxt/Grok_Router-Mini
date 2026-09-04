@@ -3,7 +3,7 @@ import crypto from 'node:crypto';
 export class Account {
   constructor(data = {}) {
     this.id = data.id || crypto.randomUUID();
-    this.name = data.name || data.email || 'Grok Account';
+    this.name = data.name || data.email || 'AI Account';
     this.email = data.email || '';
     this.ssoToken = data.ssoToken || '';
     this.refreshToken = data.refreshToken || '';

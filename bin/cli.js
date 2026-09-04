@@ -40,11 +40,11 @@ function parseArgs(args) {
 
 function showHelp() {
   console.log(`
-Grok Router Mini - Ultra-lightweight Local AI Gateway for Grok & Claude
+AI Router Mini - Ultra-lightweight Local AI Gateway for Claude & LLMs
 
 Usage:
-  grok-router-mini [options]
-  npx grok-router-mini [options]
+  ai-router-mini [options]
+  npm start -- [options]
 
 Options:
   -p, --port <number>    Port to listen on (default: 3005 or $PORT, auto-increments if busy)
@@ -52,8 +52,8 @@ Options:
   -h, --help             Display this help message
 
 Examples:
-  grok-router-mini --port 3006
-  grok-router-mini -p 8080 --host 127.0.0.1
+  npm start -- --port 3006
+  node bin/cli.js -p 8080 --host 127.0.0.1
 `);
 }
 
@@ -68,8 +68,8 @@ function printBanner(port, host) {
 
   console.log(`
 ${cCyan}┌─────────────────────────────────────────────────────────────┐
-│  ${cBold}⚡ Grok Router Mini v1.0.0 ⚡${cReset}${cCyan}                               │
-│  ${cDim}Ultra-lightweight local AI gateway for Grok & Claude Code${cReset}${cCyan}  │
+│  ${cBold}⚡ AI Router Mini v1.0.0 ⚡${cReset}${cCyan}                                 │
+│  ${cDim}Ultra-lightweight local AI gateway for Claude Code${cReset}${cCyan}           │
 └─────────────────────────────────────────────────────────────┘${cReset}
 
   ${cBold}📡 Addresses:${cReset}
@@ -86,9 +86,6 @@ ${cCyan}┌───────────────────────
 
      ${cYellow}Windows (CMD):${cReset}
        curl -fsSL ${localUrl}/claude.cmd -o setup.cmd && setup.cmd
-
-  ${cBold}🔑 Initial Credentials:${cReset}
-     • Admin:  ${cCyan}admin@local.com${cReset} / ${cCyan}admin123${cReset}
 
   ${cDim}Press Ctrl+C to stop the server${cReset}
 `);
@@ -130,7 +127,7 @@ async function main() {
     printBanner(resolvedPort, resolvedHost);
 
     const cleanup = () => {
-      console.log('\nGracefully shutting down Grok Router Mini...');
+      console.log('\nGracefully shutting down AI Router Mini...');
       server.close(() => {
         process.exit(0);
       });
@@ -141,12 +138,12 @@ async function main() {
     process.on('SIGTERM', cleanup);
   } catch (err) {
     if (err.code === 'EADDRINUSE') {
-      console.error(`\x1b[31m❌ Error: Port ${options.port} is already in use by another program (e.g. Grok_Router-free).\x1b[0m`);
+      console.error(`\x1b[31m❌ Error: Port ${options.port} is already in use by another program.\x1b[0m`);
       console.error(`👉 You can run on a different port using:`);
       console.error(`   npm start -- --port ${options.port + 1}`);
-      console.error(`   npx grok-router-mini --port ${options.port + 1}\n`);
+      console.error(`   node bin/cli.js --port ${options.port + 1}\n`);
     } else {
-      console.error('Failed to start Grok Router Mini:', err);
+      console.error('Failed to start AI Router Mini:', err);
     }
     process.exit(1);
   }

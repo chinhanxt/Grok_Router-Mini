@@ -18,7 +18,7 @@ test('bin/cli.js boots and outputs banner with local URL', (t, done) => {
     if (output.includes('3999')) {
       started = true;
       proc.kill('SIGTERM');
-      assert.ok(output.includes('Grok Router Mini'));
+      assert.ok(output.includes('AI Router Mini'));
     }
   });
 
