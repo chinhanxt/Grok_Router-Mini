@@ -49,6 +49,9 @@ test('User methods work as expected', () => {
   const emptyPassUser = new User();
   assert.equal(emptyPassUser.verifyPassword('secret'), false);
 
+  const corruptedUser = new User({ email: 'u@test.com', passwordHash: 'invalid-corrupted-hash', passwordSalt: 'salt' });
+  assert.equal(corruptedUser.verifyPassword('secret'), false);
+
   const json = user.toJSON();
   assert.equal(json.email, 'admin@domain.com');
   assert.equal(json.passwordHash, undefined);

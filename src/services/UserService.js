@@ -49,7 +49,10 @@ export class UserService {
     if (parts.length !== 3) return null;
     const [header, body, signature] = parts;
     const expectedSig = crypto.createHmac('sha256', this.config.AUTH_SECRET).update(`${header}.${body}`).digest('base64url');
-    if (signature !== expectedSig) return null;
+    const sigBuf = Buffer.from(signature);
+    const expectedSigBuf = Buffer.from(expectedSig);
+    if (sigBuf.length !== expectedSigBuf.length) return null;
+    if (!crypto.timingSafeEqual(sigBuf, expectedSigBuf)) return null;
     try {
       const payload = JSON.parse(Buffer.from(body, 'base64url').toString('utf8'));
       if (payload.exp && Date.now() > payload.exp) return null;

@@ -96,6 +96,10 @@ test('UserService token verification handles malformed, tampered, and expired to
   const tampered = `${parts[0]}.${parts[1]}.badsignature`;
   assert.equal(service.verifyToken(tampered), null);
 
+  // Tampered token with matching signature length
+  const sameLenTamperedSig = 'x'.repeat(parts[2].length);
+  assert.equal(service.verifyToken(`${parts[0]}.${parts[1]}.${sameLenTamperedSig}`), null);
+
   // Other secret
   const otherService = new UserService(new JsonStorage(), { USERS_FILE: tmpFile, AUTH_SECRET: 'different-secret' });
   assert.equal(otherService.verifyToken(token), null);

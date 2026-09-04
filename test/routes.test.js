@@ -295,3 +295,60 @@ test('createSetupRouter uses config API_KEY when query param is absent', async (
   }
 });
 
+test('createSetupRouter strictly sanitizes and rejects malicious ?key= parameters', async () => {
+  const app = express();
+  app.use('/', createSetupRouter({ API_KEY: 'sk-safe-fallback-key' }));
+
+  const server = app.listen(0);
+  const port = server.address().port;
+  const baseUrl = `http://127.0.0.1:${port}`;
+
+  try {
+    // 1. Shell injection attempt in bash script
+    const shellInjRes = await fetch(`${baseUrl}/claude.sh?key=${encodeURIComponent('"; rm -rf /; echo "')}`);
+    const shellInjText = await shellInjRes.text();
+    assert.ok(!shellInjText.includes('rm -rf'));
+    assert.ok(shellInjText.includes('ANTHROPIC_AUTH_TOKEN="sk-safe-fallback-key"'));
+    assert.ok(shellInjText.includes('SED_INPLACE=(-i)'));
+    assert.ok(shellInjText.includes('sed "${SED_INPLACE[@]}"'));
+
+    // 2. Command substitution attempt
+    const cmdSubRes = await fetch(`${baseUrl}/claude.sh?key=$(whoami)`);
+    const cmdSubText = await cmdSubRes.text();
+    assert.ok(!cmdSubText.includes('$(whoami)'));
+    assert.ok(cmdSubText.includes('ANTHROPIC_AUTH_TOKEN="sk-safe-fallback-key"'));
+
+    // 3. PowerShell injection attempt
+    const psInjRes = await fetch(`${baseUrl}/claude.ps1?key=${encodeURIComponent('test"; Start-Process calc.exe; #')}`);
+    const psInjText = await psInjRes.text();
+    assert.ok(!psInjText.includes('calc.exe'));
+    assert.ok(psInjText.includes('$apiKey = "sk-safe-fallback-key"'));
+
+    // 4. Windows CMD injection attempt
+    const cmdInjRes = await fetch(`${baseUrl}/claude.cmd?key=${encodeURIComponent('key & calc.exe & echo')}`);
+    const cmdInjText = await cmdInjRes.text();
+    assert.ok(!cmdInjText.includes('calc.exe'));
+    assert.ok(cmdInjText.includes('set "API_KEY=sk-safe-fallback-key"'));
+
+    // 5. Short key (< 8 chars) rejected
+    const shortKeyRes = await fetch(`${baseUrl}/claude.sh?key=short`);
+    const shortKeyText = await shortKeyRes.text();
+    assert.ok(shortKeyText.includes('ANTHROPIC_AUTH_TOKEN="sk-safe-fallback-key"'));
+
+    // 6. Overlong key (> 256 chars) rejected
+    const longKey = 'a'.repeat(300);
+    const longKeyRes = await fetch(`${baseUrl}/claude.sh?key=${longKey}`);
+    const longKeyText = await longKeyRes.text();
+    assert.ok(longKeyText.includes('ANTHROPIC_AUTH_TOKEN="sk-safe-fallback-key"'));
+
+    // 7. Valid key (8 to 256 alphanumeric, underscores, hyphens, dots) accepted
+    const validKey = 'sk-valid_Key.123-custom';
+    const validKeyRes = await fetch(`${baseUrl}/claude.sh?key=${validKey}`);
+    const validKeyText = await validKeyRes.text();
+    assert.ok(validKeyText.includes(`ANTHROPIC_AUTH_TOKEN="${validKey}"`));
+  } finally {
+    server.close();
+  }
+});
+
+

@@ -3,11 +3,17 @@ import { Router } from 'express';
 export function createSetupRouter(config = {}) {
   const router = Router();
 
+  const SAFE_KEY_REGEX = /^[a-zA-Z0-9_\-\.]{8,256}$/;
+
   function resolveKey(req) {
-    if (req.query?.key && typeof req.query.key === 'string' && req.query.key.trim().length > 0) {
-      return String(req.query.key).trim();
+    const defaultKey = config?.API_KEY || 'sk-keychinhan-xtchinhan-YOUR_KEY';
+    if (req.query?.key && typeof req.query.key === 'string') {
+      const trimmed = req.query.key.trim();
+      if (SAFE_KEY_REGEX.test(trimmed)) {
+        return trimmed;
+      }
     }
-    return config?.API_KEY || 'sk-keychinhan-xtchinhan-YOUR_KEY';
+    return defaultKey;
   }
 
   function getBaseUrl(req) {
@@ -35,6 +41,12 @@ export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC="1"
 
 CLAUDE_SETTINGS="$HOME/.claude/settings.json"
 mkdir -p "$HOME/.claude" 2>/dev/null || true
+
+SED_INPLACE=(-i)
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  SED_INPLACE=(-i '')
+fi
+
 if [ ! -f "$CLAUDE_SETTINGS" ]; then
   cat <<JSON > "$CLAUDE_SETTINGS"
 {
@@ -51,8 +63,8 @@ if [ ! -f "$CLAUDE_SETTINGS" ]; then
 }
 JSON
 else
-  sed -i 's|"ANTHROPIC_BASE_URL": "[^"]*"|"ANTHROPIC_BASE_URL": "${baseUrl}"|g' "$CLAUDE_SETTINGS" 2>/dev/null || true
-  sed -i 's|"ANTHROPIC_AUTH_TOKEN": "[^"]*"|"ANTHROPIC_AUTH_TOKEN": "${key}"|g' "$CLAUDE_SETTINGS" 2>/dev/null || true
+  sed "\${SED_INPLACE[@]}" 's|"ANTHROPIC_BASE_URL": "[^"]*"|"ANTHROPIC_BASE_URL": "${baseUrl}"|g' "$CLAUDE_SETTINGS" 2>/dev/null || true
+  sed "\${SED_INPLACE[@]}" 's|"ANTHROPIC_AUTH_TOKEN": "[^"]*"|"ANTHROPIC_AUTH_TOKEN": "${key}"|g' "$CLAUDE_SETTINGS" 2>/dev/null || true
 fi
 
 RC_FILE=""
@@ -63,8 +75,8 @@ elif [ -f "$HOME/.bashrc" ]; then
 fi
 
 if [ -n "$RC_FILE" ]; then
-  sed -i '/ANTHROPIC_/d' "$RC_FILE" 2>/dev/null || true
-  sed -i '/CLAUDE_CODE_/d' "$RC_FILE" 2>/dev/null || true
+  sed "\${SED_INPLACE[@]}" '/ANTHROPIC_/d' "$RC_FILE" 2>/dev/null || true
+  sed "\${SED_INPLACE[@]}" '/CLAUDE_CODE_/d' "$RC_FILE" 2>/dev/null || true
   echo 'export ANTHROPIC_BASE_URL="${baseUrl}"' >> "$RC_FILE"
   echo 'export ANTHROPIC_AUTH_TOKEN="${key}"' >> "$RC_FILE"
   echo 'export ANTHROPIC_DEFAULT_SONNET_MODEL="claude-sonnet-5"' >> "$RC_FILE"

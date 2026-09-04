@@ -719,6 +719,7 @@
     let currentToken = localStorage.getItem('grok_router_token') || '';
     let currentUser = null;
     let currentSetupTab = 'bash';
+    let accounts = [];
 
     window.addEventListener('DOMContentLoaded', () => {
       if (currentToken) {
@@ -914,7 +915,7 @@
           headers: { 'Authorization': `Bearer ${currentToken}` }
         });
         if (!res.ok) return;
-        const accounts = await res.json();
+        accounts = await res.json();
         const tbody = document.getElementById('accountsTableBody');
         tbody.innerHTML = '';
 
@@ -950,7 +951,7 @@
             <td>${cooldownInfo}</td>
             <td style="text-align: right;">
               <button class="btn btn-secondary btn-sm" onclick="toggleAccountStatus('${acc.id}', '${acc.status}')">${toggleLabel}</button>
-              <button class="btn btn-danger btn-sm" onclick="deleteAccount('${acc.id}', '${escapeHtml(acc.name)}')">Xóa</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteAccount('${acc.id}')">Xóa</button>
             </td>
           `;
           tbody.appendChild(tr);
@@ -977,7 +978,8 @@
       }
     }
 
-    async function deleteAccount(id, name) {
+    async function deleteAccount(id) {
+      const name = accounts.find(a => a.id === id)?.name || id;
       if (!confirm(`Bạn có chắc chắn muốn xóa tài khoản "${name}"?`)) return;
       try {
         const res = await fetch(`/api/accounts/${id}`, {

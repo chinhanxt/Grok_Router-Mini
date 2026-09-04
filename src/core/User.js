@@ -13,7 +13,10 @@ export class User {
   verifyPassword(password) {
     if (!this.passwordHash || !this.passwordSalt) return false;
     const computed = crypto.scryptSync(password, this.passwordSalt, 64).toString('hex');
-    return crypto.timingSafeEqual(Buffer.from(computed), Buffer.from(this.passwordHash));
+    const bufComputed = Buffer.from(computed);
+    const bufTarget = Buffer.from(this.passwordHash);
+    if (bufComputed.length !== bufTarget.length) return false;
+    return crypto.timingSafeEqual(bufComputed, bufTarget);
   }
 
   static hashPassword(password) {
