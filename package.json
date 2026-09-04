@@ -1,9 +1,10 @@
 {
-  "name": "ai-router-mini",
+  "name": "ai-claude-keyapi",
   "version": "1.0.0",
   "description": "Ultra-lightweight local AI Router with 1-Click Claude Code Setup",
   "type": "module",
   "bin": {
+    "ai-claude-keyapi": "./bin/cli.js",
     "ai-router-mini": "./bin/cli.js",
     "grok-router-mini": "./bin/cli.js"
   },

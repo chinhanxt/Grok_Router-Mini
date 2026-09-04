@@ -20,17 +20,17 @@ Sử dụng AI Claude bằng Key, kết nối trực tiếp với Claude Code CL
 
 ### Cách 1: Chạy trực tiếp (NPX)
 ```bash
-npx ai-router-mini
+npx ai-claude-keyapi
 ```
 Tùy chọn chỉ định cổng:
 ```bash
-npx ai-router-mini --port 3006
+npx ai-claude-keyapi --port 3006
 ```
 
 ### Cách 2: Cài đặt toàn cục (Global CLI)
 ```bash
-npm install -g ai-router-mini
-ai-router-mini
+npm install -g ai-claude-keyapi
+ai-claude-keyapi
 ```
 
 ### Cách 3: Chạy từ mã nguồn
