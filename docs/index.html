@@ -575,7 +575,7 @@
           <div class="cmd-card">
             <div class="cmd-text">
               <span class="cmd-prompt">$</span>
-              <span class="cmd-val" id="heroCmd">npx ai-claude-keyapi</span>
+              <span class="cmd-val" id="heroCmd">npm install -g ai-claude-keyapi</span>
             </div>
             <button class="btn-copy" onclick="copyCode('heroCmd', this)">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -587,7 +587,7 @@
           </div>
           <div style="margin-top: 12px; font-size: 13px; color: var(--text-secondary); display: flex; align-items: center; gap: 6px;">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-            <span>Sau lần đầu chạy npx, các lần sau bạn chỉ cần gõ: <code style="color: var(--text-primary); font-weight: 600; background: var(--bg-code); padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border);">aiclaude</code></span>
+            <span>Cài 1 lần duy nhất, sau đó bạn chỉ cần gõ: <code style="color: var(--text-primary); font-weight: 600; background: var(--bg-code); padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border);">aiclaude</code></span>
           </div>
         </div>
 
@@ -630,9 +630,9 @@
       <div class="tab-module">
         <div class="tab-bar">
           <div class="tab-nav">
-            <button class="tab-btn active" onclick="pickTab('cmd', 0, this)">Lần đầu (NPX)</button>
-            <button class="tab-btn" onclick="pickTab('cmd', 1, this)">Từ lần sau (aiclaude)</button>
-            <button class="tab-btn" onclick="pickTab('cmd', 2, this)">Cài đặt toàn cục</button>
+            <button class="tab-btn active" onclick="pickTab('cmd', 0, this)">Cài đặt (Khuyên dùng)</button>
+            <button class="tab-btn" onclick="pickTab('cmd', 1, this)">Khởi động (aiclaude)</button>
+            <button class="tab-btn" onclick="pickTab('cmd', 2, this)">Chạy qua NPX</button>
             <button class="tab-btn" onclick="pickTab('cmd', 3, this)">Chỉ định Cổng (Port)</button>
           </div>
           <button class="btn-copy" onclick="copyCurrentTab('cmdWrap')">
@@ -641,10 +641,9 @@
           </button>
         </div>
         <div class="tab-pane-wrap" id="cmdWrap">
-          <pre class="tab-content" style="display: block;"><code>npx ai-claude-keyapi</code></pre>
+          <pre class="tab-content" style="display: block;"><code>npm install -g ai-claude-keyapi</code></pre>
           <pre class="tab-content" style="display: none;"><code>aiclaude</code></pre>
-          <pre class="tab-content" style="display: none;"><code>npm install -g ai-claude-keyapi
-aiclaude</code></pre>
+          <pre class="tab-content" style="display: none;"><code>npx ai-claude-keyapi</code></pre>
           <pre class="tab-content" style="display: none;"><code>aiclaude --port 3006</code></pre>
         </div>
       </div>

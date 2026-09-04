@@ -20,25 +20,28 @@ Sử dụng AI Claude bằng Key, kết nối trực tiếp với Claude Code CL
 
 ## Hướng dẫn cài đặt & Khởi động
 
-### ⚡ Lệnh gọi nhanh (`aiclaude`)
-- **Lần đầu tiên:** Chạy bằng NPX (hệ thống sẽ tự động cấu hình lệnh tắt `aiclaude` vào máy tính của bạn):
-  ```bash
-  npx ai-claude-keyapi
-  ```
-- **Từ các lần sau:** Bạn chỉ cần mở terminal và gõ:
-  ```bash
-  aiclaude
-  ```
-- **Chỉ định cổng (Port):**
-  ```bash
-  aiclaude --port 3006
-  ```
-
-### Cài đặt toàn cục (Global CLI)
+### 🚀 Cách 1: Cài đặt toàn cục (Khuyên dùng - Nhanh nhất)
+Cài đặt một lần duy nhất, sau đó có thể gọi lệnh `aiclaude` ở bất kỳ thư mục nào:
 ```bash
 npm install -g ai-claude-keyapi
 aiclaude
 ```
+
+### ⚡ Cách 2: Chạy trực tiếp qua NPX
+```bash
+npx ai-claude-keyapi
+```
+*(Từ các lần sau bạn cũng có thể gõ ngay `aiclaude`)*
+
+### ⚙️ Tùy chọn nâng cao
+- **Chỉ định cổng (Port):**
+  ```bash
+  aiclaude --port 3006
+  ```
+- **Kích hoạt sẵn License Key:**
+  ```bash
+  aiclaude -l KEY-VIP-PRO-2026
+  ```
 
 ### Chạy từ mã nguồn
 ```bash
