@@ -6,7 +6,8 @@ function parseArgs(args) {
   const options = {
     port: process.env.PORT ? parseInt(process.env.PORT, 10) : 3005,
     host: process.env.HOST || '0.0.0.0',
-    help: false
+    help: false,
+    portExplicit: Boolean(process.env.PORT)
   };
 
   for (let i = 0; i < args.length; i++) {
@@ -24,9 +25,13 @@ function parseArgs(args) {
     } else if (arg.startsWith('--host=')) {
       options.host = arg.split('=')[1];
     } else if (arg === '--port' || arg === '-p') {
-      if (args[i + 1]) options.port = parseInt(args[++i], 10);
+      if (args[i + 1]) {
+        options.port = parseInt(args[++i], 10);
+        options.portExplicit = true;
+      }
     } else if (arg.startsWith('--port=') || arg.startsWith('-p=')) {
       options.port = parseInt(arg.split('=')[1], 10);
+      options.portExplicit = true;
     }
   }
 
@@ -42,12 +47,12 @@ Usage:
   npx grok-router-mini [options]
 
 Options:
-  -p, --port <number>    Port to listen on (default: 3005 or $PORT)
+  -p, --port <number>    Port to listen on (default: 3005 or $PORT, auto-increments if busy)
   --host <host>          Host to bind to (default: 0.0.0.0 or $HOST)
   -h, --help             Display this help message
 
 Examples:
-  grok-router-mini --port 3005
+  grok-router-mini --port 3006
   grok-router-mini -p 8080 --host 127.0.0.1
 `);
 }
@@ -89,6 +94,25 @@ ${cCyan}┌───────────────────────
 `);
 }
 
+async function startWithPortFallback(options) {
+  let currentPort = options.port;
+  const maxAttempts = options.portExplicit ? 1 : 10;
+
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    try {
+      const server = await startServer({ port: currentPort, host: options.host });
+      return { server, port: currentPort };
+    } catch (err) {
+      if (err.code === 'EADDRINUSE' && attempt < maxAttempts - 1) {
+        console.log(`\x1b[33m⚠️ Port ${currentPort} is in use. Trying port ${currentPort + 1}...\x1b[0m`);
+        currentPort++;
+        continue;
+      }
+      throw err;
+    }
+  }
+}
+
 async function main() {
   const options = parseArgs(process.argv.slice(2));
 
@@ -98,12 +122,12 @@ async function main() {
   }
 
   try {
-    const server = await startServer({ port: options.port, host: options.host });
+    const { server, port: boundPort } = await startWithPortFallback(options);
     const addr = server.address();
-    const boundPort = addr?.port || options.port;
-    const boundHost = addr?.address || options.host;
+    const resolvedPort = addr?.port || boundPort;
+    const resolvedHost = addr?.address || options.host;
 
-    printBanner(boundPort, boundHost);
+    printBanner(resolvedPort, resolvedHost);
 
     const cleanup = () => {
       console.log('\nGracefully shutting down Grok Router Mini...');
@@ -116,7 +140,14 @@ async function main() {
     process.on('SIGINT', cleanup);
     process.on('SIGTERM', cleanup);
   } catch (err) {
-    console.error('Failed to start Grok Router Mini:', err);
+    if (err.code === 'EADDRINUSE') {
+      console.error(`\x1b[31m❌ Error: Port ${options.port} is already in use by another program (e.g. Grok_Router-free).\x1b[0m`);
+      console.error(`👉 You can run on a different port using:`);
+      console.error(`   npm start -- --port ${options.port + 1}`);
+      console.error(`   npx grok-router-mini --port ${options.port + 1}\n`);
+    } else {
+      console.error('Failed to start Grok Router Mini:', err);
+    }
     process.exit(1);
   }
 }
