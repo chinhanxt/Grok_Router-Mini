@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Claude KeyAPI — Cổng định tuyến Claude Code</title>
-  <meta name="description" content="Cổng định tuyến Claude Code bằng Key, tự động chuyển tài khoản khi 429.">
+  <title>AI Claude KeyAPI — Kích hoạt Claude Code bằng Key</title>
+  <meta name="description" content="Kích hoạt và kết nối Claude Code bằng License Key. Tự động chuyển đổi tài khoản khi gặp 429.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600;700&family=Geist:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -27,17 +27,11 @@
       --accent: #ffffff;
       --accent-contrast: #000000;
       --badge-bg: #18181b;
-      --badge-text: #e4e4e7;
       --header-bg: rgba(9, 9, 11, 0.9);
-      --card-border: #27272a;
-      --table-header-bg: #111114;
       --success-green: #10b981;
-
-      /* Terminal Colors (Dark) */
+      --danger-red: #ef4444;
       --terminal-bg: #000000;
       --terminal-topbar: #0d0d0f;
-      --terminal-text: #e4e4e7;
-      --terminal-dim: #71717a;
     }
 
     [data-theme="light"] {
@@ -53,55 +47,34 @@
       --accent: #09090b;
       --accent-contrast: #ffffff;
       --badge-bg: #f4f4f5;
-      --badge-text: #18181b;
       --header-bg: rgba(255, 255, 255, 0.9);
-      --card-border: #e4e4e7;
-      --table-header-bg: #f4f4f5;
       --success-green: #059669;
-
-      /* Terminal Colors (Chuyển sang trắng khi sáng) */
+      --danger-red: #dc2626;
       --terminal-bg: #ffffff;
       --terminal-topbar: #f4f4f5;
-      --terminal-text: #09090b;
-      --terminal-dim: #71717a;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    html {
-      scroll-behavior: smooth;
-      background-color: var(--bg);
-      color: var(--text-primary);
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; background-color: var(--bg); color: var(--text-primary); }
     body {
       font-family: var(--font-sans);
-      font-size: 15px;
+      font-size: 14px;
       line-height: 1.5;
       color: var(--text-primary);
       background-color: var(--bg);
       -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      text-rendering: optimizeLegibility;
       transition: background-color 0.15s ease, color 0.15s ease;
     }
 
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
+    a { color: inherit; text-decoration: none; }
 
     .container-wide {
-      max-width: 1380px;
+      max-width: 1120px;
       margin: 0 auto;
-      padding: 0 36px;
+      padding: 0 24px;
     }
 
-    /* Header tối giản */
+    /* Header */
     header.site-header {
       position: sticky;
       top: 0;
@@ -125,7 +98,7 @@
     .brand-wrap {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
 
     .brand-title {
@@ -138,21 +111,10 @@
       gap: 8px;
     }
 
-    .version-tag {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-secondary);
-      background: var(--badge-bg);
-      padding: 2px 7px;
-      border-radius: 4px;
-      border: 1px solid var(--border);
-    }
-
     .nav-items {
       display: flex;
       align-items: center;
-      gap: 24px;
+      gap: 20px;
       font-size: 13px;
       font-family: var(--font-mono);
     }
@@ -161,10 +123,7 @@
       color: var(--text-secondary);
       transition: color 0.15s ease;
     }
-
-    .nav-items a:hover {
-      color: var(--text-primary);
-    }
+    .nav-items a:hover { color: var(--text-primary); }
 
     .theme-btn {
       background: transparent;
@@ -179,7 +138,6 @@
       cursor: pointer;
       transition: all 0.15s ease;
     }
-
     .theme-btn:hover {
       background: var(--bg-subtle);
       border-color: var(--text-primary);
@@ -187,28 +145,26 @@
 
     /* Hero Section */
     section.hero-section {
-      padding: 48px 0 40px;
+      padding: 56px 0 40px;
       border-bottom: 1px solid var(--border);
+      text-align: center;
     }
 
-    .hero-split {
-      display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: 40px;
-      align-items: center;
-    }
-
-    .hero-tag {
+    .hero-badge {
       font-family: var(--font-mono);
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 600;
       letter-spacing: 0.06em;
       text-transform: uppercase;
       color: var(--text-muted);
-      margin-bottom: 12px;
-      display: flex;
+      margin-bottom: 14px;
+      display: inline-flex;
       align-items: center;
       gap: 8px;
+      background: var(--bg-surface);
+      padding: 4px 12px;
+      border-radius: 99px;
+      border: 1px solid var(--border);
     }
 
     .dot-live {
@@ -219,143 +175,115 @@
     }
 
     h1.hero-title {
-      font-size: 38px;
+      font-size: 36px;
       font-weight: 800;
       letter-spacing: -0.035em;
-      line-height: 1.15;
-      margin-bottom: 24px;
+      line-height: 1.2;
+      margin-bottom: 12px;
       color: var(--text-primary);
     }
 
     p.hero-sub {
-      font-size: 16px;
+      font-size: 15px;
       color: var(--text-secondary);
-      line-height: 1.5;
-      margin-bottom: 24px;
-      max-width: 600px;
+      margin-bottom: 32px;
+      max-width: 580px;
+      margin-left: auto;
+      margin-right: auto;
     }
 
-    /* Hộp lệnh cài đặt nhanh */
-    .cmd-card {
+    /* Input Key Box */
+    .key-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px;
+      max-width: 720px;
+      margin: 0 auto;
+      text-align: left;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+
+    .key-input-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    .key-input {
+      flex: 1;
       background: var(--bg-code);
       border: 1px solid var(--border);
       border-radius: 6px;
       padding: 12px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      max-width: 540px;
-    }
-
-    .cmd-text {
       font-family: var(--font-mono);
       font-size: 14px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      white-space: nowrap;
-      overflow-x: auto;
-    }
-
-    .cmd-prompt {
-      color: var(--text-muted);
-      user-select: none;
-    }
-
-    .cmd-val {
+      font-weight: 600;
       color: var(--text-primary);
-      font-weight: 500;
+      outline: none;
+      transition: border-color 0.15s ease;
     }
-
-    .btn-copy {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      color: var(--text-primary);
-      font-family: var(--font-mono);
-      font-size: 12px;
-      font-weight: 500;
-      padding: 6px 12px;
-      border-radius: 4px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.15s ease;
-      flex-shrink: 0;
-    }
-
-    .btn-copy:hover {
-      background: var(--text-primary);
-      color: var(--accent-contrast);
+    .key-input:focus {
       border-color: var(--text-primary);
     }
 
-    .btn-copy.copied {
-      background: var(--success-green);
-      color: #ffffff;
-      border-color: var(--success-green);
-    }
-
-    /* Terminal Screen: Đổi nền trắng khi sang sáng */
-    .terminal-card {
-      background: var(--terminal-bg);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      overflow: hidden;
-      box-shadow: 0 16px 36px -12px rgba(0,0,0,0.12);
-      transition: background-color 0.15s ease, border-color 0.15s ease;
-    }
-
-    .terminal-header {
-      background: var(--terminal-topbar);
-      border-bottom: 1px solid var(--border);
-      padding: 10px 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .terminal-dots {
-      display: flex;
-      gap: 6px;
-    }
-
-    .t-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-    }
-    .dot-red { background: #ef4444; }
-    .dot-yellow { background: #f59e0b; }
-    .dot-green { background: #10b981; }
-
-    .terminal-title {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .terminal-content {
-      padding: 18px;
+    .btn-primary {
+      background: var(--text-primary);
+      color: var(--accent-contrast);
+      border: 1px solid var(--text-primary);
       font-family: var(--font-mono);
       font-size: 13px;
-      line-height: 1.65;
-      color: var(--terminal-text);
-      transition: color 0.15s ease;
+      font-weight: 600;
+      padding: 12px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      transition: opacity 0.15s ease;
+    }
+    .btn-primary:hover { opacity: 0.9; }
+
+    /* Key Result Status */
+    .key-status-box {
+      margin-top: 16px;
+      padding: 12px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .status-box-valid {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: var(--success-green);
+    }
+    .status-box-invalid {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: var(--danger-red);
     }
 
-    .c-dim { color: var(--terminal-dim); }
-    .c-green { color: var(--success-green); }
-    .c-white { color: var(--terminal-text); font-weight: 600; }
+    .status-meta-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      font-size: 12px;
+    }
 
-    /* Layout Sections */
+    /* Commands Section */
     .content-block {
       padding: 44px 0;
       border-bottom: 1px solid var(--border);
     }
 
     .block-head {
-      margin-bottom: 20px;
+      margin-bottom: 18px;
     }
 
     .block-tag {
@@ -369,19 +297,18 @@
     }
 
     .block-title {
-      font-size: 22px;
+      font-size: 20px;
       font-weight: 700;
       letter-spacing: -0.02em;
       color: var(--text-primary);
     }
 
-    /* Tabbed Code Box */
     .tab-module {
       background: var(--bg-code);
       border: 1px solid var(--border);
       border-radius: 6px;
       overflow: hidden;
-      margin: 12px 0 16px;
+      margin: 12px 0 14px;
     }
 
     .tab-bar {
@@ -390,7 +317,7 @@
       justify-content: space-between;
       border-bottom: 1px solid var(--border);
       background: var(--bg-surface);
-      padding: 0 12px;
+      padding: 0 10px;
     }
 
     .tab-nav {
@@ -410,15 +337,37 @@
       border-bottom: 2px solid transparent;
       transition: all 0.15s ease;
     }
-
-    .tab-btn:hover {
-      color: var(--text-primary);
-    }
-
+    .tab-btn:hover { color: var(--text-primary); }
     .tab-btn.active {
       color: var(--text-primary);
       border-bottom-color: var(--text-primary);
       font-weight: 600;
+    }
+
+    .btn-copy {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 500;
+      padding: 5px 11px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+    .btn-copy:hover {
+      background: var(--text-primary);
+      color: var(--accent-contrast);
+      border-color: var(--text-primary);
+    }
+    .btn-copy.copied {
+      background: var(--success-green);
+      color: #ffffff;
+      border-color: var(--success-green);
     }
 
     .tab-pane-wrap {
@@ -427,59 +376,16 @@
 
     pre code {
       font-family: var(--font-mono);
-      font-size: 14px;
+      font-size: 13px;
       line-height: 1.5;
       color: var(--text-primary);
       display: block;
       overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
     }
 
-    /* 3 Bước Quản lý Node */
-    .grid-trio {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-      margin-top: 14px;
-    }
-
-    .trio-card {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 18px;
-    }
-
-    .trio-step {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--text-muted);
-      margin-bottom: 6px;
-    }
-
-    .trio-title {
-      font-size: 15px;
-      font-weight: 600;
-      margin-bottom: 6px;
-      color: var(--text-primary);
-    }
-
-    .trio-desc {
-      font-size: 13px;
-      color: var(--text-secondary);
-      line-height: 1.5;
-    }
-
-    .trio-desc code {
-      font-family: var(--font-mono);
-      background: var(--bg-subtle);
-      padding: 1px 4px;
-      border-radius: 3px;
-      border: 1px solid var(--border);
-      font-size: 12px;
-    }
-
-    /* Bảng dữ liệu ngắn gọn */
+    /* Compact Table */
     .table-box {
       border: 1px solid var(--border);
       border-radius: 6px;
@@ -495,31 +401,25 @@
     }
 
     table.compact-table th {
-      background: var(--table-header-bg);
+      background: var(--bg-surface);
       font-family: var(--font-mono);
       font-weight: 600;
-      font-size: 12px;
+      font-size: 11px;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       color: var(--text-muted);
-      padding: 9px 16px;
+      padding: 10px 16px;
       border-bottom: 1px solid var(--border);
     }
 
     table.compact-table td {
-      padding: 11px 16px;
+      padding: 10px 16px;
       border-bottom: 1px solid var(--border-subtle);
       color: var(--text-secondary);
     }
 
-    table.compact-table tr:last-child td {
-      border-bottom: none;
-    }
-
-    table.compact-table tr:hover td {
-      background: var(--bg-surface);
-      color: var(--text-primary);
-    }
+    table.compact-table tr:last-child td { border-bottom: none; }
+    table.compact-table tr:hover td { background: var(--bg-surface); color: var(--text-primary); }
 
     .text-mono {
       font-family: var(--font-mono);
@@ -540,23 +440,6 @@
     .m-post { background: var(--bg-subtle); color: #3b82f6; }
     .m-get { background: var(--bg-subtle); color: #10b981; }
 
-    /* Khung ảnh demo: Thu nhỏ nằm gọn trong card ở giữa */
-    .demo-window {
-      max-width: 860px;
-      margin: 24px auto 0;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      overflow: hidden;
-      background: var(--bg-surface);
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
-    }
-
-    .demo-window img {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
-
     /* Footer */
     footer.site-footer {
       padding: 32px 0;
@@ -565,39 +448,29 @@
       font-size: 12px;
       color: var(--text-muted);
     }
-
     .footer-flex {
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
-
     .footer-links {
       display: flex;
       gap: 20px;
     }
-
-    .footer-links a:hover {
-      color: var(--text-primary);
-    }
-
-    /* Responsive */
-    @media (max-width: 1024px) {
-      .hero-split { grid-template-columns: 1fr; gap: 32px; }
-      .grid-trio { grid-template-columns: 1fr; }
-    }
+    .footer-links a:hover { color: var(--text-primary); }
 
     @media (max-width: 640px) {
       .container-wide { padding: 0 16px; }
       .nav-items { display: none; }
-      h1.hero-title { font-size: 28px; }
+      h1.hero-title { font-size: 26px; }
+      .key-input-group { flex-direction: column; }
       .footer-flex { flex-direction: column; gap: 12px; align-items: flex-start; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Thanh điều hướng tối giản -->
+  <!-- Header -->
   <header class="site-header">
     <div class="container-wide header-inner">
       <div class="brand-wrap">
@@ -606,17 +479,16 @@
             <polyline points="4 17 10 11 4 5"></polyline>
             <line x1="12" y1="19" x2="20" y2="19"></line>
           </svg>
-          ai-claude-keyapi
+          AI Claude KeyAPI
         </div>
       </div>
 
       <nav class="nav-items">
-        <a href="#quickstart">Khởi động</a>
-        <a href="#claude">Kết nối Claude</a>
-        <a href="#nodes">Xuất & Nhập Node</a>
+        <a href="#activate">Kích hoạt</a>
+        <a href="#setup">Cài đặt</a>
         <a href="#models">Mô hình</a>
-        <a href="#api">Endpoints</a>
-        <a href="admin.html" style="color: var(--text-primary); font-weight: 600;">Quản trị License</a>
+        <a href="#api">API</a>
+        <a href="admin.html" style="color: var(--text-primary); font-weight: 600;">Quản trị Admin</a>
       </nav>
 
       <div>
@@ -637,101 +509,42 @@
     </div>
   </header>
 
-  <!-- Hero Section: Split 2 Cột (Đã xóa 4 pill thừa) -->
-  <section class="hero-section">
+  <!-- Hero & License Key Activation -->
+  <section id="activate" class="hero-section">
     <div class="container-wide">
-      <div class="hero-split">
-        <!-- Cột Trái: Lệnh cài đặt nhanh -->
-        <div>
-          <div class="hero-tag">
-            <span class="dot-live"></span>
-            CỔNG ĐỊNH TUYẾN CLAUDE CODE
-          </div>
-          <h1 class="hero-title">Định tuyến Claude Code bằng Key</h1>
-
-          <div class="cmd-card">
-            <div class="cmd-text">
-              <span class="cmd-prompt">$</span>
-              <span class="cmd-val" id="heroCmd">npx ai-claude-keyapi</span>
-            </div>
-            <button class="btn-copy" onclick="copyCode('heroCmd', this)">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-              </svg>
-              Sao chép
-            </button>
-          </div>
-        </div>
-
-        <!-- Cột Phải: Màn Terminal Thực Tế (Tự đổi sang nền trắng khi bật sáng) -->
-        <div>
-          <div class="terminal-card">
-            <div class="terminal-header">
-              <div class="terminal-dots">
-                <span class="t-dot dot-red"></span>
-                <span class="t-dot dot-yellow"></span>
-                <span class="t-dot dot-green"></span>
-              </div>
-              <span class="terminal-title">bash — claude-code</span>
-              <span style="width: 36px;"></span>
-            </div>
-            <div class="terminal-content">
-              <p class="c-dim">$ curl -fsSL "http://localhost:3005/claude.sh?key=eyJhbGciOi..." | bash</p>
-              <p class="c-green">✓ Environment configured:</p>
-              <p class="c-green">ANTHROPIC_BASE_URL=http://localhost:3005</p>
-              <p class="c-green">✓ Profile synced: ~/.claude/settings.json</p>
-              <p class="c-dim" style="margin-top: 10px;">$ claude</p>
-              <p class="c-white">Claude Code (Sonnet 5) ready.</p>
-              <p class="c-dim">> Initializing routing pool with 12 active accounts...</p>
-              <p class="c-green">> Pool health: 100% | Latency: 42ms</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 1. Khởi động Gateway -->
-  <section id="quickstart" class="content-block">
-    <div class="container-wide">
-      <div class="block-head">
-        <div class="block-tag">01 / KHỞI ĐỘNG</div>
-        <h2 class="block-title">Lệnh chạy Router</h2>
+      <div class="hero-badge">
+        <span class="dot-live"></span>
+        CỔNG BẢN QUYỀN CLAUDE CODE
       </div>
 
-      <div class="tab-module">
-        <div class="tab-bar">
-          <div class="tab-nav">
-            <button class="tab-btn active" onclick="pickTab('cmd', 0, this)">NPX (Khuyên dùng)</button>
-            <button class="tab-btn" onclick="pickTab('cmd', 1, this)">Cài đặt toàn cục</button>
-            <button class="tab-btn" onclick="pickTab('cmd', 2, this)">Chỉ định Cổng (Port)</button>
-          </div>
-          <button class="btn-copy" onclick="copyCurrentTab('cmdWrap')">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-            Sao chép
+      <h1 class="hero-title">Kích hoạt Claude Code bằng Key</h1>
+      <p class="hero-sub">
+        Nhập mã bản quyền được cấp để nhận danh sách node và lệnh kết nối tức thì.
+      </p>
+
+      <div class="key-card">
+        <div class="key-input-group">
+          <input type="text" id="keyInput" class="key-input" placeholder="Dán mã License Key (Ví dụ: KEY-VIP-PRO-2026)" autocomplete="off" spellcheck="false" />
+          <button id="btnCheckKey" class="btn-primary" onclick="checkKey()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            Kích hoạt Key
           </button>
         </div>
-        <div class="tab-pane-wrap" id="cmdWrap">
-          <pre class="tab-content" style="display: block;"><code>npx ai-claude-keyapi</code></pre>
-          <pre class="tab-content" style="display: none;"><code>npm install -g ai-claude-keyapi
-ai-claude-keyapi</code></pre>
-          <pre class="tab-content" style="display: none;"><code>npx ai-claude-keyapi --port 3006</code></pre>
+
+        <div id="keyStatusBox" class="key-status-box">
+          <div id="statusMessage" class="status-meta-badge"></div>
+          <div id="statusDetails" style="display: flex; gap: 12px; font-family: var(--font-mono); font-size: 12px;"></div>
         </div>
       </div>
-
-      <p style="font-size: 13px; color: var(--text-secondary);">
-        Web Dashboard: <a href="http://localhost:3005" target="_blank" style="text-decoration: underline; color: var(--text-primary);">http://localhost:3005</a> • Đăng nhập Admin: <code>admin / admin123</code>
-      </p>
     </div>
   </section>
 
-  <!-- 2. Kết nối Claude Code (Đã bỏ từ 1-Click, hiển thị đúng dạng kèm ?key=...) -->
-  <section id="claude" class="content-block">
+  <!-- Setup Commands -->
+  <section id="setup" class="content-block">
     <div class="container-wide">
       <div class="block-head">
-        <div class="block-tag">02 / KẾT NỐI</div>
-        <h2 class="block-title">Lệnh kết nối Claude Code</h2>
+        <div class="block-tag">01 / CÀI ĐẶT</div>
+        <h2 class="block-title">Lệnh kết nối theo hệ điều hành</h2>
       </div>
 
       <div class="tab-module">
@@ -747,64 +560,23 @@ ai-claude-keyapi</code></pre>
           </button>
         </div>
         <div class="tab-pane-wrap" id="osWrap">
-          <pre class="tab-content" style="display: block;"><code>curl -fsSL "http://localhost:3005/claude.sh?key=<YOUR_TOKEN>" | bash</code></pre>
-          <pre class="tab-content" style="display: none;"><code>irm "http://localhost:3005/claude.ps1?key=<YOUR_TOKEN>" | iex</code></pre>
-          <pre class="tab-content" style="display: none;"><code>curl -fsSL "http://localhost:3005/claude.cmd?key=<YOUR_TOKEN>" -o setup.cmd && setup.cmd</code></pre>
+          <pre class="tab-content" style="display: block;"><code id="cmdBash">curl -fsSL "/claude.sh?key=<MÃ_KEY>" | bash</code></pre>
+          <pre class="tab-content" style="display: none;"><code id="cmdPs">irm "/claude.ps1?key=<MÃ_KEY>" | iex</code></pre>
+          <pre class="tab-content" style="display: none;"><code id="cmdCmd">curl -fsSL "/claude.cmd?key=<MÃ_KEY>" -o setup.cmd && setup.cmd</code></pre>
         </div>
       </div>
 
-      <p style="font-size: 13px; color: var(--text-secondary); margin-top: 6px;">
-        * Lấy lệnh kèm mã token <code>?key=...</code> đầy đủ trực tiếp tại Web Dashboard (<a href="http://localhost:3005" target="_blank" style="text-decoration: underline; color: var(--text-primary);">http://localhost:3005</a>) sau khi đăng nhập.
+      <p style="font-size: 13px; color: var(--text-secondary);">
+        * Chạy lệnh trên trong Terminal của bạn. Sau khi hoàn tất, gõ <code>claude</code> để bắt đầu lập trình.
       </p>
-
-      <!-- Demo Terminal Ảnh thực tế: Thu nhỏ gọn trong card ở giữa -->
-      <div class="demo-window">
-        <img src="./assets/demo.png" alt="Claude Code CLI running with ai-claude-keyapi" loading="lazy">
-      </div>
     </div>
   </section>
 
-  <!-- 3. Quản lý & Xuất / Nhập Node -->
-  <section id="nodes" class="content-block">
-    <div class="container-wide">
-      <div class="block-head">
-        <div class="block-tag">03 / QUẢN LÝ NODE</div>
-        <h2 class="block-title">Sao lưu & Khôi phục Node</h2>
-      </div>
-
-      <div class="grid-trio">
-        <div class="trio-card">
-          <div class="trio-step">BƯỚC 1</div>
-          <div class="trio-title">Nhập nhiều Node</div>
-          <div class="trio-desc">
-            Trên Dashboard, bấm <code>[ 📥 Nhập nhiều ]</code> và dán danh sách token (mỗi dòng một token).
-          </div>
-        </div>
-
-        <div class="trio-card">
-          <div class="trio-step">BƯỚC 2</div>
-          <div class="trio-title">Xuất file dự phòng</div>
-          <div class="trio-desc">
-            Bấm <code>[ 📤 Xuất Node ]</code> để tải file <code>ai-router-nodes-*.json</code> về máy.
-          </div>
-        </div>
-
-        <div class="trio-card">
-          <div class="trio-step">BƯỚC 3</div>
-          <div class="trio-title">Khôi phục khi cài lại</div>
-          <div class="trio-desc">
-            Khi chuyển máy mới, chỉ cần chạy lại router và dán nội dung file JSON vào để khôi phục toàn bộ.
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 4. Danh sách Model -->
+  <!-- Supported Models -->
   <section id="models" class="content-block">
     <div class="container-wide">
       <div class="block-head">
-        <div class="block-tag">04 / MÔ HÌNH</div>
+        <div class="block-tag">02 / MÔ HÌNH</div>
         <h2 class="block-title">Mô hình hỗ trợ</h2>
       </div>
 
@@ -813,30 +585,30 @@ ai-claude-keyapi</code></pre>
           <thead>
             <tr>
               <th style="width: 260px;">Model ID</th>
-              <th style="width: 260px;">Tên hiển thị</th>
-              <th>Mục đích</th>
+              <th style="width: 240px;">Tên hiển thị</th>
+              <th>Mục đích sử dụng</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td class="text-mono">claude-sonnet-5</td>
               <td><strong>Claude Sonnet 5</strong></td>
-              <td>Mặc định cho Claude Code CLI (Tốc độ & lập trình tối ưu).</td>
+              <td>Mặc định cho Claude Code CLI (Tối ưu lập trình & Agent).</td>
             </tr>
             <tr>
               <td class="text-mono">claude-fable-5-1</td>
               <td><strong>Claude Fable 5.1</strong></td>
-              <td>Suy luận chuyên sâu cho các tác vụ agent phức tạp.</td>
+              <td>Suy luận chuyên sâu cho tác vụ kỹ thuật phức tạp.</td>
             </tr>
             <tr>
               <td class="text-mono">claude-opus-5</td>
               <td><strong>Claude Opus 5</strong></td>
-              <td>Xử lý bài toán lớn, tổng hợp mã nguồn nhiều phân hệ.</td>
+              <td>Xử lý bài toán lớn, tổng hợp mã nguồn đa phân hệ.</td>
             </tr>
             <tr>
               <td class="text-mono">claude-haiku-4-5</td>
               <td><strong>Claude Haiku 4.5</strong></td>
-              <td>Phản hồi siêu tốc cho tra cứu và tiện ích ngắn.</td>
+              <td>Phản hồi tốc độ cao cho tra cứu và tiện ích ngắn.</td>
             </tr>
           </tbody>
         </table>
@@ -844,12 +616,12 @@ ai-claude-keyapi</code></pre>
     </div>
   </section>
 
-  <!-- 5. API Endpoints -->
+  <!-- Endpoints API -->
   <section id="api" class="content-block">
     <div class="container-wide">
       <div class="block-head">
-        <div class="block-tag">05 / API</div>
-        <h2 class="block-title">Endpoints</h2>
+        <div class="block-tag">03 / API</div>
+        <h2 class="block-title">Cổng kết nối (Endpoints)</h2>
       </div>
 
       <div class="table-box">
@@ -858,7 +630,7 @@ ai-claude-keyapi</code></pre>
             <tr>
               <th style="width: 100px;">Method</th>
               <th style="width: 280px;">Đường dẫn</th>
-              <th>Chức năng</th>
+              <th>Tương thích</th>
             </tr>
           </thead>
           <tbody>
@@ -870,22 +642,12 @@ ai-claude-keyapi</code></pre>
             <tr>
               <td><span class="method-tag m-post">POST</span></td>
               <td class="text-mono">/v1/chat/completions</td>
-              <td>OpenAI Compatible API (Cursor, Windsurf, Aider...).</td>
+              <td>OpenAI Compatible API (Cursor, Windsurf, Aider, Cline...).</td>
             </tr>
             <tr>
               <td><span class="method-tag m-get">GET</span></td>
               <td class="text-mono">/v1/models</td>
-              <td>Danh sách các model khả dụng.</td>
-            </tr>
-            <tr>
-              <td><span class="method-tag m-get">GET</span></td>
-              <td class="text-mono">/api/accounts/export</td>
-              <td>Xuất danh sách node dự phòng dạng JSON (Quyền Admin).</td>
-            </tr>
-            <tr>
-              <td><span class="method-tag m-get">GET</span></td>
-              <td class="text-mono">/claude.sh, /claude.ps1, /claude.cmd</td>
-              <td>Tải script cài đặt kèm <code>?key=...</code> tương ứng theo hệ điều hành.</td>
+              <td>Danh sách mô hình khả dụng.</td>
             </tr>
           </tbody>
         </table>
@@ -897,30 +659,106 @@ ai-claude-keyapi</code></pre>
   <footer class="site-footer">
     <div class="container-wide footer-flex">
       <div>
-        <span>AI Claude KeyAPI (ai-claude-keyapi) — Giấy phép MIT</span>
+        <span>AI Claude KeyAPI — Cổng kích hoạt & định tuyến bản quyền.</span>
       </div>
       <div class="footer-links">
-        <a href="#quickstart">Khởi động</a>
-        <a href="#claude">Kết nối Claude</a>
-        <a href="#nodes">Sao lưu Node</a>
-        <a href="#models">Models</a>
+        <a href="#activate">Kích hoạt</a>
+        <a href="#setup">Cài đặt</a>
+        <a href="#models">Mô hình</a>
+        <a href="admin.html">Quản trị Admin</a>
       </div>
     </div>
   </footer>
 
   <script>
-    function copyCode(id, btn) {
-      const text = document.getElementById(id).innerText.trim();
-      navigator.clipboard.writeText(text).then(() => {
-        const prev = btn.innerHTML;
-        btn.classList.add('copied');
-        btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> Đã chép`;
-        setTimeout(() => {
-          btn.classList.remove('copied');
-          btn.innerHTML = prev;
-        }, 2000);
-      });
+    const currentHost = window.location.origin;
+
+    function updateCommands(keyVal) {
+      const cleanKey = (keyVal || '').trim();
+      const displayKey = cleanKey || '<MÃ_KEY_CỦA_BẠN>';
+
+      document.getElementById('cmdBash').textContent = `curl -fsSL "${currentHost}/claude.sh?key=${displayKey}" | bash`;
+      document.getElementById('cmdPs').textContent = `irm "${currentHost}/claude.ps1?key=${displayKey}" | iex`;
+      document.getElementById('cmdCmd').textContent = `curl -fsSL "${currentHost}/claude.cmd?key=${displayKey}" -o setup.cmd && setup.cmd`;
     }
+
+    async function checkKey() {
+      const input = document.getElementById('keyInput');
+      const keyVal = input.value.trim();
+      const statusBox = document.getElementById('keyStatusBox');
+      const statusMsg = document.getElementById('statusMessage');
+      const statusDetails = document.getElementById('statusDetails');
+      const btn = document.getElementById('btnCheckKey');
+
+      if (!keyVal) {
+        statusBox.style.display = 'flex';
+        statusBox.className = 'key-status-box status-box-invalid';
+        statusMsg.innerHTML = '✕ Vui lòng nhập mã License Key';
+        statusDetails.innerHTML = '';
+        updateCommands('');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Đang kiểm tra...';
+
+      try {
+        const res = await fetch('/api/license?action=check', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ licenseKey: keyVal })
+        });
+        const data = await res.json();
+
+        statusBox.style.display = 'flex';
+        if (res.ok && data.ok) {
+          statusBox.className = 'key-status-box status-box-valid';
+          const nodeCount = (data.nodeCount || 0).toLocaleString('vi-VN');
+          const expireStr = data.expireAt ? new Date(data.expireAt).toLocaleDateString('vi-VN') : 'Vĩnh viễn';
+
+          statusMsg.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Mã hợp lệ: <strong>${data.licenseKey}</strong>`;
+          statusDetails.innerHTML = `
+            <span>• <strong>${nodeCount} Node</strong></span>
+            <span>• Hạn dùng: <strong>${expireStr}</strong></span>
+            <span>• Máy: <strong>${data.deviceSlot || '1/1'}</strong></span>
+          `;
+          updateCommands(data.licenseKey);
+        } else {
+          statusBox.className = 'key-status-box status-box-invalid';
+          statusMsg.innerHTML = `✕ ${data.error || 'Mã không hợp lệ hoặc đã hết hạn'}`;
+          statusDetails.innerHTML = '';
+          updateCommands(keyVal);
+        }
+      } catch (err) {
+        statusBox.style.display = 'flex';
+        statusBox.className = 'key-status-box status-box-invalid';
+        statusMsg.innerHTML = `✕ Lỗi kết nối: ${err.message}`;
+        statusDetails.innerHTML = '';
+        updateCommands(keyVal);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> Kích hoạt Key`;
+      }
+    }
+
+    // Auto-fill from URL query param ?key=...
+    window.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      const keyFromUrl = params.get('key');
+      if (keyFromUrl) {
+        document.getElementById('keyInput').value = keyFromUrl;
+        checkKey();
+      } else {
+        updateCommands('');
+      }
+    });
+
+    // Enter key submits
+    document.getElementById('keyInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        checkKey();
+      }
+    });
 
     function pickTab(group, idx, btn) {
       const parent = btn.closest('.tab-bar');
@@ -953,6 +791,7 @@ ai-claude-keyapi</code></pre>
       });
     }
 
+    // Theme toggle
     const themeBtn = document.getElementById('themeToggle');
     const themeIcon = document.getElementById('themeIcon');
 

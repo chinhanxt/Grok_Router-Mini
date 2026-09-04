@@ -24,6 +24,45 @@ export default async function handler(req, res) {
       return res.status(400).json({ ok: false, error: 'Vui lòng nhập mã kích hoạt (License Key)' });
     }
 
+    const { searchParams } = new URL(req.url, `http://${req.headers.host}`);
+    const action = searchParams.get('action') || (body && body.action) || '';
+
+    if (action === 'check') {
+      const cleanKey = effectiveKey.trim().toUpperCase();
+      const rawKeys = await kvGet('keys');
+      const keys = Array.isArray(rawKeys) ? rawKeys : [];
+      const targetKey = keys.find(k => k && k.key && k.key.toUpperCase() === cleanKey);
+
+      if (!targetKey) {
+        return res.status(401).json({ ok: false, error: 'Mã License không chính xác hoặc không tồn tại' });
+      }
+      if (targetKey.active === false) {
+        return res.status(403).json({ ok: false, error: 'Mã License này đã bị tạm khóa' });
+      }
+      if (targetKey.expireAt && Date.now() > new Date(targetKey.expireAt).getTime()) {
+        const exp = new Date(targetKey.expireAt).toLocaleDateString('vi-VN');
+        return res.status(403).json({ ok: false, error: `Mã License đã hết hạn vào ${exp}` });
+      }
+
+      const packageId = targetKey.packageId || 'default';
+      let rawNodes = await kvGet(`package_${packageId}`);
+      if ((!rawNodes || (Array.isArray(rawNodes) && rawNodes.length === 0)) && packageId === 'default') {
+        rawNodes = await kvGet('nodes');
+      }
+      const allNodes = Array.isArray(rawNodes) ? rawNodes : [];
+      const activeCount = allNodes.filter(n => n && n.status !== 'disabled').length;
+
+      return res.status(200).json({
+        ok: true,
+        valid: true,
+        licenseKey: targetKey.key,
+        label: targetKey.label,
+        nodeCount: activeCount,
+        expireAt: targetKey.expireAt,
+        deviceSlot: `${(targetKey.devices || []).length}/${targetKey.maxDevices >= 999 ? '∞' : targetKey.maxDevices}`
+      });
+    }
+
     if (!machineId || typeof machineId !== 'string') {
       return res.status(400).json({ ok: false, error: 'Thiếu định danh thiết bị (Machine ID)' });
     }
