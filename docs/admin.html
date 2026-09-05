@@ -1451,6 +1451,20 @@
         if (modal && modal.style.display === 'flex') {
           closeAdminPopup(false);
         }
+        document.querySelectorAll('.modal-overlay').forEach(m => {
+          if (m.id !== 'adminNotifyModal' && m.id !== 'authOverlay' && m.style.display === 'flex') {
+            m.style.display = 'none';
+          }
+        });
+      }
+    });
+
+    // Close modal on backdrop click
+    document.addEventListener('click', (e) => {
+      if (e.target && e.target.classList && e.target.classList.contains('modal-overlay')) {
+        if (e.target.id !== 'adminNotifyModal' && e.target.id !== 'authOverlay' && e.target.style.display === 'flex') {
+          e.target.style.display = 'none';
+        }
       }
     });
 
@@ -1589,15 +1603,15 @@
         });
         const data = await res.json();
         if (!res.ok) {
-          showToast(data.error || 'Lỗi kích hoạt Keep-Alive', 'error');
+          showAdminToast(data.error || 'Lỗi kích hoạt Keep-Alive', 'error');
           return;
         }
 
         const s = data.summary || {};
-        showToast(`Keep-Alive thành công! Đã làm mới ${s.refreshed || 0} node, ${s.skipped || 0} node còn hạn.`, 'success');
+        showAdminToast(`Keep-Alive thành công! Đã làm mới ${s.refreshed || 0} node, ${s.skipped || 0} node còn hạn.`, 'success');
         await fetchPackages();
       } catch (err) {
-        showToast('Lỗi kết nối khi chạy Keep-Alive: ' + err.message, 'error');
+        showAdminToast('Lỗi kết nối khi chạy Keep-Alive: ' + err.message, 'error');
       } finally {
         btn.disabled = false;
         btn.innerHTML = SVG_ICONS.lightning + ' Chạy Keep-Alive ngay';
@@ -1715,10 +1729,10 @@
         if (!res.ok) throw new Error(data.error || 'Lỗi lưu cấu hình');
         window.currentKeepaliveConfig = data.config;
         closeModal('modalKeepaliveConfig');
-        showToast('Đã lưu cấu hình Keep-Alive ngầm thành công!', 'success');
+        showAdminToast('Đã lưu cấu hình Keep-Alive ngầm thành công!', 'success');
         await fetchPackages();
       } catch (err) {
-        showToast(err.message, 'error');
+        showAdminToast(err.message, 'error');
       } finally {
         btn.disabled = false;
         btn.innerHTML = 'Lưu cấu hình';
@@ -1762,7 +1776,7 @@
             '<td class="nowrap" style="font-size: 12px;">' + expireStr + '</td>' +
             '<td>' + statusBadge + '</td>' +
             '<td style="text-align: right;" class="nowrap">' +
-              '<button class="btn-sm" onclick="copyKeyText(\'' + escapeHtml(k.key) + '\')" title="Sao chép Key" style="margin-right: 4px;">' + SVG_ICONS.copy + ' Copy</button>' +
+              '<button class="btn-sm" onclick="copyText(\'' + escapeHtml(k.key) + '\')" title="Sao chép Key" style="margin-right: 4px;">' + SVG_ICONS.copy + ' Copy</button>' +
               '<button class="btn-sm" onclick="unlinkKeyFromPackage(\'' + escapeHtml(k.id) + '\')" style="color: var(--status-error);" title="Gỡ key khỏi gói này">' + SVG_ICONS.trash + ' Gỡ</button>' +
             '</td>' +
           '</tr>';
@@ -1782,22 +1796,21 @@
     }
 
     function openAssignModalForPkg(pkgId) {
-      const assignKeySelect = document.getElementById('assignModalPackageSelect');
-      if (assignKeySelect) assignKeySelect.value = pkgId;
       if (keysData && keysData.length > 0) {
-        openAssignPackageModal(keysData[0].id);
+        const k = keysData[0];
+        openAssignModal(k.id, pkgId, k.key);
       } else {
         openCreateKeyModal();
       }
     }
 
     async function unlinkKeyFromPackage(keyId) {
-      const confirmed = await openAdminPopup({
-        title: 'Xác nhận gỡ Key',
-        message: 'Bạn có chắc muốn gỡ key này khỏi gói? Key sẽ được chuyển về gói mặc định.',
-        confirmText: 'Gỡ key',
-        isDanger: true
-      });
+      const confirmed = await customConfirm(
+        'Bạn có chắc muốn gỡ key này khỏi gói? Key sẽ được chuyển về gói mặc định.',
+        'Xác nhận gỡ Key',
+        true,
+        'Gỡ key'
+      );
       if (!confirmed) return;
 
       try {
@@ -1807,13 +1820,13 @@
           body: JSON.stringify({ keyId, packageId: 'default' })
         });
         if (res.ok) {
-          showToast('Đã gỡ key khỏi gói thành công', 'success');
+          showAdminToast('Đã gỡ key khỏi gói thành công', 'success');
           await fetchPackages();
           await fetchKeys();
           if (currentViewingPkgId) openPackageKeysModal(currentViewingPkgId);
         }
       } catch (err) {
-        showToast('Lỗi: ' + err.message, 'error');
+        showAdminToast('Lỗi: ' + err.message, 'error');
       }
     }
 
@@ -1883,7 +1896,7 @@
 
         openModal('modalTestResult');
       } catch (err) {
-        showToast('Lỗi kết nối kiểm tra: ' + err.message, 'error');
+        showAdminToast('Lỗi kết nối kiểm tra: ' + err.message, 'error');
       } finally {
         if (btn) {
           btn.disabled = false;
@@ -2535,14 +2548,35 @@
       document.getElementById('nodesTab').style.display = tabId === 'nodesTab' ? 'block' : 'none';
     }
 
+    function openModal(id) {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'flex';
+    }
+
+    function closeModal(id) {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+    }
+
+    function showToast(message, type = 'success') {
+      showAdminToast(message, type);
+    }
+
+    function copyKeyText(txt) {
+      copyText(txt);
+    }
+
+    function openAdminPopup(options) {
+      return showAdminPopup(options);
+    }
+
     function openCreateKeyModal() {
       document.getElementById('newKeyString').value = 'KEY-' + Math.random().toString(36).substring(2, 6).toUpperCase() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
       populatePackageDropdowns();
-      document.getElementById('createKeyModal').style.display = 'flex';
+      openModal('createKeyModal');
     }
-    function openBulkImportModal() { document.getElementById('bulkImportModal').style.display = 'flex'; }
-    function openAddNodeModal() { document.getElementById('addNodeModal').style.display = 'flex'; }
-    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    function openBulkImportModal() { openModal('bulkImportModal'); }
+    function openAddNodeModal() { openModal('addNodeModal'); }
 
     function copyText(txt) {
       navigator.clipboard.writeText(txt).then(() => showAdminToast('✔ Đã sao chép mã: ' + txt, 'success'));
