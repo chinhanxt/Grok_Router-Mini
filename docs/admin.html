@@ -186,6 +186,45 @@
       display: none;
     }
 
+    .brand-avatar-container {
+      position: relative;
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .brand-expand-overlay {
+      position: absolute;
+      inset: 0;
+      background: var(--accent-primary);
+      color: #ffffff;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.18s ease;
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+      z-index: 2;
+    }
+
+    /* When collapsed: hover on logo reveals SVG arrow to expand! */
+    .admin-sidebar.collapsed .brand-avatar-container:hover .brand-expand-overlay {
+      opacity: 1;
+      visibility: visible;
+      transform: scale(1.06);
+    }
+
+    .admin-sidebar.collapsed .brand-avatar-container:hover .brand-avatar {
+      transform: scale(1.06);
+    }
+
     .sidebar-toggle-btn {
       background: none;
       border: none;
@@ -206,37 +245,9 @@
       color: var(--text-primary);
     }
 
-    /* When collapsed: hide toggle button, reveal as floating button on hover */
+    /* When collapsed: hide external button completely to eliminate clip/slice bug */
     .admin-sidebar.collapsed .sidebar-toggle-btn {
-      position: absolute;
-      right: -13px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.35);
-      border-radius: 50%;
-      width: 24px;
-      height: 24px;
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-      z-index: 99;
-      color: var(--text-primary);
-    }
-
-    .admin-sidebar.collapsed:hover .sidebar-toggle-btn,
-    .admin-sidebar.collapsed .sidebar-head:hover .sidebar-toggle-btn {
-      opacity: 1;
-      visibility: visible;
-      pointer-events: auto;
-    }
-
-    .admin-sidebar.collapsed .sidebar-toggle-btn:hover {
-      background: var(--accent-primary);
-      color: #ffffff;
-      border-color: var(--accent-primary);
-      transform: translateY(-50%) scale(1.1);
+      display: none !important;
     }
 
     /* Topbar Icon Button (Theme Toggle) */
@@ -1252,13 +1263,16 @@
     <aside class="admin-sidebar" id="adminSidebar">
       <div class="sidebar-head">
         <div class="sidebar-brand">
-          <a href="https://github.com/chinhanxt" target="_blank" rel="noopener noreferrer" class="brand-avatar-link" title="GitHub: chinhanxt" style="display:inline-flex;align-items:center;justify-content:center;text-decoration:none;flex-shrink:0;width:32px;height:32px;">
-            <img src="https://github.com/chinhanxt.png" alt="chinhanxt" class="brand-avatar" style="width:32px;height:32px;max-width:32px;max-height:32px;min-width:32px;min-height:32px;border-radius:8px;object-fit:cover;border:1.5px solid var(--border);box-shadow:0 2px 5px rgba(0,0,0,0.15);display:block;flex-shrink:0;" onerror="this.src='https://avatars.githubusercontent.com/u/10202759?v=4'" />
-          </a>
+          <div class="brand-avatar-container" onclick="handleBrandClick(event)" title="Grok Router (chinhanxt)">
+            <img src="https://github.com/chinhanxt.png" alt="chinhanxt" class="brand-avatar" onerror="this.src='https://avatars.githubusercontent.com/u/10202759?v=4'" />
+            <div class="brand-expand-overlay" title="Mở rộng sidebar">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </div>
+          </div>
           <span class="brand-text">AI Claude Admin</span>
         </div>
-        <button class="sidebar-toggle-btn" id="btnToggleSidebar" onclick="toggleSidebar()" title="Thu gọn / Mở rộng">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        <button class="sidebar-toggle-btn" id="btnToggleSidebar" onclick="toggleSidebar()" title="Thu gọn sidebar">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
         </button>
       </div>
 
@@ -1558,7 +1572,10 @@
                   <input type="hidden" id="tabKeepaliveRunHour" value="3" />
                   <div style="display: grid; grid-template-columns: repeat(4, 1fr) auto; gap: 8px; margin-top: 6px;">
                     <button type="button" class="btn-hour-quick" data-hour="2" onclick="selectKeepaliveHour(2)">02:00</button>
-                    <button type="button" class="btn-hour-quick active" data-hour="3" onclick="selectKeepaliveHour(3)">★ 03:00</button>
+                    <button type="button" class="btn-hour-quick active" data-hour="3" onclick="selectKeepaliveHour(3)" style="display:inline-flex;align-items:center;justify-content:center;gap:4px;">
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                      <span>03:00</span>
+                    </button>
                     <button type="button" class="btn-hour-quick" data-hour="4" onclick="selectKeepaliveHour(4)">04:00</button>
                     <button type="button" class="btn-hour-quick" data-hour="5" onclick="selectKeepaliveHour(5)">05:00</button>
                     <button type="button" class="btn-secondary" id="btnCustomHourTrigger" onclick="openHourPickerModal()" style="padding: 0 12px; font-size: 12px; white-space: nowrap;">
@@ -1704,25 +1721,37 @@
       <div style="display: flex; flex-direction: column; gap: 14px; max-height: 400px; overflow-y: auto; padding-right: 4px;">
         <!-- Đêm (Khuyên dùng) -->
         <div>
-          <div style="font-size: 11.5px; font-weight: 700; color: var(--accent-primary); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.4px;">🌙 Đêm & Rạng Sáng (Khuyến nghị - ít truy cập)</div>
+          <div style="font-size: 11.5px; font-weight: 700; color: var(--accent-primary); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.4px; display: flex; align-items: center; gap: 6px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+            <span>Đêm & Rạng Sáng (Khuyến nghị - ít truy cập)</span>
+          </div>
           <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px;" id="hourPickerGridNight"></div>
         </div>
 
         <!-- Sáng -->
         <div>
-          <div style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.4px;">🌅 Buổi Sáng</div>
+          <div style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.4px; display: flex; align-items: center; gap: 6px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path></svg>
+            <span>Buổi Sáng</span>
+          </div>
           <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px;" id="hourPickerGridMorning"></div>
         </div>
 
         <!-- Chiều -->
         <div>
-          <div style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.4px;">☀️ Buổi Chiều</div>
+          <div style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.4px; display: flex; align-items: center; gap: 6px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            <span>Buổi Chiều</span>
+          </div>
           <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px;" id="hourPickerGridAfternoon"></div>
         </div>
 
         <!-- Tối -->
         <div>
-          <div style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.4px;">🌆 Buổi Tối</div>
+          <div style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.4px; display: flex; align-items: center; gap: 6px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 18a5 5 0 0 0-10 0"></path><line x1="12" y1="9" x2="12" y2="2"></line><line x1="4.22" y1="10.22" x2="5.64" y2="11.64"></line><line x1="1" y1="18" x2="3" y2="18"></line><line x1="21" y1="18" x2="23" y2="18"></line><line x1="18.36" y1="11.64" x2="19.78" y2="10.22"></line><line x1="23" y1="22" x2="1" y2="22"></line></svg>
+            <span>Buổi Tối</span>
+          </div>
           <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px;" id="hourPickerGridEvening"></div>
         </div>
       </div>
@@ -2244,6 +2273,16 @@
       }
     });
 
+    function handleBrandClick(e) {
+      const sidebar = document.getElementById('adminSidebar');
+      if (sidebar && sidebar.classList.contains('collapsed')) {
+        e.preventDefault();
+        toggleSidebar();
+      } else {
+        window.open('https://github.com/chinhanxt', '_blank');
+      }
+    }
+
     // Sidebar Collapse (Clean horizontal slide, NO icon rotate)
     function toggleSidebar() {
       const sidebar = document.getElementById('adminSidebar');
@@ -2633,7 +2672,7 @@
         const isActive = h === currentHour;
         return `
           <button type="button" class="hour-chip ${isActive ? 'active' : ''} ${isRecom ? 'recommended' : ''}" data-hour="${h}" onclick="selectKeepaliveHour(${h})">
-            ${isRecom ? '<span class="hour-chip-star">★</span>' : ''}
+            ${isRecom ? '<svg width="10" height="10" viewBox="0 0 24 24" fill="#f59e0b" stroke="none" class="hour-chip-star" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>' : ''}
             <span>${str}</span>
           </button>
         `;
@@ -3002,7 +3041,7 @@
             </div>
             <div style="display: flex; align-items: center; gap: 10px; flex-shrink: 0;">
               <span class="node-badge-count" style="font-size: 12px;">${(p.nodeCount || 0).toLocaleString('vi-VN')} node</span>
-              ${isSelected ? '<span class="status-badge status-active" style="font-size: 11px;">✓ Đang chọn</span>' : '<button class="btn-primary-sm" style="pointer-events: none;">Chọn</button>'}
+              ${isSelected ? '<span class="status-badge status-active" style="font-size: 11px; display:inline-flex; align-items:center; gap:4px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Đang chọn</span></span>' : '<button class="btn-primary-sm" style="pointer-events: none;">Chọn</button>'}
             </div>
           </div>
         `;
