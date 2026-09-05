@@ -86,6 +86,7 @@ export default async function handler(req, res) {
         valid: true,
         licenseKey: targetKey.key,
         label: targetKey.label,
+        packageId: packageId,
         nodeCount: activeCount,
         expireAt: targetKey.expireAt,
         deviceSlot: `${(targetKey.devices || []).length}/${targetKey.maxDevices >= 999 ? '∞' : targetKey.maxDevices}`

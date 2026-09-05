@@ -382,6 +382,123 @@
       flex-shrink: 0;
     }
 
+    /* Keepalive Configuration Cards & Pills */
+    .config-pill-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 6px;
+    }
+    .config-pill-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      text-align: center;
+      user-select: none;
+      position: relative;
+    }
+    .config-pill-item:hover {
+      border-color: var(--accent-primary);
+      background: var(--bg-surface-hover);
+    }
+    .config-pill-item.active {
+      border-color: var(--accent-primary);
+      background: rgba(16, 185, 129, 0.08);
+      box-shadow: 0 0 0 1px var(--accent-primary);
+    }
+    .config-pill-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .config-pill-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+    .config-pill-item.active .config-pill-desc {
+      color: var(--accent-primary);
+      font-weight: 500;
+    }
+    .config-pill-badge {
+      position: absolute;
+      top: -8px;
+      right: 8px;
+      background: var(--accent-primary);
+      color: #fff;
+      font-size: 9.5px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .btn-hour-quick {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: all 0.18s ease;
+      text-align: center;
+      user-select: none;
+    }
+    .btn-hour-quick:hover {
+      border-color: var(--accent-primary);
+      background: var(--bg-surface-hover);
+    }
+    .btn-hour-quick.active {
+      border-color: var(--accent-primary);
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--accent-primary);
+      box-shadow: 0 0 0 1px var(--accent-primary);
+    }
+
+    .hour-chip {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 7px 4px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+    .hour-chip:hover {
+      border-color: var(--accent-primary);
+      background: var(--bg-surface-hover);
+      color: var(--accent-primary);
+    }
+    .hour-chip.active {
+      border-color: var(--accent-primary);
+      background: var(--accent-primary);
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
+    }
+    .hour-chip.recommended {
+      border-color: rgba(16, 185, 129, 0.4);
+    }
+    .hour-chip-star {
+      color: #f59e0b;
+      font-size: 10px;
+    }
+    .hour-chip.active .hour-chip-star {
+      color: #ffffff;
+    }
+
 
     .sidebar-menu {
       flex: 1;
@@ -1433,31 +1550,63 @@
                   </label>
                 </div>
 
-                <div class="form-group" style="margin-bottom: 16px;">
-                  <label class="form-label" style="font-size: 12.5px; font-weight: 600;">Khung giờ chạy ngầm hàng ngày (Giờ Việt Nam UTC+7):</label>
-                  <select id="tabKeepaliveRunHour" class="form-select">
-                    <!-- Populated dynamically 00:00 to 23:00 -->
-                  </select>
-                  <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px;">Khuyến nghị chọn từ 02:00 - 05:00 sáng khi lưu lượng truy cập thấp nhất.</div>
+                <div class="form-group" style="margin-bottom: 18px;">
+                  <label class="form-label" style="font-size: 12.5px; font-weight: 600; display: flex; justify-content: space-between; align-items: center;">
+                    <span>Khung giờ chạy ngầm hàng ngày (Giờ VN UTC+7):</span>
+                    <span id="tabKeepaliveRunHourLabel" style="color: var(--accent-primary); font-weight: 700; font-family: var(--font-mono); font-size: 12.5px;">03:00 (Giờ VN)</span>
+                  </label>
+                  <input type="hidden" id="tabKeepaliveRunHour" value="3" />
+                  <div style="display: grid; grid-template-columns: repeat(4, 1fr) auto; gap: 8px; margin-top: 6px;">
+                    <button type="button" class="btn-hour-quick" data-hour="2" onclick="selectKeepaliveHour(2)">02:00</button>
+                    <button type="button" class="btn-hour-quick active" data-hour="3" onclick="selectKeepaliveHour(3)">★ 03:00</button>
+                    <button type="button" class="btn-hour-quick" data-hour="4" onclick="selectKeepaliveHour(4)">04:00</button>
+                    <button type="button" class="btn-hour-quick" data-hour="5" onclick="selectKeepaliveHour(5)">05:00</button>
+                    <button type="button" class="btn-secondary" id="btnCustomHourTrigger" onclick="openHourPickerModal()" style="padding: 0 12px; font-size: 12px; white-space: nowrap;">
+                      <span>Giờ khác ▾</span>
+                    </button>
+                  </div>
+                  <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 5px;">Khuyến nghị từ 02:00 - 05:00 sáng khi lưu lượng truy cập thấp nhất.</div>
                 </div>
 
-                <div class="form-group" style="margin-bottom: 16px;">
+                <div class="form-group" style="margin-bottom: 18px;">
                   <label class="form-label" style="font-size: 12.5px; font-weight: 600;">Chu kỳ quét tự động:</label>
-                  <select id="tabKeepaliveIntervalDays" class="form-select">
-                    <option value="1">Mỗi 1 ngày (Hàng ngày)</option>
-                    <option value="2" selected>Mỗi 2 ngày (Tối ưu - Khuyến nghị)</option>
-                    <option value="3">Mỗi 3 ngày (Tiết kiệm lượt gọi)</option>
-                  </select>
-                  <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px;">xAI hết hạn token sau 7 ngày không hoạt động. Quét 2 ngày/lần đảm bảo an toàn tuyệt đối.</div>
+                  <input type="hidden" id="tabKeepaliveIntervalDays" value="2" />
+                  <div class="config-pill-grid">
+                    <div class="config-pill-item config-interval-item" data-val="1" onclick="selectKeepaliveInterval(1)">
+                      <div class="config-pill-title">Mỗi 1 ngày</div>
+                      <div class="config-pill-desc">Hàng ngày</div>
+                    </div>
+                    <div class="config-pill-item config-interval-item active" data-val="2" onclick="selectKeepaliveInterval(2)">
+                      <span class="config-pill-badge">Khuyên dùng</span>
+                      <div class="config-pill-title">Mỗi 2 ngày</div>
+                      <div class="config-pill-desc">Tối ưu an toàn</div>
+                    </div>
+                    <div class="config-pill-item config-interval-item" data-val="3" onclick="selectKeepaliveInterval(3)">
+                      <div class="config-pill-title">Mỗi 3 ngày</div>
+                      <div class="config-pill-desc">Tiết kiệm lượt gọi</div>
+                    </div>
+                  </div>
+                  <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 6px;">xAI hết hạn token sau 7 ngày không hoạt động. Quét 2 ngày/lần đảm bảo an toàn tuyệt đối.</div>
                 </div>
 
-                <div class="form-group" style="margin-bottom: 20px;">
+                <div class="form-group" style="margin-bottom: 22px;">
                   <label class="form-label" style="font-size: 12.5px; font-weight: 600;">Ngưỡng làm mới token trước khi hết hạn:</label>
-                  <select id="tabKeepaliveFreshThreshold" class="form-select">
-                    <option value="24">Chỉ làm mới token sắp hết hạn trong 24 giờ</option>
-                    <option value="48" selected>Làm mới token sắp hết hạn trong 48 giờ (Khuyên dùng)</option>
-                    <option value="72">Làm mới token sắp hết hạn trong 72 giờ</option>
-                  </select>
+                  <input type="hidden" id="tabKeepaliveFreshThreshold" value="48" />
+                  <div class="config-pill-grid">
+                    <div class="config-pill-item config-threshold-item" data-val="24" onclick="selectKeepaliveThreshold(24)">
+                      <div class="config-pill-title">24 Giờ</div>
+                      <div class="config-pill-desc">Chỉ làm mới sát hạn</div>
+                    </div>
+                    <div class="config-pill-item config-threshold-item active" data-val="48" onclick="selectKeepaliveThreshold(48)">
+                      <span class="config-pill-badge">Khuyên dùng</span>
+                      <div class="config-pill-title">48 Giờ</div>
+                      <div class="config-pill-desc">Làm mới trước 2 ngày</div>
+                    </div>
+                    <div class="config-pill-item config-threshold-item" data-val="72" onclick="selectKeepaliveThreshold(72)">
+                      <div class="config-pill-title">72 Giờ</div>
+                      <div class="config-pill-desc">Làm mới sớm trước 3 ngày</div>
+                    </div>
+                  </div>
                 </div>
 
                 <button type="submit" class="btn-primary" id="btnTabSaveKeepalive" style="padding: 9px 18px; font-size: 13px;">
@@ -1535,6 +1684,51 @@
 
       <div class="modal-foot">
         <button type="button" class="btn-secondary" onclick="closeModal('modalPackagePicker')">Đóng</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Chọn Khung Giờ Chạy Ngầm (24 giờ dạng bảng chip trực quan) -->
+  <div id="modalHourPicker" class="modal-overlay" style="z-index: 600 !important;" onclick="if(event.target===this)closeModal('modalHourPicker')">
+    <div class="modal-box" style="max-width: 480px;">
+      <div class="modal-head">
+        <div class="modal-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          <span>Chọn Khung Giờ Chạy Ngầm (Giờ VN UTC+7)</span>
+        </div>
+        <button class="btn-sm" onclick="closeModal('modalHourPicker')" title="Đóng">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 14px; max-height: 400px; overflow-y: auto; padding-right: 4px;">
+        <!-- Đêm (Khuyên dùng) -->
+        <div>
+          <div style="font-size: 11.5px; font-weight: 700; color: var(--accent-primary); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.4px;">🌙 Đêm & Rạng Sáng (Khuyến nghị - ít truy cập)</div>
+          <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px;" id="hourPickerGridNight"></div>
+        </div>
+
+        <!-- Sáng -->
+        <div>
+          <div style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.4px;">🌅 Buổi Sáng</div>
+          <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px;" id="hourPickerGridMorning"></div>
+        </div>
+
+        <!-- Chiều -->
+        <div>
+          <div style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.4px;">☀️ Buổi Chiều</div>
+          <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px;" id="hourPickerGridAfternoon"></div>
+        </div>
+
+        <!-- Tối -->
+        <div>
+          <div style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.4px;">🌆 Buổi Tối</div>
+          <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px;" id="hourPickerGridEvening"></div>
+        </div>
+      </div>
+
+      <div class="modal-foot">
+        <button type="button" class="btn-secondary" onclick="closeModal('modalHourPicker')">Đóng</button>
       </div>
     </div>
   </div>
@@ -2337,25 +2531,11 @@
 
       // Sync Tab 4 Settings Form & Status
       const tabAutoRun = document.getElementById('tabKeepaliveAutoRun');
-      const tabHour = document.getElementById('tabKeepaliveRunHour');
-      const tabInterval = document.getElementById('tabKeepaliveIntervalDays');
-      const tabThreshold = document.getElementById('tabKeepaliveFreshThreshold');
-
       if (tabAutoRun) tabAutoRun.checked = isAct;
-      if (tabHour) {
-        // Populate 24 hours if empty
-        if (tabHour.children.length === 0) {
-          for (let h = 0; h < 24; h++) {
-            const opt = document.createElement('option');
-            opt.value = h;
-            opt.textContent = `${String(h).padStart(2, '0')}:00 (Giờ VN)`;
-            tabHour.appendChild(opt);
-          }
-        }
-        tabHour.value = cfg.runHour !== undefined ? cfg.runHour : 3;
-      }
-      if (tabInterval) tabInterval.value = cfg.intervalDays || 2;
-      if (tabThreshold) tabThreshold.value = cfg.freshThresholdHours || 48;
+
+      selectKeepaliveHour(cfg.runHour !== undefined ? cfg.runHour : 3, false);
+      selectKeepaliveInterval(cfg.intervalDays || 2);
+      selectKeepaliveThreshold(cfg.freshThresholdHours || 48);
 
       // Status in Tab 4
       const lastTimeEl = document.getElementById('tabKeepaliveLastTime');
@@ -2371,6 +2551,113 @@
       if (lastRefEl) lastRefEl.textContent = `${lastRun ? (lastRun.refreshed || 0) : 0} node`;
       if (lastSkipEl) lastSkipEl.textContent = `${lastRun ? (lastRun.skipped || 0) : 0} node`;
       if (lastDurEl) lastDurEl.textContent = `${lastRun ? (lastRun.durationMs || 0) : 0} ms`;
+    }
+
+    // Keepalive Settings Interactive Selectors
+    function selectKeepaliveHour(h, closePicker = true) {
+      const hour = parseInt(h, 10);
+      const hiddenInput = document.getElementById('tabKeepaliveRunHour');
+      if (hiddenInput) hiddenInput.value = hour;
+
+      const hourStr = `${String(hour).padStart(2, '0')}:00`;
+      const label = document.getElementById('tabKeepaliveRunHourLabel');
+      if (label) label.textContent = `${hourStr} (Giờ VN)`;
+
+      // Update quick buttons
+      document.querySelectorAll('.btn-hour-quick').forEach(btn => {
+        const btnHour = parseInt(btn.getAttribute('data-hour'), 10);
+        btn.classList.toggle('active', btnHour === hour);
+      });
+
+      // Update custom hour trigger text
+      const customBtn = document.getElementById('btnCustomHourTrigger');
+      if (customBtn) {
+        if ([2, 3, 4, 5].includes(hour)) {
+          customBtn.innerHTML = '<span>Giờ khác ▾</span>';
+          customBtn.classList.remove('active');
+        } else {
+          customBtn.innerHTML = `<span>Giờ khác: <strong>${hourStr}</strong> ▾</span>`;
+          customBtn.classList.add('active');
+        }
+      }
+
+      // Update chips inside modal
+      document.querySelectorAll('.hour-chip').forEach(chip => {
+        const chipHour = parseInt(chip.getAttribute('data-hour'), 10);
+        chip.classList.toggle('active', chipHour === hour);
+      });
+
+      if (closePicker) {
+        closeModal('modalHourPicker');
+      }
+    }
+
+    function selectKeepaliveInterval(days) {
+      const val = parseInt(days, 10);
+      const hiddenInput = document.getElementById('tabKeepaliveIntervalDays');
+      if (hiddenInput) hiddenInput.value = val;
+
+      document.querySelectorAll('.config-interval-item').forEach(item => {
+        const itemVal = parseInt(item.getAttribute('data-val'), 10);
+        item.classList.toggle('active', itemVal === val);
+      });
+    }
+
+    function selectKeepaliveThreshold(hours) {
+      const val = parseInt(hours, 10);
+      const hiddenInput = document.getElementById('tabKeepaliveFreshThreshold');
+      if (hiddenInput) hiddenInput.value = val;
+
+      document.querySelectorAll('.config-threshold-item').forEach(item => {
+        const itemVal = parseInt(item.getAttribute('data-val'), 10);
+        item.classList.toggle('active', itemVal === val);
+      });
+    }
+
+    function openHourPickerModal() {
+      const currentHour = parseInt(document.getElementById('tabKeepaliveRunHour')?.value || '3', 10);
+      renderHourPickerGrid(currentHour);
+      openModal('modalHourPicker');
+    }
+
+    function renderHourPickerGrid(currentHour) {
+      const nightContainer = document.getElementById('hourPickerGridNight');
+      const morningContainer = document.getElementById('hourPickerGridMorning');
+      const afternoonContainer = document.getElementById('hourPickerGridAfternoon');
+      const eveningContainer = document.getElementById('hourPickerGridEvening');
+
+      if (!nightContainer) return;
+
+      const makeChip = (h, isRecom = false) => {
+        const str = `${String(h).padStart(2, '0')}:00`;
+        const isActive = h === currentHour;
+        return `
+          <button type="button" class="hour-chip ${isActive ? 'active' : ''} ${isRecom ? 'recommended' : ''}" data-hour="${h}" onclick="selectKeepaliveHour(${h})">
+            ${isRecom ? '<span class="hour-chip-star">★</span>' : ''}
+            <span>${str}</span>
+          </button>
+        `;
+      };
+
+      // Đêm: 0..5 (02, 03, 04, 05 là khuyến nghị)
+      let nightHtml = '';
+      for (let h = 0; h <= 5; h++) nightHtml += makeChip(h, h >= 2 && h <= 5);
+      nightContainer.innerHTML = nightHtml;
+
+      // Sáng: 6..11
+      let morningHtml = '';
+      for (let h = 6; h <= 11; h++) morningHtml += makeChip(h);
+      morningContainer.innerHTML = morningHtml;
+
+      // Chiều: 12..17
+      let afternoonHtml = '';
+      for (let h = 12; h <= 17; h++) afternoonHtml += makeChip(h);
+      afternoonContainer.innerHTML = afternoonHtml;
+
+      // Tối: 18..23
+      let eveningHtml = '';
+      for (let h = 18; h <= 23; h++) eveningHtml += makeChip(h);
+      eveningContainer.innerHTML = eveningHtml;
     }
 
     async function saveKeepaliveConfigFromTab(e) {
