@@ -20,7 +20,7 @@ const distShortcut = path.join(__dirname, '../dist/utils/shortcut.js');
 const shortcutPath = fs.existsSync(distShortcut) ? distShortcut : path.join(__dirname, '../src/utils/shortcut.js');
 const { setupShortcut } = await import(shortcutPath);
 
-let pkg = { name: 'ai-claude-keyapi', version: '1.0.8' };
+let pkg = { name: 'ai-claude-keyapi', version: '1.0.9' };
 try {
   const rawPkg = fs.readFileSync(path.join(__dirname, '../package.json'), 'utf8');
   pkg = JSON.parse(rawPkg);
