@@ -5,6 +5,12 @@ export function buildChatPayload(reqBody) {
   const claudeModelName = getClaudeModelName(requestedModel);
   const claudeIdentityPrompt = buildClaudeSystemPrompt(claudeModelName);
 
+  const m = String(requestedModel || '').toLowerCase();
+  const reasoningEffort = reqBody.reasoning_effort || (
+    (m.includes('haiku') || m.includes('mini') || m.includes('fast') || m.includes('flash')) ? 'low' :
+    (m.includes('opus') || m.includes('fable') || m.includes('3-7') || m.includes('3.7')) ? 'high' : 'medium'
+  );
+
   let processedMessages = Array.isArray(reqBody.messages) ? [...reqBody.messages] : [];
   if (processedMessages.length > 0 && processedMessages[0].role === 'system') {
     const originalContent = typeof processedMessages[0].content === 'string' ? processedMessages[0].content : '';
@@ -20,15 +26,20 @@ export function buildChatPayload(reqBody) {
   }
 
   return {
-    upstreamBody: { ...reqBody, messages: processedMessages, model: 'grok-4.6' },
+    upstreamBody: { ...reqBody, messages: processedMessages, model: 'grok-4.6', reasoning_effort: reasoningEffort },
     requestedModel
   };
 }
 
 export async function pipeChatStream(upstreamRes, clientRes) {
   clientRes.setHeader('Content-Type', 'text/event-stream');
-  clientRes.setHeader('Cache-Control', 'no-cache');
+  clientRes.setHeader('Cache-Control', 'no-cache, no-transform');
   clientRes.setHeader('Connection', 'keep-alive');
+  clientRes.setHeader('X-Accel-Buffering', 'no');
+
+  if (typeof clientRes.flushHeaders === 'function') {
+    clientRes.flushHeaders();
+  }
 
   try {
     if (upstreamRes.body) {
@@ -40,12 +51,14 @@ export async function pipeChatStream(upstreamRes, clientRes) {
           if (done) break;
           const chunkStr = typeof value === 'string' ? value : decoder.decode(value, { stream: true });
           clientRes.write(sanitizeClaudeText(chunkStr));
+          if (typeof clientRes.flush === 'function') clientRes.flush();
         }
       } else if (typeof upstreamRes.body[Symbol.asyncIterator] === 'function') {
         const decoder = new TextDecoder();
         for await (const chunk of upstreamRes.body) {
           const chunkStr = typeof chunk === 'string' ? chunk : decoder.decode(chunk);
           clientRes.write(sanitizeClaudeText(chunkStr));
+          if (typeof clientRes.flush === 'function') clientRes.flush();
         }
       }
     }

@@ -21,7 +21,14 @@ export function createApp(options = {}) {
   const app = express();
 
   app.use(cors());
-  app.use(compression());
+  app.use(compression({
+    filter: (req, res) => {
+      if (req.headers.accept?.includes('text/event-stream') || req.path?.includes('/v1/messages') || req.path?.includes('/v1/chat/completions') || req.path === '/messages') {
+        return false;
+      }
+      return compression.filter(req, res);
+    }
+  }));
   app.use(express.json({ limit: '10mb' }));
   app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 

@@ -3,10 +3,22 @@ import { sanitizeClaudeText, sanitizeToClaudeError } from './claudeUtils.js';
 
 export async function pipeAnthropicStream(upstreamRes, clientRes, reqModel, msgId) {
   clientRes.setHeader('Content-Type', 'text/event-stream');
-  clientRes.setHeader('Cache-Control', 'no-cache');
+  clientRes.setHeader('Cache-Control', 'no-cache, no-transform');
   clientRes.setHeader('Connection', 'keep-alive');
+  clientRes.setHeader('X-Accel-Buffering', 'no');
 
-  clientRes.write(`event: message_start\ndata: ${JSON.stringify({
+  if (typeof clientRes.flushHeaders === 'function') {
+    clientRes.flushHeaders();
+  }
+
+  const writeAndFlush = (data) => {
+    clientRes.write(data);
+    if (typeof clientRes.flush === 'function') {
+      clientRes.flush();
+    }
+  };
+
+  writeAndFlush(`event: message_start\ndata: ${JSON.stringify({
     type: 'message_start',
     message: {
       id: `msg_${msgId}`,
@@ -45,14 +57,14 @@ export async function pipeAnthropicStream(upstreamRes, clientRes, reqModel, msgI
         if (delta.content) {
           if (!textBlockStarted) {
             textBlockStarted = true;
-            clientRes.write(`event: content_block_start\ndata: ${JSON.stringify({
+            writeAndFlush(`event: content_block_start\ndata: ${JSON.stringify({
               type: 'content_block_start',
               index: currentBlockIndex,
               content_block: { type: 'text', text: '' }
             })}\n\n`);
           }
           outputTokens += 1;
-          clientRes.write(`event: content_block_delta\ndata: ${JSON.stringify({
+          writeAndFlush(`event: content_block_delta\ndata: ${JSON.stringify({
             type: 'content_block_delta',
             index: currentBlockIndex,
             delta: { type: 'text_delta', text: sanitizeClaudeText(delta.content) }
@@ -61,7 +73,7 @@ export async function pipeAnthropicStream(upstreamRes, clientRes, reqModel, msgI
 
         if (Array.isArray(delta.tool_calls)) {
           if (textBlockStarted) {
-            clientRes.write(`event: content_block_stop\ndata: ${JSON.stringify({
+            writeAndFlush(`event: content_block_stop\ndata: ${JSON.stringify({
               type: 'content_block_stop',
               index: currentBlockIndex
             })}\n\n`);
@@ -77,7 +89,7 @@ export async function pipeAnthropicStream(upstreamRes, clientRes, reqModel, msgI
               const toolName = tc.function?.name || 'tool';
               openToolBlocks.set(tcIdx, { index: toolBlockIdx, id: toolId, name: toolName });
 
-              clientRes.write(`event: content_block_start\ndata: ${JSON.stringify({
+              writeAndFlush(`event: content_block_start\ndata: ${JSON.stringify({
                 type: 'content_block_start',
                 index: toolBlockIdx,
                 content_block: {
@@ -92,7 +104,7 @@ export async function pipeAnthropicStream(upstreamRes, clientRes, reqModel, msgI
             const argsChunk = tc.function?.arguments;
             if (argsChunk) {
               outputTokens += 1;
-              clientRes.write(`event: content_block_delta\ndata: ${JSON.stringify({
+              writeAndFlush(`event: content_block_delta\ndata: ${JSON.stringify({
                 type: 'content_block_delta',
                 index: blockInfo.index,
                 delta: {
@@ -141,7 +153,7 @@ export async function pipeAnthropicStream(upstreamRes, clientRes, reqModel, msgI
       });
     } else {
       try {
-        clientRes.write(`event: error\ndata: ${JSON.stringify({
+        writeAndFlush(`event: error\ndata: ${JSON.stringify({
           type: 'error',
           error: {
             type: 'api_error',
@@ -152,13 +164,13 @@ export async function pipeAnthropicStream(upstreamRes, clientRes, reqModel, msgI
     }
   } finally {
     if (textBlockStarted) {
-      clientRes.write(`event: content_block_stop\ndata: ${JSON.stringify({
+      writeAndFlush(`event: content_block_stop\ndata: ${JSON.stringify({
         type: 'content_block_stop',
         index: currentBlockIndex
       })}\n\n`);
     }
     for (const [, blockInfo] of openToolBlocks) {
-      clientRes.write(`event: content_block_stop\ndata: ${JSON.stringify({
+      writeAndFlush(`event: content_block_stop\ndata: ${JSON.stringify({
         type: 'content_block_stop',
         index: blockInfo.index
       })}\n\n`);
@@ -166,12 +178,12 @@ export async function pipeAnthropicStream(upstreamRes, clientRes, reqModel, msgI
 
     const stopReason = openToolBlocks.size > 0 ? 'tool_use' : 'end_turn';
 
-    clientRes.write(`event: message_delta\ndata: ${JSON.stringify({
+    writeAndFlush(`event: message_delta\ndata: ${JSON.stringify({
       type: 'message_delta',
       delta: { stop_reason: stopReason, stop_sequence: null },
       usage: { output_tokens: Math.max(1, outputTokens) }
     })}\n\n`);
-    clientRes.write(`event: message_stop\ndata: ${JSON.stringify({ type: 'message_stop' })}\n\n`);
+    writeAndFlush(`event: message_stop\ndata: ${JSON.stringify({ type: 'message_stop' })}\n\n`);
     clientRes.end();
   }
 

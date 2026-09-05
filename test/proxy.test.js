@@ -508,3 +508,28 @@ test('ProxyService forwardChatCompletion and listModels work correctly', async (
   }
 });
 
+test('ProxyService maps reasoning_effort according to model tier and sets unbuffered SSE headers', async () => {
+  const { resolveReasoningEffort, buildOpenAIPayload } = await import('../src/services/claudeTranslator.js');
+  const { buildChatPayload } = await import('../src/services/chatHandler.js');
+
+  assert.equal(resolveReasoningEffort('claude-haiku-4-5'), 'low');
+  assert.equal(resolveReasoningEffort('claude-3-5-haiku-20241022'), 'low');
+  assert.equal(resolveReasoningEffort('claude-sonnet-5'), 'medium');
+  assert.equal(resolveReasoningEffort('claude-3-5-sonnet-20241022'), 'medium');
+  assert.equal(resolveReasoningEffort('claude-opus-5'), 'high');
+  assert.equal(resolveReasoningEffort('claude-fable-5-1'), 'high');
+
+  const p1 = buildOpenAIPayload({ messages: [] }, 'claude-haiku-4-5');
+  assert.equal(p1.reasoning_effort, 'low');
+
+  const p2 = buildOpenAIPayload({ messages: [] }, 'claude-opus-5');
+  assert.equal(p2.reasoning_effort, 'high');
+
+  const chat1 = buildChatPayload({ model: 'claude-haiku-4-5', messages: [] });
+  assert.equal(chat1.upstreamBody.reasoning_effort, 'low');
+
+  const chat2 = buildChatPayload({ model: 'claude-opus-5', messages: [] });
+  assert.equal(chat2.upstreamBody.reasoning_effort, 'high');
+});
+
+

@@ -6,6 +6,18 @@ import {
   AUTONOMOUS_AGENT_PROTOCOL
 } from './claudeUtils.js';
 
+export function resolveReasoningEffort(reqModel, explicitEffort = null) {
+  if (explicitEffort) return explicitEffort;
+  const m = String(reqModel || '').toLowerCase();
+  if (m.includes('haiku') || m.includes('mini') || m.includes('fast') || m.includes('flash')) {
+    return 'low';
+  }
+  if (m.includes('opus') || m.includes('fable') || m.includes('3-7') || m.includes('3.7')) {
+    return 'high';
+  }
+  return 'medium';
+}
+
 export function buildOpenAIPayload(reqBody, reqModel) {
   const messages = [];
 
@@ -118,12 +130,15 @@ export function buildOpenAIPayload(reqBody, reqModel) {
     }
   }
 
+  const reasoningEffort = resolveReasoningEffort(reqModel, reqBody.reasoning_effort);
+
   return {
     model: 'grok-4.6',
     messages,
     stream: Boolean(reqBody.stream),
     temperature: reqBody.temperature,
     max_tokens: reqBody.max_tokens,
+    reasoning_effort: reasoningEffort,
     ...(openAITools ? { tools: openAITools } : {}),
     ...(openAIToolChoice ? { tool_choice: openAIToolChoice } : {})
   };

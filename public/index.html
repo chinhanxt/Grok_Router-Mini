@@ -1306,20 +1306,143 @@
       to { opacity: 1; transform: translateY(0) scale(1); }
     }
 
-    /* Playground Output */
+    /* AI Playground & Claude Thinking Card */
+    .playground-output-container {
+      margin-top: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .playground-header-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.35rem 0.5rem;
+      background-color: var(--secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 0.775rem;
+    }
+
+    .playground-meta-left {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .claude-thinking-card {
+      border: 1px solid #e2e8f0;
+      background-color: #fafaf9;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      transition: all 0.2s ease;
+    }
+
+    .thinking-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.55rem 0.85rem;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.15s ease;
+    }
+
+    .thinking-header:hover {
+      background-color: #f5f5f4;
+    }
+
+    .thinking-header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.825rem;
+      font-weight: 500;
+      color: #78716c;
+    }
+
+    .claude-sparkle-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #d97757;
+      transition: transform 0.2s ease;
+    }
+
+    .claude-sparkle-spin {
+      animation: claudeSparkleSpin 1.8s linear infinite;
+    }
+
+    @keyframes claudeSparkleSpin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .thinking-title {
+      color: #44403c;
+      font-weight: 500;
+    }
+
+    .thinking-timer-pill {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: #a8a29e;
+      margin-left: 0.15rem;
+    }
+
+    .thinking-chevron {
+      color: #a8a29e;
+      transition: transform 0.2s ease;
+    }
+
+    .thinking-chevron.expanded {
+      transform: rotate(180deg);
+    }
+
+    .thinking-body {
+      padding: 0.65rem 0.85rem 0.75rem 0.85rem;
+      border-top: 1px dashed #e7e5e4;
+      background-color: #fdfdfc;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: #78716c;
+      line-height: 1.55;
+      max-height: 220px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
     .playground-result {
-      margin-top: 0.75rem;
       padding: 1rem;
       border-radius: var(--radius-lg);
       border: 1px solid var(--border);
       background-color: #ffffff;
-      font-family: var(--font-mono);
-      font-size: 0.825rem;
-      color: #1e40af;
+      font-family: var(--font-sans);
+      font-size: 0.875rem;
+      color: var(--foreground);
       white-space: pre-wrap;
-      max-height: 320px;
+      word-break: break-word;
+      min-height: 120px;
+      max-height: 480px;
       overflow-y: auto;
-      line-height: 1.5;
+      line-height: 1.65;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+    }
+
+    .stream-cursor {
+      display: inline-block;
+      color: #d97757;
+      font-weight: 700;
+      animation: cursorBlink 0.8s infinite;
+      margin-left: 2px;
+      vertical-align: baseline;
+    }
+
+    @keyframes cursorBlink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
     }
   </style>
 </head>
@@ -1596,7 +1719,7 @@
               <h2 class="card-title">Thử nghiệm prompt</h2>
             </div>
             <div class="form-group">
-              <textarea id="aiTestPrompt" rows="2" placeholder="Nhập câu hỏi...">Xin chào!</textarea>
+              <textarea id="aiTestPrompt" rows="2" placeholder="Nhập câu hỏi... (Ctrl+Enter để gửi)" onkeydown="handlePlaygroundKeydown(event)">Xin chào!</textarea>
             </div>
             <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
               <select id="aiTestModel" class="hidden">
@@ -1665,7 +1788,55 @@
                 <span>Gửi</span>
               </button>
             </div>
-            <div class="playground-result" id="aiTestResult">Kết quả phản hồi...</div>
+
+            <!-- Playground Output Container -->
+            <div class="playground-output-container" id="aiTestContainer">
+              <!-- Top bar with model badge, TTFT & timing info, action buttons (Copy) -->
+              <div class="playground-header-bar hidden" id="aiTestHeaderBar">
+                <div class="playground-meta-left">
+                  <span class="badge badge-outline" id="aiTestModelBadge" style="display: inline-flex; align-items: center; gap: 4px; font-weight: 600;">
+                    <span class="status-indicator online" style="width: 6px; height: 6px;"></span>
+                    <span id="aiTestModelName">Claude Sonnet 5</span>
+                  </span>
+                  <span class="playground-time-stat" id="aiTestTimeStat" style="font-size: 11px; color: var(--muted-foreground);"></span>
+                </div>
+                <div class="playground-actions">
+                  <button class="btn btn-outline btn-xs" id="copyResultBtn" onclick="copyPlaygroundResult()" title="Sao chép câu trả lời" style="display: inline-flex; align-items: center; gap: 4px;">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    <span id="copyResultText">Sao chép</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Claude Thinking Card -->
+              <div class="claude-thinking-card hidden" id="claudeThinkingCard">
+                <div class="thinking-header" onclick="toggleThinkingDetails()">
+                  <div class="thinking-header-left">
+                    <span class="claude-sparkle-icon" id="thinkingSparkle">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
+                      </svg>
+                    </span>
+                    <span class="thinking-title" id="thinkingTitle">Đang suy nghĩ...</span>
+                    <span class="thinking-timer-pill" id="thinkingTimerPill">(0.0s)</span>
+                  </div>
+                  <div class="thinking-header-right">
+                    <svg class="thinking-chevron" id="thinkingChevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </div>
+                </div>
+                <div class="thinking-body hidden" id="thinkingBody">
+                  <div class="thinking-content" id="thinkingContent"></div>
+                </div>
+              </div>
+
+              <!-- Answer Area -->
+              <div class="playground-result" id="aiTestResult">Kết quả phản hồi...</div>
+            </div>
           </div>
         </section>
 
@@ -2439,12 +2610,66 @@
       }
     });
 
-    // AI Playground
+    // AI Playground & Claude Thinking
+    function handlePlaygroundKeydown(e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        sendAITest();
+      }
+    }
+
+    let isThinkingExpanded = false;
+    function toggleThinkingDetails() {
+      const thinkingBody = document.getElementById('thinkingBody');
+      const thinkingChevron = document.getElementById('thinkingChevron');
+      if (!thinkingBody) return;
+      isThinkingExpanded = !isThinkingExpanded;
+      if (isThinkingExpanded) {
+        thinkingBody.classList.remove('hidden');
+        if (thinkingChevron) thinkingChevron.classList.add('expanded');
+      } else {
+        thinkingBody.classList.add('hidden');
+        if (thinkingChevron) thinkingChevron.classList.remove('expanded');
+      }
+    }
+
+    let playgroundRawContent = '';
+    async function copyPlaygroundResult() {
+      if (!playgroundRawContent) return;
+      try {
+        await navigator.clipboard.writeText(playgroundRawContent);
+        const copyText = document.getElementById('copyResultText');
+        if (copyText) {
+          copyText.textContent = 'Đã chép!';
+          setTimeout(() => {
+            copyText.textContent = 'Sao chép';
+          }, 2000);
+        }
+        showToast('Đã sao chép nội dung vào clipboard', 'success');
+      } catch (err) {
+        showToast('Không thể sao chép: ' + err.message, 'error');
+      }
+    }
+
+    let thinkingTimer = null;
+
     async function sendAITest() {
-      const prompt = document.getElementById('aiTestPrompt').value.trim();
+      const promptInput = document.getElementById('aiTestPrompt');
+      const prompt = promptInput ? promptInput.value.trim() : '';
       const model = document.getElementById('aiTestModel').value;
-      const resultBox = document.getElementById('aiTestResult');
       const sendBtn = document.getElementById('aiTestBtn');
+      const resultBox = document.getElementById('aiTestResult');
+      const headerBar = document.getElementById('aiTestHeaderBar');
+      const modelNameEl = document.getElementById('aiTestModelName');
+      const timeStatEl = document.getElementById('aiTestTimeStat');
+      const thinkingCard = document.getElementById('claudeThinkingCard');
+      const thinkingSparkle = document.getElementById('thinkingSparkle');
+      const thinkingTitle = document.getElementById('thinkingTitle');
+      const thinkingTimerPill = document.getElementById('thinkingTimerPill');
+      const thinkingBody = document.getElementById('thinkingBody');
+      const thinkingContent = document.getElementById('thinkingContent');
+      const thinkingChevron = document.getElementById('thinkingChevron');
+
       if (!prompt) return;
 
       if (!currentLicense) {
@@ -2455,17 +2680,87 @@
       const hasAccounts = Array.isArray(accounts) && accounts.length > 0;
 
       if (!hasActiveLicense && !hasAccounts) {
+        if (headerBar) headerBar.classList.add('hidden');
+        if (thinkingCard) thinkingCard.classList.add('hidden');
         resultBox.innerHTML = '<strong style="color:var(--destructive);">Chưa có mã sử dụng.</strong><br/><br/>Vui lòng chuyển sang mục <a href="javascript:void(0)" onclick="switchTab(\'license\')" style="color:#2563eb; text-decoration:underline; font-weight:600;">Mã sử dụng</a> để kích hoạt License Key trước khi gửi tin nhắn thử nghiệm.';
         resultBox.style.color = 'var(--destructive)';
         showToast('Chưa có mã sử dụng! Vui lòng kích hoạt License Key.', 'error');
         return;
       }
 
+      // Reset state
       sendBtn.disabled = true;
-      resultBox.textContent = 'Đang gửi...';
+      playgroundRawContent = '';
+      if (thinkingTimer) {
+        clearInterval(thinkingTimer);
+        thinkingTimer = null;
+      }
+
+      // Show header bar & thinking card in active state
+      if (headerBar) headerBar.classList.remove('hidden');
+      if (modelNameEl) {
+        const modelLabelEl = document.getElementById('selectedModelLabel');
+        modelNameEl.textContent = modelLabelEl ? modelLabelEl.textContent : model;
+      }
+      if (timeStatEl) timeStatEl.textContent = 'Đang kết nối...';
+
+      if (thinkingCard) thinkingCard.classList.remove('hidden');
+      if (thinkingSparkle) thinkingSparkle.classList.add('claude-sparkle-spin');
+      if (thinkingTitle) {
+        thinkingTitle.textContent = 'Đang suy nghĩ...';
+        thinkingTitle.style.color = '#c2410c';
+      }
+      if (thinkingTimerPill) {
+        thinkingTimerPill.style.display = 'inline';
+        thinkingTimerPill.textContent = '(0.0s)';
+      }
+      if (thinkingContent) thinkingContent.textContent = '';
+      if (thinkingBody) thinkingBody.classList.add('hidden');
+      if (thinkingChevron) thinkingChevron.classList.remove('expanded');
+      isThinkingExpanded = false;
+
+      // Result box initial state
       resultBox.style.color = 'var(--foreground)';
+      resultBox.innerHTML = '<span class="stream-cursor">▌</span>';
 
       const startTime = Date.now();
+      let firstTokenTime = null;
+      let thinkingCompleted = false;
+      let accumulatedThinking = '';
+      let accumulatedRawStream = '';
+      let accumulatedContent = '';
+
+      // Live timer update during thinking
+      thinkingTimer = setInterval(() => {
+        const now = Date.now();
+        const elapsedSec = ((now - startTime) / 1000).toFixed(1);
+        if (!thinkingCompleted && thinkingTimerPill) {
+          thinkingTimerPill.textContent = '(' + elapsedSec + 's)';
+        }
+        if (timeStatEl) {
+          timeStatEl.textContent = 'Thời gian: ' + elapsedSec + 's';
+        }
+      }, 100);
+
+      function completeThinking() {
+        if (thinkingCompleted) return;
+        thinkingCompleted = true;
+        if (thinkingTimer) {
+          clearInterval(thinkingTimer);
+          thinkingTimer = null;
+        }
+        const thinkingDuration = (((firstTokenTime || Date.now()) - startTime) / 1000).toFixed(1);
+        if (thinkingSparkle) thinkingSparkle.classList.remove('claude-sparkle-spin');
+        if (thinkingTitle) {
+          thinkingTitle.textContent = 'Đã suy nghĩ trong ' + thinkingDuration + 's';
+          thinkingTitle.style.color = '#44403c';
+        }
+        if (thinkingTimerPill) thinkingTimerPill.style.display = 'none';
+        if (thinkingContent && !accumulatedThinking) {
+          thinkingContent.innerHTML = '<span style="color:var(--muted-foreground); font-style:italic;">Quá trình suy nghĩ và định tuyến đã hoàn tất.</span>';
+        }
+      }
+
       try {
         const headers = { 'Content-Type': 'application/json' };
         if (currentToken) headers['Authorization'] = 'Bearer ' + currentToken;
@@ -2476,12 +2771,13 @@
           body: JSON.stringify({
             model,
             messages: [{ role: 'user', content: prompt }],
-            stream: false
+            stream: true
           })
         });
 
-        const elapsed = Date.now() - startTime;
         if (!res.ok) {
+          if (thinkingTimer) clearInterval(thinkingTimer);
+          if (thinkingCard) thinkingCard.classList.add('hidden');
           const err = await res.json().catch(() => ({ error: res.statusText }));
           const errMsg = err.error?.message || err.error || err.message || JSON.stringify(err);
           if (err.error?.code === 'no_active_license' || errMsg.includes('Chưa có mã sử dụng')) {
@@ -2491,16 +2787,111 @@
             resultBox.textContent = '[' + res.status + '] ' + errMsg;
           }
           resultBox.style.color = 'var(--destructive)';
-        } else {
-          const data = await res.json();
-          const content = data.choices?.[0]?.message?.content || JSON.stringify(data);
-          resultBox.textContent = '[' + (data.model || model) + ' | ' + elapsed + 'ms]\n\n' + content;
-          resultBox.style.color = '#1e40af';
+          if (timeStatEl) timeStatEl.textContent = 'Lỗi kết nối';
+          return;
+        }
+
+        // Read SSE stream
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder('utf-8');
+        let buffer = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop();
+
+          for (const line of lines) {
+            const trimmed = line.trim();
+            if (!trimmed || !trimmed.startsWith('data:')) continue;
+            const dataPayload = trimmed.slice(5).trim();
+            if (dataPayload === '[DONE]') continue;
+
+            try {
+              const parsed = JSON.parse(dataPayload);
+              const delta = parsed.choices?.[0]?.delta;
+              if (!delta) continue;
+
+              // Check for reasoning chunk
+              const reasoningChunk = delta.reasoning_content || delta.reasoning || delta.thought;
+              if (reasoningChunk) {
+                accumulatedThinking += reasoningChunk;
+                if (thinkingContent) thinkingContent.textContent = accumulatedThinking;
+                if (isThinkingExpanded && thinkingBody) {
+                  thinkingBody.scrollTop = thinkingBody.scrollHeight;
+                }
+              }
+
+              // Check for content chunk
+              if (delta.content) {
+                accumulatedRawStream += delta.content;
+
+                // Check for embedded <thinking>...</thinking> in content stream
+                const thinkTagOpen = accumulatedRawStream.indexOf('<thinking>');
+                if (thinkTagOpen !== -1) {
+                  const thinkTagClose = accumulatedRawStream.indexOf('</thinking>');
+                  if (thinkTagClose === -1) {
+                    // Still streaming thinking inside <thinking>
+                    accumulatedThinking = accumulatedRawStream.slice(thinkTagOpen + 10);
+                    if (thinkingContent) thinkingContent.textContent = accumulatedThinking;
+                    continue;
+                  } else {
+                    // Finished <thinking> tag
+                    accumulatedThinking = accumulatedRawStream.slice(thinkTagOpen + 10, thinkTagClose);
+                    if (thinkingContent) thinkingContent.textContent = accumulatedThinking;
+                    accumulatedContent = (accumulatedRawStream.slice(0, thinkTagOpen) + accumulatedRawStream.slice(thinkTagClose + 11)).trimStart();
+                  }
+                } else {
+                  accumulatedContent += delta.content;
+                }
+
+                if (!firstTokenTime && accumulatedContent.length > 0) {
+                  firstTokenTime = Date.now();
+                  completeThinking();
+                }
+
+                playgroundRawContent = accumulatedContent;
+
+                // Render streaming answer with cursor
+                resultBox.textContent = accumulatedContent;
+                const cursorSpan = document.createElement('span');
+                cursorSpan.className = 'stream-cursor';
+                cursorSpan.textContent = '▌';
+                resultBox.appendChild(cursorSpan);
+
+                resultBox.scrollTop = resultBox.scrollHeight;
+              }
+            } catch (parseErr) {
+              // Ignore partial JSON chunks
+            }
+          }
+        }
+
+        // Stream completed
+        completeThinking();
+        const totalDuration = ((Date.now() - startTime) / 1000).toFixed(1);
+        const ttftMs = firstTokenTime ? (firstTokenTime - startTime) : (Date.now() - startTime);
+
+        resultBox.textContent = accumulatedContent || '(Không có nội dung trả về)';
+        playgroundRawContent = accumulatedContent;
+
+        if (timeStatEl) {
+          timeStatEl.textContent = 'Tổng: ' + totalDuration + 's • TTFT: ' + ttftMs + 'ms';
         }
       } catch (err) {
+        if (thinkingTimer) clearInterval(thinkingTimer);
+        completeThinking();
         resultBox.textContent = err.message;
         resultBox.style.color = 'var(--destructive)';
+        if (timeStatEl) timeStatEl.textContent = 'Lỗi truy vấn';
       } finally {
+        if (thinkingTimer) {
+          clearInterval(thinkingTimer);
+          thinkingTimer = null;
+        }
         sendBtn.disabled = false;
       }
     }
