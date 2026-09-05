@@ -348,6 +348,22 @@ test('ProxyService returns 429 when all accounts in pool are cooling', async () 
   assert.equal(resOpenAI.body.error.type, 'rate_limit_error');
 });
 
+test('ProxyService returns 400 with "Chưa có mã sử dụng" when accounts pool is empty', async () => {
+  const config = createTestConfig();
+  const pool = new AccountPool(new JsonStorage(), config);
+  const proxy = new ProxyService(pool, config);
+
+  const resClaude = new MockResponse();
+  await proxy.handleAnthropicMessages({ messages: [] }, resClaude);
+  assert.equal(resClaude.statusCode, 400);
+  assert.ok(resClaude.body.error.message.includes('Chưa có mã sử dụng'));
+
+  const resOpenAI = new MockResponse();
+  await proxy.handleChatCompletion({ messages: [] }, resOpenAI);
+  assert.equal(resOpenAI.statusCode, 400);
+  assert.ok(resOpenAI.body.error.message.includes('Chưa có mã sử dụng'));
+});
+
 test('createProxyRouter mounts /v1/messages, /messages, /v1/chat/completions, and /v1/models', () => {
   const config = createTestConfig();
   const pool = new AccountPool(new JsonStorage(), config);

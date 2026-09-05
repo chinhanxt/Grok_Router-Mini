@@ -2169,6 +2169,7 @@
     let ACCOUNTS_PER_PAGE = 10;
     let accountStatusFilter = 'all';
     let accountSearchQuery = '';
+    let currentLicense = null;
 
     // Logs data & pagination
     let allLogs = [];
@@ -2305,7 +2306,7 @@
         loadAccounts();
       } else if (tabId === 'logs') {
         loadLogs();
-      } else if (tabId === 'license') {
+      } else if (tabId === 'license' || tabId === 'playground') {
         loadLicense();
       }
     }
@@ -2446,8 +2447,23 @@
       const sendBtn = document.getElementById('aiTestBtn');
       if (!prompt) return;
 
+      if (!currentLicense) {
+        await loadLicense();
+      }
+
+      const hasActiveLicense = Boolean(currentLicense && currentLicense.active);
+      const hasAccounts = Array.isArray(accounts) && accounts.length > 0;
+
+      if (!hasActiveLicense && !hasAccounts) {
+        resultBox.innerHTML = '<strong style="color:var(--destructive);">Chưa có mã sử dụng.</strong><br/><br/>Vui lòng chuyển sang mục <a href="javascript:void(0)" onclick="switchTab(\'license\')" style="color:#2563eb; text-decoration:underline; font-weight:600;">Mã sử dụng</a> để kích hoạt License Key trước khi gửi tin nhắn thử nghiệm.';
+        resultBox.style.color = 'var(--destructive)';
+        showToast('Chưa có mã sử dụng! Vui lòng kích hoạt License Key.', 'error');
+        return;
+      }
+
       sendBtn.disabled = true;
       resultBox.textContent = 'Đang gửi...';
+      resultBox.style.color = 'var(--foreground)';
 
       const startTime = Date.now();
       try {
@@ -2467,7 +2483,13 @@
         const elapsed = Date.now() - startTime;
         if (!res.ok) {
           const err = await res.json().catch(() => ({ error: res.statusText }));
-          resultBox.textContent = '[' + res.status + '] ' + (err.error?.message || err.error || JSON.stringify(err));
+          const errMsg = err.error?.message || err.error || err.message || JSON.stringify(err);
+          if (err.error?.code === 'no_active_license' || errMsg.includes('Chưa có mã sử dụng')) {
+            resultBox.innerHTML = '<strong style="color:var(--destructive);">Chưa có mã sử dụng.</strong><br/><br/>Vui lòng chuyển sang mục <a href="javascript:void(0)" onclick="switchTab(\'license\')" style="color:#2563eb; text-decoration:underline; font-weight:600;">Mã sử dụng</a> để kích hoạt License Key.';
+            showToast('Chưa có mã sử dụng! Vui lòng kích hoạt License Key.', 'error');
+          } else {
+            resultBox.textContent = '[' + res.status + '] ' + errMsg;
+          }
           resultBox.style.color = 'var(--destructive)';
         } else {
           const data = await res.json();
@@ -3534,6 +3556,7 @@
         if (!res.ok || !data.ok) return;
 
         const lic = data.license || {};
+        currentLicense = lic;
         const badge = document.getElementById('licenseStatusBadge');
         const activeInfo = document.getElementById('licenseActiveInfo');
         const inputKey = document.getElementById('inputLicenseKey');

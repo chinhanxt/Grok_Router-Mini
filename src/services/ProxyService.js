@@ -89,7 +89,16 @@ export class ProxyService {
   async handleChatCompletion(reqBody, clientRes, user = null, req = null) {
     const isStream = Boolean(reqBody.stream);
     const { upstreamBody, requestedModel } = buildChatPayload(reqBody);
-    const accounts = typeof this.accountPool.getAccounts === 'function' ? this.accountPool.getAccounts() : [];
+    const accounts = typeof this.accountPool.getAccounts === 'function' ? this.accountPool.getAccounts() : (this.accountPool.accounts || []);
+    if (!accounts || accounts.length === 0) {
+      return clientRes.status(400).json({
+        error: {
+          message: 'Chưa có mã sử dụng. Vui lòng vào mục "Mã sử dụng" để kích hoạt trước khi gửi yêu cầu.',
+          type: 'invalid_request_error',
+          code: 'no_active_license'
+        }
+      });
+    }
     const activeAccounts = accounts.filter(a => (typeof a.isAvailable === 'function' ? a.isAvailable() : a.status === 'active'));
     const maxRetries = Math.max(1, activeAccounts.length);
 
@@ -180,7 +189,17 @@ export class ProxyService {
     const msgId = crypto.randomUUID().replace(/-/g, '').slice(0, 24);
 
     const openAIBody = buildOpenAIPayload(reqBody, reqModel);
-    const accounts = typeof this.accountPool.getAccounts === 'function' ? this.accountPool.getAccounts() : [];
+    const accounts = typeof this.accountPool.getAccounts === 'function' ? this.accountPool.getAccounts() : (this.accountPool.accounts || []);
+    if (!accounts || accounts.length === 0) {
+      return clientRes.status(400).json({
+        type: 'error',
+        error: {
+          type: 'invalid_request_error',
+          code: 'no_active_license',
+          message: 'Chưa có mã sử dụng. Vui lòng vào mục "Mã sử dụng" để kích hoạt trước khi gửi yêu cầu.'
+        }
+      });
+    }
     const activeAccounts = accounts.filter(a => (typeof a.isAvailable === 'function' ? a.isAvailable() : a.status === 'active'));
     const maxRetries = Math.max(1, activeAccounts.length);
 
