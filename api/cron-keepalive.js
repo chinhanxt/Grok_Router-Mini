@@ -143,6 +143,19 @@ export default async function handler(req, res) {
       return res.status(200).json({ ok: true, message: 'Keep-Alive is disabled in settings', skipped: true });
     }
 
+    const isVercelEnv = Boolean(process.env.VERCEL || process.env.VERCEL_ENV);
+    if (isVercelEnv && isVercelCron) {
+      const targetHour = parseInt(config.runHour !== undefined ? config.runHour : 3, 10);
+      const currentVnHour = (new Date().getUTCHours() + 7) % 24;
+      if (currentVnHour !== targetHour) {
+        return res.status(200).json({
+          ok: true,
+          message: `Skipped: current VN hour ${currentVnHour} does not match scheduled hour ${targetHour}`,
+          skipped: true
+        });
+      }
+    }
+
     const freshHours = parseInt(config.freshThresholdHours, 10) || 48;
     const freshThresholdMs = freshHours * 60 * 60 * 1000;
 

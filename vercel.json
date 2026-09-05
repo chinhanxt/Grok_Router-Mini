@@ -3,6 +3,7 @@
   "outputDirectory": "docs",
   "cleanUrls": true,
   "rewrites": [
+    { "source": "/admin/:path*", "destination": "/admin.html" },
     { "source": "/install.ps1", "destination": "/api/install?type=ps1" },
     { "source": "/install.sh", "destination": "/api/install?type=sh" }
   ],
@@ -14,7 +15,7 @@
   "crons": [
     {
       "path": "/api/cron-keepalive",
-      "schedule": "0 20 * * *"
+      "schedule": "0 * * * *"
     }
   ]
 }

@@ -3,546 +3,494 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Claude KeyAPI — Quản trị Node & License</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600;700&family=Geist:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
+  <title>AI Claude KeyAPI — Quản Trị Hệ Thống</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
   <style>
     :root {
-      --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      --font-mono: 'Geist Mono', ui-monospace, 'Fira Code', Menlo, Consolas, monospace;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --sidebar-width: 240px;
+      --sidebar-collapsed-width: 68px;
+    }
 
+    /* Dark Theme */
+    [data-theme="dark"] {
       --bg: #09090b;
-      --bg-surface: #111114;
-      --bg-subtle: #18181b;
+      --bg-surface: #121215;
+      --bg-card: #18181b;
+      --bg-subtle: #202024;
       --bg-code: #000000;
+      --bg-input: #151518;
+      --border: #27272a;
+      --border-subtle: #1f1f23;
       --text-primary: #f4f4f5;
       --text-secondary: #a1a1aa;
       --text-muted: #71717a;
-      --border: #27272a;
-      --border-subtle: #1f1f23;
-      --accent: #ffffff;
-      --accent-contrast: #000000;
-      --badge-bg: #18181b;
-      --badge-text: #e4e4e7;
-      --header-bg: rgba(9, 9, 11, 0.9);
-      --card-border: #27272a;
-      --table-header-bg: #141418;
-      --success-green: #10b981;
-      --danger-red: #ef4444;
+      --accent-primary: #10b981;
+      --accent-hover: #059669;
+      --accent-glow: rgba(16, 185, 129, 0.15);
+      --status-active: #10b981;
+      --status-suspended: #f59e0b;
+      --status-error: #ef4444;
+      --select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
     }
 
+    /* Light Theme */
     [data-theme="light"] {
-      --bg: #ffffff;
-      --bg-surface: #fafafa;
-      --bg-subtle: #f4f4f5;
-      --bg-code: #f9f9fb;
-      --text-primary: #09090b;
-      --text-secondary: #52525b;
-      --text-muted: #71717a;
-      --border: #e4e4e7;
-      --border-subtle: #f4f4f5;
-      --accent: #09090b;
-      --accent-contrast: #ffffff;
-      --badge-bg: #f4f4f5;
-      --badge-text: #18181b;
-      --header-bg: rgba(255, 255, 255, 0.9);
-      --card-border: #e4e4e7;
-      --table-header-bg: #f4f4f5;
-      --success-green: #059669;
-      --danger-red: #dc2626;
+      --bg: #f8fafc;
+      --bg-surface: #ffffff;
+      --bg-card: #f1f5f9;
+      --bg-subtle: #e2e8f0;
+      --bg-code: #f1f5f9;
+      --bg-input: #ffffff;
+      --border: #cbd5e1;
+      --border-subtle: #e2e8f0;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --accent-primary: #059669;
+      --accent-hover: #047857;
+      --accent-glow: rgba(5, 150, 105, 0.15);
+      --status-active: #059669;
+      --status-suspended: #d97706;
+      --status-error: #dc2626;
+      --select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { background-color: var(--bg); color: var(--text-primary); }
     body {
-      font-family: var(--font-sans);
-      font-size: 14px;
-      line-height: 1.5;
+      background: var(--bg);
       color: var(--text-primary);
-      background-color: var(--bg);
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      transition: background-color 0.15s ease, color 0.15s ease;
-    }
-    a { color: inherit; text-decoration: none; }
-
-    .container-wide {
-      max-width: 1420px;
-      margin: 0 auto;
-      padding: 0 32px;
+      font-family: var(--font-sans);
+      font-size: 13px;
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
     }
 
-    /* Header */
-    header.site-header {
+    /* Layout Structure */
+    .admin-layout {
+      display: flex;
+      width: 100%;
+      min-height: 100vh;
+    }
+
+    /* Sidebar Navigation */
+    .admin-sidebar {
+      width: var(--sidebar-width);
+      background: var(--bg-surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
       position: sticky;
       top: 0;
-      z-index: 50;
-      background: var(--header-bg);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-      height: 56px;
-      display: flex;
-      align-items: center;
+      height: 100vh;
+      flex-shrink: 0;
+      transition: width 0.24s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 90;
     }
 
-    .header-inner {
+    .admin-sidebar.collapsed {
+      width: var(--sidebar-collapsed-width);
+    }
+
+    .sidebar-head {
+      height: 60px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      width: 100%;
+      padding: 0 16px;
+      border-bottom: 1px solid var(--border-subtle);
     }
 
-    .brand-title {
-      font-family: var(--font-mono);
-      font-weight: 700;
-      font-size: 15px;
+    .sidebar-brand {
       display: flex;
       align-items: center;
       gap: 10px;
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
     }
 
-    .theme-btn {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text-primary);
-      width: 32px;
-      height: 32px;
-      border-radius: 4px;
-      display: inline-flex;
+    .brand-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background: var(--accent-glow);
+      color: var(--accent-primary);
+      display: flex;
       align-items: center;
       justify-content: center;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+
+    .admin-sidebar.collapsed .brand-text {
+      display: none;
+    }
+
+    .sidebar-toggle-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+    }
+
+    .sidebar-toggle-btn:hover {
+      background: var(--bg-card);
+      color: var(--text-primary);
+    }
+
+    .admin-sidebar.collapsed .sidebar-toggle-btn svg {
+      transform: rotate(180deg);
+    }
+
+    .sidebar-menu {
+      flex: 1;
+      padding: 16px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      overflow-y: auto;
+    }
+
+    .sidebar-nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.15s ease;
+      cursor: pointer;
+      white-space: nowrap;
+      position: relative;
+    }
+
+    .sidebar-nav-item:hover {
+      background: var(--bg-card);
+      color: var(--text-primary);
+    }
+
+    .sidebar-nav-item.active {
+      background: var(--accent-glow);
+      color: var(--accent-primary);
+      font-weight: 600;
+    }
+
+    .sidebar-nav-item .nav-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+
+    .sidebar-nav-item .nav-label {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .admin-sidebar.collapsed .sidebar-nav-item .nav-label,
+    .admin-sidebar.collapsed .sidebar-nav-item .nav-badge {
+      display: none;
+    }
+
+    .nav-badge {
+      padding: 2px 7px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 600;
+      background: var(--bg-card);
+      color: var(--text-muted);
+    }
+
+    .sidebar-nav-item.active .nav-badge {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--accent-primary);
+    }
+
+    .sidebar-foot {
+      padding: 14px 12px;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .btn-sidebar-theme {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 12px;
+      color: var(--text-secondary);
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.15s ease;
+      justify-content: flex-start;
+    }
+
+    .btn-sidebar-theme:hover {
+      background: var(--bg-card);
+      color: var(--text-primary);
+    }
+
+    .admin-sidebar.collapsed .theme-label {
+      display: none;
+    }
+
+    .sidebar-status-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      color: var(--text-muted);
+      padding: 4px 6px;
+    }
+
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--status-active);
+      box-shadow: 0 0 6px var(--status-active);
+      flex-shrink: 0;
+    }
+
+    .admin-sidebar.collapsed .sidebar-status-pill .status-label {
+      display: none;
+    }
+
+    /* Main Content Area */
+    .admin-main {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      height: 100vh;
+    }
+
+    .admin-topbar {
+      height: 60px;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 20px;
+      color: var(--text-primary);
       cursor: pointer;
     }
 
+    .page-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .keepalive-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    .pill-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--status-active);
+    }
+
+    .admin-content {
+      padding: 24px 28px 60px;
+      flex: 1;
+    }
+
     /* Stats Grid */
-    .stats-bar {
+    .stats-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: 16px;
-      margin: 28px 0 24px;
+      margin-bottom: 20px;
     }
 
     .stat-card {
       background: var(--bg-surface);
       border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 18px 24px;
+      border-radius: 8px;
+      padding: 16px;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      gap: 4px;
+      transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+
+    .stat-card:hover {
+      border-color: var(--text-muted);
+    }
+
+    .stat-card-highlight {
+      border-color: rgba(16, 185, 129, 0.4);
+      background: linear-gradient(180deg, var(--bg-surface) 0%, rgba(16, 185, 129, 0.04) 100%);
     }
 
     .stat-label {
-      font-family: var(--font-mono);
-      font-size: 11px;
+      font-size: 11.5px;
       color: var(--text-muted);
+      font-weight: 500;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
-      margin-bottom: 6px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      letter-spacing: 0.5px;
     }
 
-    .stat-val {
-      font-size: 26px;
+    .stat-value {
+      font-size: 22px;
       font-weight: 700;
       color: var(--text-primary);
       font-family: var(--font-mono);
-      display: flex;
-      align-items: baseline;
-      gap: 6px;
+      margin: 2px 0;
     }
 
-    .stat-unit {
-      font-size: 13px;
-      color: var(--text-muted);
-      font-weight: 500;
-      font-family: var(--font-sans);
-    }
-
-    /* Storage Warning Banner */
-    .storage-banner {
-      background: #18181b;
-      border: 1px solid #3f3f46;
-      border-radius: 6px;
-      padding: 14px 20px;
-      margin-bottom: 24px;
-      font-size: 13px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+    .stat-sub {
+      font-size: 11px;
       color: var(--text-secondary);
     }
-    .storage-banner strong { color: var(--text-primary); }
 
-    /* Action Tabs */
-    .admin-nav {
-      display: flex;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 24px;
-      gap: 12px;
-    }
-
-    .admin-tab {
-      background: transparent;
-      border: none;
-      font-family: var(--font-mono);
-      font-size: 13px;
-      font-weight: 500;
-      padding: 12px 18px;
-      color: var(--text-secondary);
-      cursor: pointer;
-      border-bottom: 2px solid transparent;
-      transition: all 0.15s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      white-space: nowrap;
-    }
-
-    .admin-tab:hover { color: var(--text-primary); }
-    .admin-tab.active {
-      color: var(--text-primary);
-      border-bottom-color: var(--text-primary);
-      font-weight: 600;
-    }
-
-    .tab-badge {
-      font-size: 11px;
-      padding: 1px 6px;
-      border-radius: 10px;
-      background: var(--bg-subtle);
-      border: 1px solid var(--border);
-      color: var(--text-secondary);
-    }
-    .admin-tab.active .tab-badge {
-      background: var(--text-primary);
-      color: var(--accent-contrast);
-      border-color: var(--text-primary);
-    }
-
-    .toolbar-actions {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .btn-primary {
-      background: var(--text-primary);
-      color: var(--accent-contrast);
-      border: 1px solid var(--text-primary);
-      font-family: var(--font-mono);
-      font-size: 13px;
-      font-weight: 600;
-      padding: 8px 14px;
-      border-radius: 4px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      white-space: nowrap;
-      transition: opacity 0.15s ease;
-    }
-    .btn-primary:hover { opacity: 0.9; }
-
-    .btn-secondary {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      color: var(--text-primary);
-      font-family: var(--font-mono);
-      font-size: 13px;
-      font-weight: 500;
-      padding: 8px 14px;
-      border-radius: 4px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      white-space: nowrap;
-      transition: all 0.15s ease;
-    }
-    .btn-secondary:hover { background: var(--bg-subtle); border-color: var(--text-primary); }
-
-    .btn-sm {
-      padding: 4px 9px;
-      font-size: 11px;
-      font-family: var(--font-mono);
-      font-weight: 500;
-      border-radius: 3px;
-      border: 1px solid var(--border);
-      cursor: pointer;
-      background: var(--bg-surface);
-      color: var(--text-primary);
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      white-space: nowrap;
-      transition: all 0.15s ease;
-    }
-    .btn-sm:hover { background: var(--bg-subtle); border-color: var(--text-secondary); }
-
-    .btn-danger { color: var(--danger-red); }
-    .btn-danger:hover { background: rgba(239, 68, 68, 0.1); border-color: var(--danger-red); }
-
-    /* Tables & Responsive Wrapper */
-    .table-frame {
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      overflow: hidden;
-      background: var(--bg-surface);
-    }
-
-    .table-responsive {
-      width: 100%;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    table.admin-table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: left;
-      font-size: 13px;
-    }
-
-    table.admin-table th {
-      background: var(--table-header-bg);
-      font-family: var(--font-mono);
-      font-weight: 600;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--text-muted);
-      padding: 10px 14px;
-      border-bottom: 1px solid var(--border);
-      white-space: nowrap;
-    }
-
-    table.admin-table td {
-      padding: 10px 14px;
-      border-bottom: 1px solid var(--border-subtle);
-      color: var(--text-secondary);
-      white-space: nowrap;
-      vertical-align: middle;
-    }
-
-    .btn-dots {
-      width: 28px;
-      height: 28px;
-      border-radius: 4px;
-      border: 1px solid var(--border);
-      background: var(--bg-surface);
-      color: var(--text-primary);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.12s ease;
-      padding: 0;
-    }
-    .btn-dots:hover, .btn-dots.active {
-      background: var(--bg-subtle);
-      border-color: var(--text-secondary);
-    }
-
-    .action-dropdown {
-      position: fixed;
-      z-index: 1000;
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-      padding: 4px;
-      min-width: 170px;
-      display: none;
-      font-size: 12px;
-      font-family: var(--font-sans);
-    }
-    .action-dropdown-item {
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      padding: 7px 12px;
-      border-radius: 4px;
-      cursor: pointer;
-      color: var(--text-primary);
-      transition: background 0.12s ease;
-      font-size: 12px;
-      font-weight: 500;
-      user-select: none;
-    }
-    .action-dropdown-item:hover {
-      background: var(--bg-subtle);
-    }
-    .action-dropdown-item.danger {
-      color: var(--danger-red);
-    }
-    .action-dropdown-item.danger:hover {
-      background: rgba(239, 68, 68, 0.12);
-    }
-    .action-dropdown-divider {
-      height: 1px;
-      background: var(--border-subtle);
-      margin: 4px 0;
-    }
-
-    .table-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 16px;
-      border-top: 1px solid var(--border-subtle);
-      background: var(--bg-surface);
-      font-size: 12px;
-      color: var(--text-secondary);
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-    .pagination-controls {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .page-btn {
-      padding: 4px 10px;
-      font-size: 11px;
-      font-family: var(--font-mono);
-      font-weight: 500;
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: 3px;
-      color: var(--text-primary);
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      transition: all 0.15s ease;
-    }
-    .page-btn:hover:not(:disabled) {
-      background: var(--bg-subtle);
-      border-color: var(--text-primary);
-    }
-    .page-btn:disabled {
-      opacity: 0.35;
-      cursor: not-allowed;
-    }
-    .page-info {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--text-muted);
-      padding: 0 4px;
-    }
-
-    table.admin-table tr:last-child td { border-bottom: none; }
-    table.admin-table tr:hover td { background: var(--bg-subtle); color: var(--text-primary); }
-
-    .nowrap { white-space: nowrap; }
-
-    .mono-cell {
-      font-family: var(--font-mono);
-      font-weight: 600;
-      color: var(--text-primary);
-      letter-spacing: -0.01em;
-    }
-
-    .status-badge {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      font-weight: 600;
-      padding: 2px 7px;
-      border-radius: 3px;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      border: 1px solid var(--border);
-      white-space: nowrap;
-    }
-    .status-active { background: rgba(16, 185, 129, 0.1); color: var(--success-green); border-color: rgba(16, 185, 129, 0.3); }
-    .status-disabled { background: rgba(239, 68, 68, 0.1); color: var(--danger-red); border-color: rgba(239, 68, 68, 0.3); }
-
-    .node-badge-count {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      font-weight: 700;
-      padding: 3px 9px;
-      border-radius: 4px;
-      background: rgba(16, 185, 129, 0.12);
-      color: var(--success-green);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      white-space: nowrap;
-    }
-
-    /* Dropzone */
-    .dropzone {
-      border: 2px dashed var(--border);
-      border-radius: 6px;
-      padding: 26px;
-      text-align: center;
-      background: var(--bg-surface);
-      cursor: pointer;
-      transition: all 0.15s ease;
-      margin-bottom: 24px;
-    }
-    .dropzone:hover, .dropzone.dragover {
-      border-color: var(--text-primary);
-      background: var(--bg-subtle);
-    }
-
-    /* Option Cards */
-    .option-card {
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 14px;
-      margin-bottom: 12px;
-      background: var(--bg-surface);
-      cursor: pointer;
-      transition: all 0.15s ease;
-    }
-    .option-card:hover { border-color: var(--text-secondary); }
-    .option-card.selected {
-      border-color: var(--text-primary);
-      background: var(--bg-subtle);
-    }
-
-    /* Modal dialogs */
-    .modal-overlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(4px);
-      z-index: 100;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-
-    .modal-box {
+    /* Keepalive Banner */
+    .keepalive-banner {
       background: var(--bg-surface);
       border: 1px solid var(--border);
       border-radius: 8px;
-      width: 100%;
-      max-width: 520px;
-      padding: 24px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
     }
 
-    .modal-box.modal-lg { max-width: 660px; }
-    .modal-box.modal-xl { max-width: 820px; width: 95%; }
+    .keepalive-info {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .keepalive-title-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13.5px;
+    }
+
+    .keepalive-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .keepalive-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Buttons */
+    .btn-primary, .btn-secondary, .btn-sm {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: var(--accent-primary);
+      color: #ffffff;
+      border: 1px solid var(--accent-primary);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--accent-hover);
+      border-color: var(--accent-hover);
+    }
+
+    .btn-secondary {
+      background: var(--bg-card);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: var(--bg-subtle);
+      border-color: var(--text-muted);
+    }
+
+    .btn-sm {
+      padding: 5px 9px;
+      font-size: 11.5px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+    }
+
+    .btn-sm:hover:not(:disabled) {
+      background: var(--bg-subtle);
+    }
 
     .btn-link-underline {
       background: none;
       border: none;
-      padding: 0;
       color: var(--accent-primary);
       text-decoration: underline;
       text-underline-offset: 3px;
@@ -552,60 +500,304 @@
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      transition: all 0.15s ease;
-    }
-    .btn-link-underline:hover {
-      color: var(--text-primary);
-      text-decoration-color: var(--text-primary);
+      padding: 0;
     }
 
-    .modal-head {
+    .btn-link-underline:hover {
+      color: var(--text-primary);
+    }
+
+    .btn-dots {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 4px 6px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-dots:hover, .btn-dots.active {
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+    }
+
+    /* Redesigned Form Elements & Custom Dropdowns */
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+
+    .form-input, .form-textarea {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 13px;
+      padding: 9px 12px;
+      border-radius: 7px;
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .form-input:focus, .form-textarea:focus {
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    /* Modern Styled Dropdown Select */
+    .form-select {
+      width: 100%;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-color: var(--bg-input);
+      background-image: var(--select-arrow);
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 14px;
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 9px 34px 9px 12px;
+      border-radius: 7px;
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .form-select:hover {
+      border-color: var(--text-muted);
+    }
+
+    .form-select:focus {
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .form-select option {
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      padding: 8px 10px;
+    }
+
+    .form-textarea {
+      height: 120px;
+      resize: vertical;
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+
+    /* Toolbar Header */
+    .toolbar-actions {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 18px;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
     }
 
-    .modal-title {
-      font-size: 17px;
+    .toolbar-title {
+      font-size: 15px;
       font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    /* Tables */
+    .table-frame {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+      text-align: left;
+    }
+
+    .admin-table th {
+      background: var(--bg-card);
+      color: var(--text-muted);
+      font-weight: 600;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .admin-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      vertical-align: middle;
+    }
+
+    .admin-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .admin-table tr:hover td {
+      background: var(--bg-card);
+    }
+
+    .nowrap { white-space: nowrap; }
+    .mono-cell { font-family: var(--font-mono); font-size: 12px; color: var(--text-primary); }
+
+    /* Badges */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .status-active {
+      background: rgba(16, 185, 129, 0.12);
+      color: var(--status-active);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+
+    .status-suspended {
+      background: rgba(245, 158, 11, 0.12);
+      color: var(--status-suspended);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+    }
+
+    .node-badge-count {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 3px 8px;
+      border-radius: 5px;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    /* Table Footer & Pagination */
+    .table-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: var(--bg-card);
+      border-top: 1px solid var(--border);
+      font-size: 11.5px;
+      color: var(--text-muted);
+    }
+
+    .pagination-controls {
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
-    .form-group {
-      margin-bottom: 16px;
-    }
-
-    .form-label {
-      display: block;
-      font-family: var(--font-mono);
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-bottom: 6px;
-    }
-
-    .form-input, .form-select, .form-textarea {
-      width: 100%;
-      background: var(--bg-code);
+    .page-btn {
+      background: var(--bg-surface);
       border: 1px solid var(--border);
       color: var(--text-primary);
-      font-family: var(--font-mono);
-      font-size: 13px;
-      padding: 10px 12px;
-      border-radius: 4px;
-      outline: none;
+      padding: 4px 10px;
+      border-radius: 5px;
+      font-size: 11.5px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
     }
 
-    .form-input:focus, .form-select:focus, .form-textarea:focus {
-      border-color: var(--text-primary);
+    .page-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
     }
 
-    .form-textarea {
-      height: 140px;
-      resize: vertical;
-      line-height: 1.5;
+    /* Dropzone */
+    .dropzone {
+      border: 2px dashed var(--border);
+      border-radius: 8px;
+      padding: 24px 20px;
+      text-align: center;
+      background: var(--bg-surface);
+      cursor: pointer;
+      margin-bottom: 20px;
+      transition: all 0.2s ease;
+    }
+
+    .dropzone:hover, .dropzone.dragover {
+      border-color: var(--accent-primary);
+      background: var(--accent-glow);
+    }
+
+    /* Modals */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.72);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-box {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      width: 100%;
+      max-width: 520px;
+      padding: 22px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+      position: relative;
+    }
+
+    .modal-box.modal-lg { max-width: 680px; }
+    .modal-box.modal-xl { max-width: 1040px; width: 92vw; }
+
+    .modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .modal-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .modal-foot {
@@ -613,513 +805,599 @@
       justify-content: flex-end;
       gap: 10px;
       margin-top: 20px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border-subtle);
     }
 
-    /* Modern Admin Popup / Notification Modal */
-    .admin-popup-box {
-      max-width: 440px;
-      text-align: center;
-      padding: 30px 24px 24px;
-      border-radius: 12px;
-      animation: popupScaleIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.65);
-      position: relative;
-    }
-    @keyframes popupScaleIn {
-      from {
-        opacity: 0;
-        transform: scale(0.92) translateY(8px);
-      }
-      to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-      }
-    }
-    .popup-icon-wrap {
-      width: 56px;
-      height: 56px;
-      border-radius: 50%;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 16px;
-      transition: all 0.2s ease;
-    }
-    .popup-icon-wrap.type-danger {
-      background: rgba(239, 68, 68, 0.12);
-      color: var(--danger-red);
-      border: 1px solid rgba(239, 68, 68, 0.25);
-    }
-    .popup-icon-wrap.type-warning {
-      background: rgba(245, 158, 11, 0.12);
-      color: #f59e0b;
-      border: 1px solid rgba(245, 158, 11, 0.25);
-    }
-    .popup-icon-wrap.type-success {
-      background: rgba(16, 185, 129, 0.12);
-      color: var(--success-green);
-      border: 1px solid rgba(16, 185, 129, 0.25);
-    }
-    .popup-icon-wrap.type-info {
-      background: rgba(59, 130, 246, 0.12);
-      color: #3b82f6;
-      border: 1px solid rgba(59, 130, 246, 0.25);
-    }
-    .popup-title {
-      font-size: 17px;
-      font-weight: 700;
-      color: var(--text-primary);
-      margin-bottom: 10px;
-    }
-    .popup-message {
-      font-size: 13.5px;
-      color: var(--text-secondary);
-      line-height: 1.6;
-      margin-bottom: 22px;
-      word-break: break-word;
-    }
-    .popup-foot {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      margin-top: 0;
-    }
-    .popup-foot button {
-      min-width: 105px;
-      padding: 9px 20px;
-      font-size: 13px;
-    }
-    .btn-danger-solid {
-      background: var(--danger-red) !important;
-      color: #ffffff !important;
-      border: 1px solid var(--danger-red) !important;
-      font-weight: 600;
-    }
-    .btn-danger-solid:hover {
-      opacity: 0.9 !important;
-    }
-
-    /* Password gate overlay */
-    #authOverlay {
+    /* Dropdown Action Menu */
+    .action-dropdown {
       position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: var(--bg);
-      z-index: 200;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      z-index: 1000;
+      padding: 5px;
+      min-width: 165px;
+      display: none;
+    }
+
+    .action-dropdown-item {
       display: flex;
       align-items: center;
-      justify-content: center;
+      gap: 8px;
+      padding: 8px 12px;
+      font-size: 12.5px;
+      color: var(--text-primary);
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.1s ease;
+    }
+
+    .action-dropdown-item:hover {
+      background: var(--bg-card);
+    }
+
+    .action-dropdown-item.danger {
+      color: var(--status-error);
+    }
+
+    .action-dropdown-item.danger:hover {
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    .action-dropdown-divider {
+      height: 1px;
+      background: var(--border-subtle);
+      margin: 4px 0;
+    }
+
+    /* Spinner */
+    .spinner {
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-top-color: #ffffff;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      display: inline-block;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .admin-sidebar { position: fixed; left: -240px; }
+      .admin-sidebar.mobile-open { left: 0; }
+      .mobile-menu-btn { display: block; }
+    }
+
+    @media (max-width: 600px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      .admin-topbar { padding: 0 16px; }
+      .admin-content { padding: 16px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Khóa mật khẩu Admin -->
-  <div id="authOverlay">
-    <div class="modal-box" style="max-width: 400px; text-align: center;">
-      <div style="margin-bottom: 16px;">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto; color: var(--text-primary);">
-          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-        </svg>
+  <!-- Khóa mật khẩu Admin Gate -->
+  <div id="authOverlay" class="modal-overlay" style="display: flex; z-index: 9999;">
+    <div class="modal-box" style="max-width: 380px; text-align: center;">
+      <div style="width: 46px; height: 46px; border-radius: 10px; background: var(--accent-glow); color: var(--accent-primary); display: flex; align-items: center; justify-content: center; margin: 0 auto 14px;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
       </div>
-      <h2 style="font-size: 18px; margin-bottom: 8px;">Xác thực Quản trị viên</h2>
-      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Nhập mật khẩu Admin để truy cập bảng điều khiển.</p>
+      <h2 style="font-size: 17px; margin-bottom: 6px;">Xác thực Quản trị</h2>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 18px;">Nhập mật khẩu Admin để truy cập bảng điều khiển.</p>
       
-      <form id="loginForm" onsubmit="handleLogin(event)">
+      <form onsubmit="handleLogin(event)">
         <div class="form-group">
-          <input type="password" id="adminPwdInput" class="form-input" placeholder="Nhập mật khẩu Admin..." required autofocus />
+          <input type="password" id="adminPwdInput" class="form-input" placeholder="Mật khẩu Admin..." required autofocus />
         </div>
         <button type="submit" class="btn-primary" style="width: 100%; justify-content: center;">Mở khóa Dashboard</button>
       </form>
-      <div id="loginErr" style="color: var(--danger-red); font-size: 12px; margin-top: 10px; display: none;"></div>
+      <div id="loginErr" style="color: var(--status-error); font-size: 12px; margin-top: 10px; display: none;"></div>
     </div>
   </div>
 
-  <!-- Header -->
-  <header class="site-header">
-    <div class="container-wide header-inner">
-      <div class="brand-title">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
-        AI Claude KeyAPI — Quản trị Node & License
-      </div>
-      <div style="display: flex; align-items: center; gap: 14px;">
-        <a href="/" style="font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary); display: inline-flex; align-items: center; gap: 4px;">
-          ← Trang chủ
-        </a>
-        <button id="themeToggle" class="theme-btn" title="Chuyển giao diện Sáng / Tối">
-          <svg id="themeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-        </button>
-      </div>
-    </div>
-  </header>
-
-  <main class="container-wide" style="padding-bottom: 60px;">
-    <!-- Thống kê nhanh -->
-    <div class="stats-bar">
-      <div class="stat-card">
-        <div class="stat-label">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-          Tổng số Node trong kho
+  <div class="admin-layout" id="adminApp">
+    <!-- Collapsible Sidebar Navigation -->
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="sidebar-head">
+        <div class="sidebar-brand">
+          <span class="brand-icon">⚡</span>
+          <span class="brand-text">AI Claude Admin</span>
         </div>
-        <div class="stat-val">
-          <span id="statNodesCount">0</span>
-          <span class="stat-unit">Node (Tài khoản)</span>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7.5" cy="15.5" r="5.5"></circle><path d="m21 2-9.6 9.6"></path><path d="m15.5 7.5 3 3L22 7l-3-3"></path></svg>
-          Tổng số License Key
-        </div>
-        <div class="stat-val">
-          <span id="statKeysCount">0</span>
-          <span class="stat-unit">Mã hoạt động</span>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
-          Thiết bị đang sử dụng
-        </div>
-        <div class="stat-val">
-          <span id="statDevicesCount">0</span>
-          <span class="stat-unit">Máy đã kết nối</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Thông báo trạng thái Vercel KV -->
-    <div id="kvNotice" class="storage-banner" style="display: none;">
-      <div>
-        <strong>Lưu ý về lưu trữ Vercel:</strong> Chưa phát hiện Vercel KV. Dữ liệu đang được lưu tạm trong bộ nhớ. Hãy vào tab <strong>Storage</strong> trên Dashboard Vercel ➔ Tạo <strong>KV</strong> để dữ liệu được lưu vĩnh viễn 100%.
-      </div>
-    </div>
-
-    <!-- Navigation Tabs -->
-    <div class="admin-nav">
-      <button class="admin-tab active" onclick="switchAdminTab('keysTab', this)">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7.5" cy="15.5" r="5.5"></circle><path d="m21 2-9.6 9.6"></path><path d="m15.5 7.5 3 3L22 7l-3-3"></path></svg>
-        Quản lý License Keys
-        <span class="tab-badge" id="keysTabBadge">0</span>
-      </button>
-      <button class="admin-tab" onclick="switchAdminTab('nodesTab', this)">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-        Kho Gói Node
-        <span class="tab-badge" id="nodesTabBadge">0 gói</span>
-      </button>
-    </div>
-
-    <!-- TAB 1: LICENSE KEYS -->
-    <section id="keysTab">
-      <div class="toolbar-actions">
-        <h3 style="font-size: 16px; font-weight: 600;">Danh sách Mã sử dụng đã cấp</h3>
-        <button class="btn-primary" onclick="openCreateKeyModal()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-          Tạo Mã License
+        <button class="sidebar-toggle-btn" id="btnToggleSidebar" onclick="toggleSidebar()" title="Thu nhỏ / Mở rộng">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
         </button>
       </div>
 
-      <div class="table-frame">
-        <div class="table-responsive">
-          <table class="admin-table">
-            <thead>
-              <tr>
-                <th>Mã Key</th>
-                <th>Ghi chú</th>
-                <th>Gói Node</th>
-                <th>Thiết bị</th>
-                <th>Hạn dùng</th>
-                <th>Trạng thái</th>
-                <th style="text-align: right; width: 44px;"></th>
-              </tr>
-            </thead>
-            <tbody id="keysTableBody">
-              <tr><td colspan="7" style="text-align: center; padding: 24px; color: var(--text-muted);">Đang tải danh sách key...</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="table-footer" id="keysTableFooter" style="display: none;">
-          <div id="keysPageSummary">Hiển thị 0 mã</div>
-          <div class="pagination-controls">
-            <button class="page-btn" id="keysPrevBtn" onclick="changeKeysPage(-1)" disabled>
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
-              Trước
-            </button>
-            <span class="page-info" id="keysPageInfo">Trang 1 / 1</span>
-            <button class="page-btn" id="keysNextBtn" onclick="changeKeysPage(1)" disabled>
-              Sau
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
-            </button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- TAB 2: KHO NODE TÀI KHOẢN -->
-    <section id="nodesTab" style="display: none;">
-      <!-- Drag & Drop Upload Zone -->
-      <div class="dropzone" id="fileDropzone" onclick="document.getElementById('jsonFileInput').click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleFileDrop(event)">
-        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto 10px; display: block; color: var(--text-secondary);">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-          <polyline points="17 8 12 3 7 8"></polyline>
-          <line x1="12" y1="3" x2="12" y2="15"></line>
-        </svg>
-        <div style="font-weight: 600; font-size: 14px; margin-bottom: 4px;">Kéo thả file .json vào đây hoặc bấm để chọn file từ máy tính</div>
-        <div style="font-size: 12px; color: var(--text-muted);">
-          Hỗ trợ file xuất hàng loạt (ví dụ: <code>ai-nodes-2026-09-04.json</code> có 1,883 node). Hệ thống tự đếm và cho chọn Đè lên node cũ hoặc Tạo gói mới.
-        </div>
-        <input type="file" id="jsonFileInput" accept=".json" style="display: none;" onchange="handleFileInputChange(this)" />
-      </div>
-
-      <!-- Keep-Alive Automation Banner -->
-      <div style="display: flex; align-items: center; justify-content: space-between; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; gap: 12px; flex-wrap: wrap;">
-        <div style="display: flex; align-items: center; gap: 12px;">
-          <div style="width: 34px; height: 34px; border-radius: 6px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); display: flex; align-items: center; justify-content: center; color: #10b981; flex-shrink: 0;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
-            </svg>
-          </div>
-          <div>
-            <div style="font-weight: 600; font-size: 13px; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
-              <span>Tự Động Chạy Ngầm (Keep-Alive Cron)</span>
-              <span class="status-badge status-active" id="keepaliveBadge" style="font-size: 10px;">Bật 24/7 (03:00 Hàng Ngày)</span>
-            </div>
-            <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;" id="keepaliveStatusText">
-              Lịch chạy: 03:00 AM hàng ngày • Tự động gia hạn OAuth token trước khi chạm ngưỡng 7 ngày.
-            </div>
-          </div>
-        </div>
-        <div style="display: flex; gap: 8px;">
-          <button class="btn-secondary" onclick="openKeepaliveConfigModal()" style="font-size: 12px; padding: 6px 12px; display: inline-flex; align-items: center; gap: 6px;" title="Tùy chỉnh chu kỳ và thời gian chạy ngầm">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-            Cấu hình ngầm
-          </button>
-          <button class="btn-secondary" onclick="triggerManualKeepAlive()" id="btnTriggerKeepalive" style="font-size: 12px; padding: 6px 12px; display: inline-flex; align-items: center; gap: 6px;" title="Kích hoạt kiểm tra và gia hạn token ngay lập tức">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
-            Chạy Keep-Alive ngay
-          </button>
-        </div>
-      </div>
-
-      <div class="toolbar-actions">
-        <h3 style="font-size: 16px; font-weight: 600;">Danh sách File & Gói Node</h3>
-        <div style="display: flex; gap: 8px;">
-          <button class="btn-primary" onclick="document.getElementById('jsonFileInput').click()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-            Tải lên file JSON (.json)
-          </button>
-          <button class="btn-secondary" onclick="openAddNodeModal()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-            Thêm 1 Node
-          </button>
-          <button class="btn-secondary" onclick="openBulkImportModal()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-            Nhập Token text
-          </button>
-        </div>
-      </div>
-
-      <!-- Packages Table -->
-      <div class="table-frame">
-        <div class="table-responsive">
-          <table class="admin-table">
-            <thead>
-              <tr>
-                <th>Gói Node</th>
-                <th>Số Node</th>
-                <th>Key sử dụng</th>
-                <th>Chạy thử</th>
-                <th>Cập nhật</th>
-                <th style="text-align: right; width: 44px;"></th>
-              </tr>
-            </thead>
-            <tbody id="packagesTableBody">
-              <tr><td colspan="6" style="text-align: center; padding: 24px; color: var(--text-muted);">Đang tải danh sách gói node...</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="table-footer" id="packagesTableFooter" style="display: none;">
-          <div id="packagesPageSummary">Hiển thị 0 gói</div>
-          <div class="pagination-controls">
-            <button class="page-btn" id="packagesPrevBtn" onclick="changePackagesPage(-1)" disabled>
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
-              Trước
-            </button>
-            <span class="page-info" id="packagesPageInfo">Trang 1 / 1</span>
-            <button class="page-btn" id="packagesNextBtn" onclick="changePackagesPage(1)" disabled>
-              Sau
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
-            </button>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <!-- MODAL: Nạp File Node JSON -->
-  <div id="uploadPackageModal" class="modal-overlay">
-    <div class="modal-box modal-lg">
-      <div class="modal-head">
-        <div class="modal-title">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-          Nạp File Node JSON
-        </div>
-        <button class="btn-sm" onclick="closeModal('uploadPackageModal')">✕</button>
-      </div>
-
-      <!-- File info banner -->
-      <div style="background: var(--bg-code); border: 1px solid var(--border); border-radius: 6px; padding: 14px 18px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between;">
-        <div>
-          <div style="font-family: var(--font-mono); font-weight: 600; font-size: 13px;" id="uploadModalFileName">ai-nodes.json</div>
-          <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Cấu trúc hợp lệ, đã giải mã danh sách tài khoản</div>
-        </div>
-        <div>
-          <span id="uploadModalNodeCount" class="node-badge-count" style="font-size: 13px; padding: 4px 10px;">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            0 Node
+      <nav class="sidebar-menu">
+        <a href="javascript:void(0)" class="sidebar-nav-item active" id="navDashboard" onclick="navigateToTab('dashboard')">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
           </span>
-        </div>
-      </div>
+          <span class="nav-label">Dashboard</span>
+        </a>
 
-      <div style="font-size: 13px; font-weight: 600; margin-bottom: 10px;">Chọn cách nạp danh sách Node:</div>
+        <a href="javascript:void(0)" class="sidebar-nav-item" id="navLicenseKeys" onclick="navigateToTab('licensekeys')">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7.5" cy="15.5" r="5.5"></circle><path d="m21 2-9.6 9.6"></path><path d="m15.5 7.5 3 3L22 7l-3-3"></path></svg>
+          </span>
+          <span class="nav-label">Mã Bản Quyền</span>
+          <span class="nav-badge" id="sideBadgeKeys">0</span>
+        </a>
 
-      <!-- Option 1: Overwrite -->
-      <div class="option-card selected" id="optCardOverwrite" onclick="selectUploadOption('overwrite')">
-        <div style="display: flex; align-items: flex-start; gap: 10px;">
-          <input type="radio" id="radioOverwrite" name="uploadOption" value="overwrite" checked style="margin-top: 3px;" onchange="selectUploadOption('overwrite')">
-          <div style="flex: 1;">
-            <label for="radioOverwrite" style="font-weight: 600; cursor: pointer; display: block;">Lựa chọn 1: Đè lên node hiện tại (Ghi đè)</label>
-            <div style="font-size: 12px; color: var(--text-muted); margin: 4px 0 10px;">
-              Ghi đè toàn bộ danh sách node trong một gói có sẵn. Các Key đang dùng gói này sẽ nhận danh sách node mới ngay lập tức.
-            </div>
+        <a href="javascript:void(0)" class="sidebar-nav-item" id="navPackageNode" onclick="navigateToTab('packagenode')">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+          </span>
+          <span class="nav-label">Kho Gói Node</span>
+          <span class="nav-badge" id="sideBadgePackages">0</span>
+        </a>
+      </nav>
 
-            <div id="overwriteFields" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-              <div>
-                <label class="form-label">Chọn Gói cần ghi đè:</label>
-                <select id="overwriteTargetPkgSelect" class="form-select" style="font-size: 12px; padding: 7px 10px;">
-                  <!-- Dynamically populated -->
-                </select>
-              </div>
-              <div>
-                <label class="form-label">Áp dụng cho Key nào:</label>
-                <select id="overwriteTargetKeySelect" class="form-select" style="font-size: 12px; padding: 7px 10px;">
-                  <option value="">Giữ nguyên các Key hiện tại</option>
-                  <!-- Dynamically populated -->
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Option 2: Create new package -->
-      <div class="option-card" id="optCardNew" onclick="selectUploadOption('new')">
-        <div style="display: flex; align-items: flex-start; gap: 10px;">
-          <input type="radio" id="radioNew" name="uploadOption" value="new" style="margin-top: 3px;" onchange="selectUploadOption('new')">
-          <div style="flex: 1;">
-            <label for="radioNew" style="font-weight: 600; cursor: pointer; display: block;">Lựa chọn 2: Tạo ra 1 file node mới (Gói độc lập)</label>
-            <div style="font-size: 12px; color: var(--text-muted); margin: 4px 0 10px;">
-              Tạo một gói node hoàn toàn riêng biệt. Không làm thay đổi các node của các gói khác.
-            </div>
-
-            <div id="newPkgFields" style="display: none; grid-template-columns: 1fr 1fr; gap: 12px;">
-              <div>
-                <label class="form-label">Tên gói node mới:</label>
-                <input type="text" id="newPkgNameInput" class="form-input" placeholder="Ví dụ: Gói VIP 2026" style="font-size: 12px; padding: 7px 10px;" />
-              </div>
-              <div>
-                <label class="form-label">Gán ngay cho Key (Tùy chọn):</label>
-                <select id="newPkgKeySelect" class="form-select" style="font-size: 12px; padding: 7px 10px;">
-                  <option value="">Chưa gán (Sẽ gán sau)</option>
-                  <!-- Dynamically populated -->
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="modal-foot">
-        <button type="button" class="btn-secondary" onclick="closeModal('uploadPackageModal')">Hủy</button>
-        <button type="button" id="submitUploadBtn" class="btn-primary" onclick="submitUploadPackage()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
-          Xác nhận Nạp Node
+      <div class="sidebar-foot">
+        <button class="btn-sidebar-theme" id="themeToggle" title="Đổi giao diện">
+          <svg id="themeIcon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle></svg>
+          <span class="theme-label">Giao diện Sáng/Tối</span>
         </button>
+        <div class="sidebar-status-pill">
+          <span class="pulse-dot"></span>
+          <span class="status-label">Hệ thống Online</span>
+        </div>
       </div>
-    </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="admin-main">
+      <!-- Topbar -->
+      <div class="admin-topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu-btn" onclick="toggleMobileSidebar()">☰</button>
+          <h1 class="page-title" id="pageTitleText">Dashboard Tổng Quan</h1>
+        </div>
+        <div class="topbar-right">
+          <div id="keepaliveTopPill" class="keepalive-pill">
+            <span class="pill-dot"></span>
+            <span id="keepaliveTopText">Keep-Alive: Đang kết nối</span>
+          </div>
+          <button class="btn-secondary" onclick="loadAllData()" title="Làm mới dữ liệu">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+            <span>Làm mới</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="admin-content">
+        <!-- Storage Notice (if KV missing) -->
+        <div id="kvNotice" style="display: none; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; font-size: 12px; color: #f59e0b;">
+          ⚠️ <strong>Lưu ý:</strong> Vercel KV chưa được liên kết. Hãy tạo KV trên Vercel để lưu trữ dữ liệu vĩnh viễn.
+        </div>
+
+        <!-- ==================== TAB 1: DASHBOARD ==================== -->
+        <div id="tabDashboard" class="tab-pane">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-label">License Key Đã Cấp</div>
+              <div class="stat-value" id="dashTotalKeys">0</div>
+              <div class="stat-sub" id="dashKeysSub">0 đang kích hoạt</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Tổng Kho Node xAI</div>
+              <div class="stat-value" id="dashTotalNodes">0</div>
+              <div class="stat-sub">Sẵn sàng điều phối</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Gói Node Phân Phối</div>
+              <div class="stat-value" id="dashTotalPackages">0</div>
+              <div class="stat-sub">Kho gói độc lập</div>
+            </div>
+            <div class="stat-card stat-card-highlight">
+              <div class="stat-label">Chạy Ngầm Keep-Alive</div>
+              <div class="stat-value" id="dashKeepaliveBadge" style="font-size: 16px;">Bật 24/7</div>
+              <div class="stat-sub" id="dashKeepaliveSub">Lịch quét: --:-- VN</div>
+            </div>
+          </div>
+
+          <!-- Keepalive Banner -->
+          <div class="keepalive-banner">
+            <div class="keepalive-info">
+              <div class="keepalive-title-row">
+                <strong>⚡ Tự Động Duy Trì Node (Keep-Alive 24/7)</strong>
+                <span class="status-badge status-active" id="keepaliveBadge">Bật</span>
+              </div>
+              <div class="keepalive-desc" id="keepaliveStatusText">
+                Tự động kiểm tra và gia hạn token xAI ngầm định kỳ.
+              </div>
+            </div>
+            <div class="keepalive-actions">
+              <button class="btn-secondary" onclick="openKeepaliveConfigModal()">⚙️ Cấu hình ngầm</button>
+              <button class="btn-primary" id="btnTriggerKeepalive" onclick="triggerManualKeepAlive()">⚡ Chạy ngay</button>
+            </div>
+          </div>
+
+          <!-- Quick Shortcuts & Preview -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 20px;">
+            <!-- Gói Node Preview -->
+            <div class="table-frame">
+              <div style="padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;">
+                <strong style="font-size: 13px;">📦 Gói Node Nổi Bật</strong>
+                <button class="btn-link-underline" onclick="navigateToTab('packagenode')">Xem tất cả →</button>
+              </div>
+              <div id="dashPackagesPreview">
+                <div style="padding: 20px; text-align: center; color: var(--text-muted);">Đang tải gói node...</div>
+              </div>
+            </div>
+
+            <!-- License Key Preview -->
+            <div class="table-frame">
+              <div style="padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;">
+                <strong style="font-size: 13px;">🔑 License Key Gần Đây</strong>
+                <button class="btn-link-underline" onclick="navigateToTab('licensekeys')">Xem tất cả →</button>
+              </div>
+              <div id="dashKeysPreview">
+                <div style="padding: 20px; text-align: center; color: var(--text-muted);">Đang tải danh sách key...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== TAB 2: LICENSE KEYS ==================== -->
+        <div id="tabLicenseKeys" class="tab-pane" style="display: none;">
+          <div class="toolbar-actions">
+            <div>
+              <h2 class="toolbar-title">Quản Lý License Key</h2>
+              <div style="font-size: 12px; color: var(--text-muted);">Cấp mã bản quyền và phân bổ kho node cho từng người dùng.</div>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn-secondary" onclick="openAssignModalFromBtn()" title="Gán hoặc đổi gói node cho License Key">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                Gán Gói Cho Key
+              </button>
+              <button class="btn-primary" onclick="openCreateKeyModal()">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                Tạo Mã License
+              </button>
+            </div>
+          </div>
+
+          <div class="table-frame">
+            <div class="table-responsive">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Mã Key</th>
+                    <th>Khách Hàng / Ghi Chú</th>
+                    <th>Gói Node Định Tuyến</th>
+                    <th>Thiết Bị</th>
+                    <th>Hạn Dùng</th>
+                    <th>Trạng Thái</th>
+                    <th style="text-align: right; width: 44px;"></th>
+                  </tr>
+                </thead>
+                <tbody id="keysTableBody">
+                  <tr><td colspan="7" style="text-align: center; padding: 24px; color: var(--text-muted);">Đang tải danh sách key...</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="table-footer" id="keysTableFooter" style="display: none;">
+              <div id="keysPageSummary">Hiển thị 0 mã</div>
+              <div class="pagination-controls">
+                <button class="page-btn" id="keysPrevBtn" onclick="changeKeysPage(-1)" disabled>Trước</button>
+                <span id="keysPageInfo">Trang 1 / 1</span>
+                <button class="page-btn" id="keysNextBtn" onclick="changeKeysPage(1)" disabled>Sau</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== TAB 3: PACKAGE NODE ==================== -->
+        <div id="tabPackageNode" class="tab-pane" style="display: none;">
+          <!-- Dropzone -->
+          <div class="dropzone" id="fileDropzone" onclick="document.getElementById('jsonFileInput').click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleFileDrop(event)">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin: 0 auto 8px; display: block; color: var(--text-muted);">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            <div style="font-weight: 600; font-size: 13.5px; margin-bottom: 3px;">Kéo thả file .json vào đây hoặc bấm để tải lên</div>
+            <div style="font-size: 11.5px; color: var(--text-muted);">Hỗ trợ file xuất token hàng loạt. Tùy chọn Ghi đè hoặc Tạo gói độc lập.</div>
+            <input type="file" id="jsonFileInput" accept=".json" style="display: none;" onchange="handleFileInputChange(this)" />
+          </div>
+
+          <div class="toolbar-actions">
+            <div>
+              <h2 class="toolbar-title">Danh Sách File & Gói Node</h2>
+              <div style="font-size: 12px; color: var(--text-muted);">Quản lý kho tài khoản xAI được định tuyến cho các License Key.</div>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn-secondary" onclick="openAssignKeyModalForPkg('default')">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7.5" cy="15.5" r="5.5"></circle><path d="m21 2-9.6 9.6"></path><path d="m15.5 7.5 3 3L22 7l-3-3"></path></svg>
+                Gán Key Vào Gói
+              </button>
+              <button class="btn-secondary" onclick="openAddNodeModal()">+ Thêm 1 Node</button>
+              <button class="btn-secondary" onclick="openBulkImportModal()">+ Nhập Token text</button>
+              <button class="btn-primary" onclick="document.getElementById('jsonFileInput').click()">Tải File JSON</button>
+            </div>
+          </div>
+
+          <!-- Packages Table -->
+          <div class="table-frame">
+            <div class="table-responsive">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Gói Node</th>
+                    <th>Số Node</th>
+                    <th>Key Sử Dụng</th>
+                    <th>Chạy Thử</th>
+                    <th>Cập Nhật</th>
+                    <th style="text-align: right; width: 44px;"></th>
+                  </tr>
+                </thead>
+                <tbody id="packagesTableBody">
+                  <tr><td colspan="6" style="text-align: center; padding: 24px; color: var(--text-muted);">Đang tải danh sách gói node...</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="table-footer" id="packagesTableFooter" style="display: none;">
+              <div id="packagesPageSummary">Hiển thị 0 gói</div>
+              <div class="pagination-controls">
+                <button class="page-btn" id="packagesPrevBtn" onclick="changePackagesPage(-1)" disabled>Trước</button>
+                <span id="packagesPageInfo">Trang 1 / 1</span>
+                <button class="page-btn" id="packagesNextBtn" onclick="changePackagesPage(1)" disabled>Sau</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
   </div>
 
-  <!-- MODAL: Gán Gói Node cho Key -->
-  <div id="assignPackageModal" class="modal-overlay">
-    <div class="modal-box" style="max-width: 440px;">
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- MODAL: Gán License Key Vào Gói Node (Cho phép chọn cả Key lẫn Gói) -->
+  <div id="modalAssignKeyToPackage" class="modal-overlay" onclick="if(event.target===this)closeModal('modalAssignKeyToPackage')">
+    <div class="modal-box" style="max-width: 480px;">
       <div class="modal-head">
         <div class="modal-title">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
-          Đổi Gói Node Cho Key
+          Gán License Key Vào Gói Node
         </div>
-        <button class="btn-sm" onclick="closeModal('assignPackageModal')">✕</button>
+        <button class="btn-sm" onclick="closeModal('modalAssignKeyToPackage')">✕</button>
       </div>
-      <div style="margin-bottom: 14px;">
-        <div style="font-size: 12px; color: var(--text-muted);">Mã License:</div>
-        <div class="mono-cell" id="assignModalKeyString" style="font-size: 14px; margin-top: 2px;"></div>
+      
+      <form onsubmit="submitAssignKeyToPackage(event)">
+        <div class="form-group">
+          <label class="form-label">Chọn License Key:</label>
+          <select id="assignTargetKeySelect" class="form-select" required>
+            <!-- Populated dynamically -->
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Chuyển sang Gói Node:</label>
+          <select id="assignTargetPackageSelect" class="form-select" required>
+            <!-- Populated dynamically -->
+          </select>
+          <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">
+            Client sử dụng key này sẽ lập tức nhận kho tài khoản từ gói node mới.
+          </div>
+        </div>
+
+        <div class="modal-foot">
+          <button type="button" class="btn-secondary" onclick="closeModal('modalAssignKeyToPackage')">Hủy</button>
+          <button type="submit" class="btn-primary">Lưu Thay Đổi</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Danh sách Key trong gói (Rộng thoáng, k thanh trượt ngang, có phân trang) -->
+  <div id="modalPackageKeys" class="modal-overlay" onclick="if(event.target===this)closeModal('modalPackageKeys')">
+    <div class="modal-box modal-xl">
+      <div class="modal-head">
+        <div class="modal-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7.5" cy="15.5" r="5.5"></circle><path d="m21 2-9.6 9.6"></path><path d="m15.5 7.5 3 3L22 7l-3-3"></path></svg>
+          <span id="pkgKeysModalTitle">Danh sách License Key</span>
+        </div>
+        <button class="btn-sm" onclick="closeModal('modalPackageKeys')">✕</button>
       </div>
-      <div class="form-group">
-        <label class="form-label">Chọn Gói Node định tuyến:</label>
-        <select id="assignModalPackageSelect" class="form-select">
-          <!-- Populated dynamically -->
-        </select>
+
+      <!-- Header actions bar -->
+      <div style="margin-bottom: 14px; padding: 10px 14px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 7px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+        <div style="font-size: 12px; color: var(--text-secondary);" id="pkgKeysModalSubtitle">
+          Kho Node: ...
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn-secondary" onclick="openAssignKeyModalForPkg(currentViewingPkgId)" style="font-size: 11.5px; padding: 5px 10px;">
+            + Gán thêm Key có sẵn
+          </button>
+          <button class="btn-primary" onclick="createNewKeyForCurrentPkg()" style="font-size: 11.5px; padding: 5px 10px;">
+            + Tạo Key mới cho gói này
+          </button>
+        </div>
       </div>
+
+      <!-- Keys Table (Clean, no horizontal scroll) -->
+      <div style="border: 1px solid var(--border); border-radius: 7px; overflow: hidden; background: var(--bg-surface);">
+        <table class="admin-table" style="margin: 0; width: 100%;">
+          <thead>
+            <tr>
+              <th style="width: 25%;">Mã License Key</th>
+              <th style="width: 22%;">Khách Hàng</th>
+              <th style="width: 15%;">Thiết Bị</th>
+              <th style="width: 15%;">Hạn Dùng</th>
+              <th style="width: 11%;">Trạng Thái</th>
+              <th style="text-align: right; width: 12%;">Thao Tác</th>
+            </tr>
+          </thead>
+          <tbody id="pkgKeysTableBody">
+            <!-- Populated dynamically -->
+          </tbody>
+        </table>
+        
+        <!-- Modal Pagination -->
+        <div class="table-footer" id="pkgKeysTableFooter" style="display: none;">
+          <div id="pkgKeysPageSummary">Hiển thị 0 key</div>
+          <div class="pagination-controls">
+            <button class="page-btn" id="pkgKeysPrevBtn" onclick="changePkgKeysPage(-1)" disabled>Trước</button>
+            <span id="pkgKeysPageInfo">Trang 1 / 1</span>
+            <button class="page-btn" id="pkgKeysNextBtn" onclick="changePkgKeysPage(1)" disabled>Sau</button>
+          </div>
+        </div>
+      </div>
+
       <div class="modal-foot">
-        <button type="button" class="btn-secondary" onclick="closeModal('assignPackageModal')">Hủy</button>
-        <button type="button" class="btn-primary" onclick="submitAssignPackage()">Lưu thay đổi</button>
+        <button type="button" class="btn-secondary" onclick="closeModal('modalPackageKeys')">Đóng</button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL: Tạo License Key mới -->
-  <div id="createKeyModal" class="modal-overlay">
-    <div class="modal-box">
+  <!-- MODAL: Cấu hình Tự động Keep-Alive (Giờ linh hoạt, ngắn gọn) -->
+  <div id="modalKeepaliveConfig" class="modal-overlay" onclick="if(event.target===this)closeModal('modalKeepaliveConfig')">
+    <div class="modal-box" style="max-width: 480px;">
+      <div class="modal-head">
+        <div class="modal-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          Cấu hình Chạy Ngầm Keep-Alive
+        </div>
+        <button class="btn-sm" onclick="closeModal('modalKeepaliveConfig')">✕</button>
+      </div>
+
+      <form onsubmit="submitKeepaliveConfig(event)">
+        <div class="form-group">
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 600; font-size: 13px;">
+            <input type="checkbox" id="cfgAutoRunEnabled" checked style="width: 16px; height: 16px; accent-color: var(--accent-primary);" />
+            <span>Kích hoạt tự động chạy ngầm (Vercel Cron 24/7)</span>
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Khung giờ chạy ngầm định kỳ (Giờ VN):</label>
+          <select id="cfgRunHour" class="form-select">
+            <option value="0">00:00 (Nửa đêm)</option>
+            <option value="1">01:00 AM</option>
+            <option value="2">02:00 AM</option>
+            <option value="3" selected>03:00 AM (Mặc định - Khuyên dùng)</option>
+            <option value="4">04:00 AM</option>
+            <option value="5">05:00 AM</option>
+            <option value="6">06:00 AM</option>
+            <option value="7">07:00 AM</option>
+            <option value="8">08:00 AM</option>
+            <option value="9">09:00 AM</option>
+            <option value="10">10:00 AM</option>
+            <option value="11">11:00 AM</option>
+            <option value="12">12:00 (Trưa)</option>
+            <option value="13">13:00 (01:00 PM)</option>
+            <option value="14">14:00 (02:00 PM)</option>
+            <option value="15">15:00 (03:00 PM)</option>
+            <option value="16">16:00 (04:00 PM)</option>
+            <option value="17">17:00 (05:00 PM)</option>
+            <option value="18">18:00 (06:00 PM)</option>
+            <option value="19">19:00 (07:00 PM)</option>
+            <option value="20">20:00 (08:00 PM)</option>
+            <option value="21">21:00 (09:00 PM)</option>
+            <option value="22">22:00 (10:00 PM)</option>
+            <option value="23">23:00 (11:00 PM)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Tần suất quét làm mới:</label>
+          <select id="cfgIntervalDays" class="form-select">
+            <option value="1">Mỗi 1 ngày</option>
+            <option value="2" selected>Mỗi 2 ngày (Khuyên dùng)</option>
+            <option value="3">Mỗi 3 ngày</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Bỏ qua token còn tươi mới:</label>
+          <select id="cfgFreshHours" class="form-select">
+            <option value="24">Trong vòng 24 giờ</option>
+            <option value="48" selected>Trong vòng 48 giờ (Khuyên dùng)</option>
+            <option value="72">Trong vòng 72 giờ</option>
+          </select>
+          <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">
+            Token đã làm mới gần đây sẽ được giữ nguyên nhằm tối ưu tài nguyên.
+          </div>
+        </div>
+
+        <div class="modal-foot">
+          <button type="button" class="btn-secondary" onclick="closeModal('modalKeepaliveConfig')">Hủy</button>
+          <button type="submit" class="btn-primary" id="btnSaveKeepaliveCfg">Lưu Cấu Hình</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Kết quả chạy thử Node -->
+  <div id="modalTestResult" class="modal-overlay" onclick="if(event.target===this)closeModal('modalTestResult')">
+    <div class="modal-box" style="max-width: 500px;">
+      <div class="modal-head">
+        <div class="modal-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+          Kết Quả Chạy Thử xAI Live
+        </div>
+        <button class="btn-sm" onclick="closeModal('modalTestResult')">✕</button>
+      </div>
+
+      <div id="testResultContent"></div>
+
+      <div class="modal-foot">
+        <button type="button" class="btn-primary" onclick="closeModal('modalTestResult')">Đã Hiểu</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Tạo Key Mới -->
+  <div id="createKeyModal" class="modal-overlay" onclick="if(event.target===this)closeModal('createKeyModal')">
+    <div class="modal-box" style="max-width: 480px;">
       <div class="modal-head">
         <div class="modal-title">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7.5" cy="15.5" r="5.5"></circle><path d="m21 2-9.6 9.6"></path><path d="m15.5 7.5 3 3L22 7l-3-3"></path></svg>
-          Tạo Mã License Mới
+          Tạo Mã License Key Mới
         </div>
         <button class="btn-sm" onclick="closeModal('createKeyModal')">✕</button>
       </div>
       <form onsubmit="submitCreateKey(event)">
         <div class="form-group">
-          <label class="form-label">Tên khách hàng / Ghi chú</label>
-          <input type="text" id="newKeyLabel" class="form-input" placeholder="Ví dụ: Anh Nam Dev / Team Frontend" required />
+          <label class="form-label">Tên khách hàng / Ghi chú:</label>
+          <input type="text" id="newKeyLabel" class="form-input" placeholder="Ví dụ: Team Dev / Anh Tuấn" required />
         </div>
         <div class="form-group">
-          <label class="form-label">Mã License (Để trống sẽ tự tạo ngẫu nhiên)</label>
-          <input type="text" id="newKeyString" class="form-input" placeholder="Ví dụ: VIP-NAM-2026" />
+          <label class="form-label">Mã License (Để trống sẽ tự tạo):</label>
+          <input type="text" id="newKeyString" class="form-input" placeholder="KEY-XXXX-YYYY" />
         </div>
         <div class="form-group">
-          <label class="form-label">Gói Node cấp cho Key này</label>
-          <select id="newKeyPackage" class="form-select">
-            <!-- Populated dynamically -->
-          </select>
+          <label class="form-label">Gói Node cấp cho Key:</label>
+          <select id="newKeyPackage" class="form-select"></select>
         </div>
-        <div class="form-group">
-          <label class="form-label">Số thiết bị cho phép sử dụng đồng thời</label>
-          <select id="newKeyMaxDevices" class="form-select">
-            <option value="1" selected>1 thiết bị (Khuyên dùng - Chống chia sẻ)</option>
-            <option value="2">2 thiết bị (Máy công ty + Laptop cá nhân)</option>
-            <option value="3">3 thiết bị</option>
-            <option value="5">5 thiết bị (Dành cho nhóm)</option>
-            <option value="999">Không giới hạn (Toàn quyền)</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Thời hạn sử dụng</label>
-          <select id="newKeyExpireDays" class="form-select">
-            <option value="0" selected>Vĩnh viễn (Không giới hạn ngày)</option>
-            <option value="7">7 ngày (Dùng thử)</option>
-            <option value="30">30 ngày (1 tháng)</option>
-            <option value="90">90 ngày (3 tháng)</option>
-            <option value="365">365 ngày (1 năm)</option>
-          </select>
+        <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div>
+            <label class="form-label">Số thiết bị:</label>
+            <select id="newKeyMaxDevices" class="form-select">
+              <option value="1" selected>1 thiết bị</option>
+              <option value="2">2 thiết bị</option>
+              <option value="3">3 thiết bị</option>
+              <option value="5">5 thiết bị</option>
+              <option value="999">Không giới hạn</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label">Hạn dùng:</label>
+            <select id="newKeyExpireDays" class="form-select">
+              <option value="0" selected>Vĩnh viễn</option>
+              <option value="7">7 ngày</option>
+              <option value="30">30 ngày (1 tháng)</option>
+              <option value="90">90 ngày</option>
+              <option value="365">1 năm</option>
+            </select>
+          </div>
         </div>
         <div class="modal-foot">
           <button type="button" class="btn-secondary" onclick="closeModal('createKeyModal')">Hủy</button>
@@ -1129,44 +1407,94 @@
     </div>
   </div>
 
-  <!-- MODAL: Nhập nhiều Node (Text) -->
-  <div id="bulkImportModal" class="modal-overlay">
+  <!-- MODAL: Nạp File JSON -->
+  <div id="uploadPackageModal" class="modal-overlay" onclick="if(event.target===this)closeModal('uploadPackageModal')">
+    <div class="modal-box modal-lg">
+      <div class="modal-head">
+        <div class="modal-title">Nạp File Node JSON</div>
+        <button class="btn-sm" onclick="closeModal('uploadPackageModal')">✕</button>
+      </div>
+
+      <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 7px; padding: 12px 16px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between;">
+        <div>
+          <div style="font-family: var(--font-mono); font-weight: 600; font-size: 13px;" id="uploadModalFileName">file.json</div>
+          <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 2px;">Cấu trúc hợp lệ, sẵn sàng nạp.</div>
+        </div>
+        <span id="uploadModalNodeCount" class="node-badge-count">0 Node</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Phương thức nạp:</label>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <label style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer; padding: 10px; border: 1px solid var(--border); border-radius: 7px; background: var(--bg-card);">
+            <input type="radio" name="uploadOpt" value="overwrite" checked onchange="toggleUploadOpt('overwrite')" style="margin-top: 3px;" />
+            <div>
+              <strong>Ghi đè gói có sẵn</strong>
+              <div style="font-size: 11.5px; color: var(--text-muted);">Thay thế toàn bộ node trong gói đã chọn.</div>
+            </div>
+          </label>
+          <label style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer; padding: 10px; border: 1px solid var(--border); border-radius: 7px; background: var(--bg-card);">
+            <input type="radio" name="uploadOpt" value="new" onchange="toggleUploadOpt('new')" style="margin-top: 3px;" />
+            <div>
+              <strong>Tạo gói độc lập mới</strong>
+              <div style="font-size: 11.5px; color: var(--text-muted);">Tạo kho gói node hoàn toàn riêng biệt.</div>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <div id="uploadOptOverwriteFields" class="form-group">
+        <label class="form-label">Chọn Gói cần ghi đè:</label>
+        <select id="overwriteTargetPkgSelect" class="form-select"></select>
+      </div>
+
+      <div id="uploadOptNewFields" class="form-group" style="display: none;">
+        <label class="form-label">Tên gói node mới:</label>
+        <input type="text" id="newPkgNameInput" class="form-input" placeholder="Ví dụ: Gói Live VIP" />
+      </div>
+
+      <div class="modal-foot">
+        <button type="button" class="btn-secondary" onclick="closeModal('uploadPackageModal')">Hủy</button>
+        <button type="button" class="btn-primary" id="submitUploadBtn" onclick="submitUploadPackage()">Xác nhận Nạp</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Nhập Token text lẻ -->
+  <div id="bulkImportModal" class="modal-overlay" onclick="if(event.target===this)closeModal('bulkImportModal')">
     <div class="modal-box">
       <div class="modal-head">
-        <div class="modal-title">Nhập nhiều Token text</div>
+        <div class="modal-title">Nhập Token Dạng Text</div>
         <button class="btn-sm" onclick="closeModal('bulkImportModal')">✕</button>
       </div>
       <form onsubmit="submitBulkImport(event)">
         <div class="form-group">
-          <label class="form-label">Dán danh sách token (Mỗi dòng một token, hoặc tên:token)</label>
-          <textarea id="bulkNodesInput" class="form-textarea" placeholder="gsk_token1&#10;gsk_token2&#10;Node3:gsk_token3" required></textarea>
+          <label class="form-label">Dán token (Mỗi dòng 1 token hoặc Email:Token):</label>
+          <textarea id="bulkNodesInput" class="form-textarea" placeholder="sso_token_1&#10;user@mail.com:sso_token_2" required></textarea>
         </div>
-        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">
-          * Hệ thống tự động lọc bỏ các token trùng lặp và phân bổ vào kho mặc định.
-        </p>
         <div class="modal-foot">
           <button type="button" class="btn-secondary" onclick="closeModal('bulkImportModal')">Hủy</button>
-          <button type="submit" class="btn-primary">Nạp vào kho</button>
+          <button type="submit" class="btn-primary">Nạp Vào Kho</button>
         </div>
       </form>
     </div>
   </div>
 
   <!-- MODAL: Thêm 1 Node lẻ -->
-  <div id="addNodeModal" class="modal-overlay">
-    <div class="modal-box">
+  <div id="addNodeModal" class="modal-overlay" onclick="if(event.target===this)closeModal('addNodeModal')">
+    <div class="modal-box" style="max-width: 440px;">
       <div class="modal-head">
-        <div class="modal-title">Thêm Node mới</div>
+        <div class="modal-title">Thêm 1 Node Mới</div>
         <button class="btn-sm" onclick="closeModal('addNodeModal')">✕</button>
       </div>
       <form onsubmit="submitAddNode(event)">
         <div class="form-group">
-          <label class="form-label">Tên gợi nhớ</label>
-          <input type="text" id="nodeNameInput" class="form-input" placeholder="Node-Chính-01" required />
+          <label class="form-label">Tên gợi nhớ:</label>
+          <input type="text" id="nodeNameInput" class="form-input" placeholder="Node-01" required />
         </div>
         <div class="form-group">
-          <label class="form-label">API Token / SSO Token</label>
-          <input type="text" id="nodeKeyInput" class="form-input" placeholder="sso_... hoặc gsk_..." required />
+          <label class="form-label">API Token / SSO Token:</label>
+          <input type="text" id="nodeKeyInput" class="form-input" placeholder="sso_..." required />
         </div>
         <div class="modal-foot">
           <button type="button" class="btn-secondary" onclick="closeModal('addNodeModal')">Hủy</button>
@@ -1176,133 +1504,12 @@
     </div>
   </div>
 
-  <!-- MODAL: Cài đặt Tự Động Keep-Alive -->
-  <div id="modalKeepaliveConfig" class="modal-overlay">
-    <div class="modal-box" style="max-width: 480px;">
-      <div class="modal-head">
-        <div class="modal-title">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-          Cấu hình Tự động Keep-Alive
-        </div>
-        <button class="btn-sm" onclick="closeModal('modalKeepaliveConfig')">✕</button>
-      </div>
-      <form onsubmit="submitKeepaliveConfig(event)">
-        <div class="form-group">
-          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 600; font-size: 13px;">
-            <input type="checkbox" id="cfgAutoRunEnabled" checked style="width: 16px; height: 16px; cursor: pointer;" />
-            <span>Kích hoạt tự động chạy ngầm (Vercel Cron 24/7)</span>
-          </label>
-          <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px; margin-left: 24px;">
-            Hệ thống sẽ chạy ngầm định kỳ vào 03:00 AM (giờ Việt Nam).
-          </div>
-        </div>
-
-        <div class="form-group" style="margin-top: 16px;">
-          <label class="form-label">Chu kỳ quét & gia hạn token:</label>
-          <select id="cfgIntervalDays" class="form-select">
-            <option value="1">Mỗi 1 ngày (Hàng ngày lúc 03:00 AM)</option>
-            <option value="2" selected>Mỗi 2 ngày (Khuyến nghị - An toàn cao)</option>
-            <option value="3">Mỗi 3 ngày (Tiết kiệm tài nguyên)</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Ngưỡng coi Token "Còn Tươi" (Bỏ qua request thừa):</label>
-          <select id="cfgFreshHours" class="form-select">
-            <option value="24">24 giờ (Làm mới liên tục mỗi ngày)</option>
-            <option value="48" selected>48 giờ (Khuyến nghị - Token đã làm mới trong 2 ngày sẽ được giữ nguyên)</option>
-            <option value="72">72 giờ (3 ngày)</option>
-          </select>
-          <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">
-            Hệ thống chỉ làm mới các node có token cũ hơn ngưỡng này để tránh bị xAI chặn IP hoặc giới hạn tần suất.
-          </div>
-        </div>
-
-        <div class="modal-foot" style="margin-top: 24px;">
-          <button type="button" class="btn-secondary" onclick="closeModal('modalKeepaliveConfig')">Hủy</button>
-          <button type="submit" class="btn-primary" id="btnSaveKeepaliveCfg">Lưu cấu hình</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- MODAL: Danh sách Key đang sử dụng gói (Rộng thoáng) -->
-  <div id="modalPackageKeys" class="modal-overlay">
-    <div class="modal-box modal-xl">
-      <div class="modal-head">
-        <div class="modal-title" style="display: flex; align-items: center; gap: 8px;">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7.5" cy="15.5" r="5.5"></circle><path d="m21 2-9.6 9.6"></path><path d="m15.5 7.5 3 3L22 7l-3-3"></path></svg>
-          <span id="pkgKeysModalTitle">Danh sách License Key</span>
-        </div>
-        <button class="btn-sm" onclick="closeModal('modalPackageKeys')">✕</button>
-      </div>
-      
-      <div style="margin-bottom: 16px; padding: 10px 14px; background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 6px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
-        <div style="font-size: 12px; color: var(--text-muted);" id="pkgKeysModalSubtitle">
-          Đang sử dụng kho node: ...
-        </div>
-        <button class="btn-secondary" onclick="createNewKeyForCurrentPkg()" style="font-size: 11px; padding: 5px 10px; display: inline-flex; align-items: center; gap: 5px;">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-          + Tạo Key mới gán vào gói này
-        </button>
-      </div>
-
-      <div class="table-responsive" style="max-height: 420px; overflow-y: auto; border: 1px solid var(--border); border-radius: 6px;">
-        <table class="admin-table" style="margin: 0;">
-          <thead>
-            <tr>
-              <th>Mã License Key</th>
-              <th>Khách hàng / Tên</th>
-              <th>Thiết bị</th>
-              <th>Hạn dùng</th>
-              <th>Trạng thái</th>
-              <th style="text-align: right;">Thao tác</th>
-            </tr>
-          </thead>
-          <tbody id="pkgKeysTableBody">
-            <!-- Populated dynamically -->
-          </tbody>
-        </table>
-      </div>
-
-      <div class="modal-foot" style="margin-top: 20px;">
-        <button type="button" class="btn-secondary" onclick="closeModal('modalPackageKeys')">Đóng</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL: Kết quả chạy thử Node -->
-  <div id="modalTestResult" class="modal-overlay">
-    <div class="modal-box" style="max-width: 520px;">
-      <div class="modal-head">
-        <div class="modal-title" style="display: flex; align-items: center; gap: 8px;">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-          Kết Quả Chạy Thử Thực Tế
-        </div>
-        <button class="btn-sm" onclick="closeModal('modalTestResult')">✕</button>
-      </div>
-
-      <div id="testResultContent">
-        <!-- Populated dynamically -->
-      </div>
-
-      <div class="modal-foot" style="margin-top: 20px;">
-        <button type="button" class="btn-primary" onclick="closeModal('modalTestResult')">Đã hiểu</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modern Admin Popup / Confirm Modal -->
+  <!-- Dialog / Confirm Modal -->
   <div id="adminNotifyModal" class="modal-overlay" style="z-index: 100000;" onclick="if(event.target===this)closeAdminPopup(false)">
-    <div class="modal-box admin-popup-box">
-      <div class="popup-icon-wrap" id="popupIconWrap">
-        <span id="popupIcon"></span>
-      </div>
-      <div class="popup-content">
-        <h3 id="popupTitle" class="popup-title">Thông báo</h3>
-        <p id="popupMessage" class="popup-message"></p>
-      </div>
-      <div class="modal-foot popup-foot">
+    <div class="modal-box" style="max-width: 420px; text-align: center;">
+      <h3 id="popupTitle" style="font-size: 16px; margin-bottom: 8px;">Thông báo</h3>
+      <p id="popupMessage" style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.6;"></p>
+      <div style="display: flex; justify-content: center; gap: 10px;">
         <button type="button" id="popupCancelBtn" class="btn-secondary" onclick="closeAdminPopup(false)">Hủy</button>
         <button type="button" id="popupConfirmBtn" class="btn-primary" onclick="closeAdminPopup(true)">Đồng ý</button>
       </div>
@@ -1312,15 +1519,19 @@
   <!-- Floating Action Menu Dropdown -->
   <div id="actionDropdownMenu" class="action-dropdown"></div>
 
+  <!-- JavaScript Logic -->
   <script>
-    // 🛡️ Stealth Gate: Hide admin portal unless accessed with ?portal=chinhan or has valid session
+    // 🛡️ Stealth Gate
     const urlParams = new URLSearchParams(window.location.search);
-    const secretKey = urlParams.get('portal') || urlParams.get('key') || urlParams.get('secret');
+    const rawSecret = urlParams.get('portal') || urlParams.get('key') || urlParams.get('secret') || '';
     let adminToken = sessionStorage.getItem('admin_token') || '';
 
-    if (!adminToken && secretKey !== 'chinhan' && secretKey !== 'chinhanxt') {
+    // Allow portal subpaths like portal=chinhan/licensekeys or portal=chinhan/packagenode
+    const isAuthorizedGate = rawSecret.startsWith('chinhan') || rawSecret.startsWith('chinhanxt');
+
+    if (!adminToken && !isAuthorizedGate) {
       document.body.innerHTML = `
-        <div style="height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:sans-serif;background:#09090b;color:#f4f4f5;text-align:center;padding:20px;">
+        <div style="height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#09090b;color:#f4f4f5;text-align:center;padding:20px;">
           <h1 style="font-size:72px;font-weight:800;margin-bottom:8px;color:#71717a;">404</h1>
           <h2 style="font-size:20px;font-weight:600;margin-bottom:12px;">Trang không tồn tại</h2>
           <p style="color:#a1a1aa;margin-bottom:24px;font-size:14px;">Đường dẫn bạn yêu cầu không khả dụng hoặc đã được di chuyển.</p>
@@ -1330,127 +1541,91 @@
       throw new Error('Not found');
     }
 
-    // Toast Notification System for Admin
+    // State
+    let packagesData = [];
+    let keysData = [];
+    let currentViewingPkgId = null;
+    let currentUploadNodes = [];
+    let currentUploadFilename = '';
+
+    // Modals Pagination State
+    let pkgKeysCurrentPage = 1;
+    const pkgKeysPerPage = 6;
+    let currentPkgKeysList = [];
+
+    let keysCurrentPage = 1;
+    const keysPerPage = 10;
+    let packagesCurrentPage = 1;
+    const packagesPerPage = 10;
+
+    // Toast Notifications
     function showAdminToast(message, type = 'success') {
       let container = document.getElementById('adminToastContainer');
       if (!container) {
         container = document.createElement('div');
         container.id = 'adminToastContainer';
-        container.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:99999;display:flex;flex-direction:column;gap:10px;pointer-events:none;';
+        container.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:99999;display:flex;flex-direction:column;gap:8px;pointer-events:none;';
         document.body.appendChild(container);
       }
       const toast = document.createElement('div');
-      const borderColor = type === 'success' ? '#10b981' : (type === 'warning' ? '#f59e0b' : (type === 'error' ? '#ef4444' : '#3b82f6'));
-      const textColor = type === 'success' ? '#34d399' : (type === 'warning' ? '#fbbf24' : (type === 'error' ? '#fca5a5' : '#93c5fd'));
-      const icon = type === 'success' ? '✔' : (type === 'warning' ? '⚠️' : (type === 'error' ? '✖' : 'ℹ'));
-      toast.style.cssText = `background:#18181b;border:1px solid ${borderColor};color:#f4f4f5;padding:12px 18px;border-radius:8px;font-size:13px;box-shadow:0 10px 25px rgba(0,0,0,0.6);display:flex;align-items:center;gap:10px;pointer-events:auto;transition:all 0.3s ease;`;
-      toast.innerHTML = `<span style="font-size:16px;color:${textColor};">${icon}</span><span>${message}</span>`;
+      const borderColor = type === 'success' ? '#10b981' : (type === 'warning' ? '#f59e0b' : '#ef4444');
+      const icon = type === 'success' ? '✔' : (type === 'warning' ? '⚠️' : '✖');
+      toast.style.cssText = `background:#18181b;border:1px solid ${borderColor};color:#f4f4f5;padding:10px 16px;border-radius:7px;font-size:12.5px;box-shadow:0 10px 25px rgba(0,0,0,0.5);display:flex;align-items:center;gap:8px;pointer-events:auto;transition:all 0.25s ease;`;
+      toast.innerHTML = `<span style="font-weight:700;color:${borderColor};">${icon}</span><span>${escapeHtml(message)}</span>`;
       container.appendChild(toast);
       setTimeout(() => {
         toast.style.opacity = '0';
-        toast.style.transform = 'translateY(8px)';
-        setTimeout(() => toast.remove(), 320);
-      }, 4500);
+        toast.style.transform = 'translateY(6px)';
+        setTimeout(() => toast.remove(), 260);
+      }, 4000);
     }
+    const showToast = showAdminToast;
 
-    // Modern Custom Dialog & Notification Popup System for Admin
+    // Custom Popup / Confirm System
     let popupResolveHandler = null;
-
-    function showAdminPopup({
-      title = 'Thông báo',
-      message = '',
-      type = 'info', // 'danger' | 'warning' | 'success' | 'info' | 'error'
-      confirmText = 'Đồng ý',
-      cancelText = 'Hủy',
-      showCancel = false,
-      dangerConfirm = false
-    }) {
+    function showAdminPopup({ title = 'Thông báo', message = '', confirmText = 'Đồng ý', cancelText = 'Hủy', showCancel = false }) {
       return new Promise((resolve) => {
         popupResolveHandler = resolve;
-        const modal = document.getElementById('adminNotifyModal');
-        const iconWrap = document.getElementById('popupIconWrap');
-        const iconEl = document.getElementById('popupIcon');
-        const titleEl = document.getElementById('popupTitle');
-        const msgEl = document.getElementById('popupMessage');
-        const cancelBtn = document.getElementById('popupCancelBtn');
-        const confirmBtn = document.getElementById('popupConfirmBtn');
-
-        const resolvedType = (type === 'error' || type === 'delete') ? 'danger' : type;
-        iconWrap.className = 'popup-icon-wrap type-' + resolvedType;
-
-        let iconSvg = '';
-        if (resolvedType === 'danger') {
-          iconSvg = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>';
-        } else if (resolvedType === 'warning') {
-          iconSvg = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>';
-        } else if (resolvedType === 'success') {
-          iconSvg = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>';
-        } else {
-          iconSvg = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>';
-        }
-
-        iconEl.innerHTML = iconSvg;
-        titleEl.textContent = title;
-        msgEl.innerHTML = message;
-
-        cancelBtn.textContent = cancelText;
-        cancelBtn.style.display = showCancel ? 'inline-block' : 'none';
-
-        confirmBtn.textContent = confirmText;
-        if (dangerConfirm) {
-          confirmBtn.className = 'btn-primary btn-danger-solid';
-        } else {
-          confirmBtn.className = 'btn-primary';
-        }
-
-        modal.style.display = 'flex';
+        document.getElementById('popupTitle').textContent = title;
+        document.getElementById('popupMessage').innerHTML = message;
+        document.getElementById('popupCancelBtn').style.display = showCancel ? 'inline-block' : 'none';
+        document.getElementById('popupConfirmBtn').textContent = confirmText;
+        openModal('adminNotifyModal');
       });
     }
-
     function closeAdminPopup(result) {
-      const modal = document.getElementById('adminNotifyModal');
-      if (modal) modal.style.display = 'none';
+      closeModal('adminNotifyModal');
       if (popupResolveHandler) {
         const handler = popupResolveHandler;
         popupResolveHandler = null;
         handler(result);
       }
     }
-
-    function customAlert(message, title = 'Thông báo', type = 'info') {
-      return showAdminPopup({
-        title,
-        message,
-        type,
-        confirmText: 'Đóng',
-        showCancel: false
-      });
-    }
-
     function customConfirm(message, title = 'Xác nhận', danger = false, confirmText = 'Xác nhận') {
-      return showAdminPopup({
-        title,
-        message,
-        type: danger ? 'danger' : 'warning',
-        confirmText,
-        cancelText: 'Hủy',
-        showCancel: true,
-        dangerConfirm: danger
-      });
+      return showAdminPopup({ title, message, confirmText, showCancel: true });
+    }
+    function customAlert(message, title = 'Thông báo') {
+      return showAdminPopup({ title, message, confirmText: 'Đóng', showCancel: false });
     }
 
-    // Override native window.alert
-    window.alert = function(msg) {
-      customAlert(msg, 'Thông báo', 'info');
-    };
+    // Modal Helpers
+    function openModal(id) {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'flex';
+    }
+    function closeModal(id) {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+    }
+    function copyText(txt) {
+      navigator.clipboard.writeText(txt).then(() => showAdminToast('Đã sao chép: ' + txt, 'success'));
+    }
+    const copyKeyText = copyText;
 
-    // Close modal on Escape key
+    // Global Keydown & Backdrop Listeners
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
-        const modal = document.getElementById('adminNotifyModal');
-        if (modal && modal.style.display === 'flex') {
-          closeAdminPopup(false);
-        }
+        closeAdminPopup(false);
         document.querySelectorAll('.modal-overlay').forEach(m => {
           if (m.id !== 'adminNotifyModal' && m.id !== 'authOverlay' && m.style.display === 'flex') {
             m.style.display = 'none';
@@ -1459,42 +1634,96 @@
       }
     });
 
-    // Close modal on backdrop click
-    document.addEventListener('click', (e) => {
-      if (e.target && e.target.classList && e.target.classList.contains('modal-overlay')) {
-        if (e.target.id !== 'adminNotifyModal' && e.target.id !== 'authOverlay' && e.target.style.display === 'flex') {
-          e.target.style.display = 'none';
-        }
+    // Sidebar Collapse
+    function toggleSidebar() {
+      const sidebar = document.getElementById('adminSidebar');
+      sidebar.classList.toggle('collapsed');
+      localStorage.setItem('sidebar_collapsed', sidebar.classList.contains('collapsed') ? '1' : '0');
+    }
+    function toggleMobileSidebar() {
+      document.getElementById('adminSidebar').classList.toggle('mobile-open');
+    }
+    if (localStorage.getItem('sidebar_collapsed') === '1') {
+      document.getElementById('adminSidebar')?.classList.add('collapsed');
+    }
+
+    // Tab Navigation & URL Routing
+    function navigateToTab(tabName, skipPush = false) {
+      const tabs = ['dashboard', 'licensekeys', 'packagenode'];
+      if (!tabs.includes(tabName)) tabName = 'dashboard';
+
+      // Update Nav Items
+      document.querySelectorAll('.sidebar-nav-item').forEach(item => item.classList.remove('active'));
+      if (tabName === 'dashboard') document.getElementById('navDashboard')?.classList.add('active');
+      if (tabName === 'licensekeys') document.getElementById('navLicenseKeys')?.classList.add('active');
+      if (tabName === 'packagenode') document.getElementById('navPackageNode')?.classList.add('active');
+
+      // Update Panes
+      document.getElementById('tabDashboard').style.display = tabName === 'dashboard' ? 'block' : 'none';
+      document.getElementById('tabLicenseKeys').style.display = tabName === 'licensekeys' ? 'block' : 'none';
+      document.getElementById('tabPackageNode').style.display = tabName === 'packagenode' ? 'block' : 'none';
+
+      // Update Topbar Title
+      const titles = {
+        dashboard: 'Dashboard Tổng Quan',
+        licensekeys: 'Quản Lý Mã License Key',
+        packagenode: 'Kho File & Gói Node'
+      };
+      document.getElementById('pageTitleText').textContent = titles[tabName] || 'Quản trị hệ thống';
+
+      // Update URL with history.pushState
+      if (!skipPush) {
+        const portal = (rawSecret.split('/')[0] || 'chinhan');
+        let newUrl = `/admin?portal=${portal}`;
+        if (tabName === 'licensekeys') newUrl = `/admin?portal=${portal}/licensekeys`;
+        if (tabName === 'packagenode') newUrl = `/admin?portal=${portal}/packagenode`;
+        window.history.pushState({ tab: tabName }, '', newUrl);
       }
+
+      // Close mobile sidebar if open
+      document.getElementById('adminSidebar')?.classList.remove('mobile-open');
+    }
+
+    function initRouting() {
+      const path = window.location.pathname.toLowerCase();
+      const search = window.location.search.toLowerCase();
+      const hash = window.location.hash.toLowerCase();
+
+      if (path.includes('/licensekeys') || search.includes('licensekeys') || hash.includes('licensekeys')) {
+        navigateToTab('licensekeys', true);
+      } else if (path.includes('/packagenode') || search.includes('packagenode') || hash.includes('packagenode')) {
+        navigateToTab('packagenode', true);
+      } else {
+        navigateToTab('dashboard', true);
+      }
+    }
+    window.addEventListener('popstate', () => initRouting());
+
+    // Theme Toggle
+    const themeBtn = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    function applyTheme(t) {
+      document.documentElement.setAttribute('data-theme', t);
+      localStorage.setItem('theme', t);
+      if (t === 'dark') {
+        themeIcon.innerHTML = '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>';
+      } else {
+        themeIcon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+      }
+    }
+    applyTheme(localStorage.getItem('theme') || 'dark');
+    themeBtn?.addEventListener('click', () => {
+      const cur = document.documentElement.getAttribute('data-theme');
+      applyTheme(cur === 'dark' ? 'light' : 'dark');
     });
 
-    let packagesData = [];
-    let keysData = [];
-
-    let currentUploadNodes = [];
-    let currentUploadFilename = '';
-    let currentAssignKeyId = null;
-
-    // SVG Icons Definitions
-    const SVG_ICONS = {
-      package: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>',
-      key: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7.5" cy="15.5" r="5.5"></circle><path d="m21 2-9.6 9.6"></path><path d="m15.5 7.5 3 3L22 7l-3-3"></path></svg>',
-      copy: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>',
-      edit: '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>',
-      download: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>',
-      trash: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>',
-      lock: '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>',
-      unlock: '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path></svg>',
-      reset: '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 2v6h6"></path><path d="M21 12A9 9 0 0 0 6 5.3L3 8"></path><path d="M21 22v-6h-6"></path><path d="M3 12a9 9 0 0 0 15 6.7l3-2.7"></path></svg>',
-      check: '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>',
-      dots: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.5"></circle><circle cx="12" cy="5" r="1.5"></circle><circle cx="12" cy="19" r="1.5"></circle></svg>',
-      lightning: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>'
-    };
-
-    // Check login state on load
+    // Auth & Data Flow
     if (adminToken) {
       document.getElementById('authOverlay').style.display = 'none';
+      initRouting();
       loadAllData();
+    } else {
+      initRouting();
     }
 
     async function handleLogin(e) {
@@ -1514,12 +1743,10 @@
           adminToken = data.token;
           sessionStorage.setItem('admin_token', adminToken);
           document.getElementById('authOverlay').style.display = 'none';
-          if (!data.hasKv) {
-            document.getElementById('kvNotice').style.display = 'flex';
-          }
+          if (!data.hasKv) document.getElementById('kvNotice').style.display = 'block';
           loadAllData();
         } else {
-          errBox.textContent = data.error || 'Đăng nhập thất bại';
+          errBox.textContent = data.error || 'Mật khẩu không chính xác';
           errBox.style.display = 'block';
         }
       } catch (err) {
@@ -1538,9 +1765,10 @@
     async function loadAllData() {
       await fetchPackages();
       await fetchKeys();
+      updateDashboardStats();
     }
 
-    // 1. Packages & Nodes Data
+    // Packages
     async function fetchPackages() {
       try {
         const res = await fetch('/api/admin?action=getNodePackages', { headers: authHeaders() });
@@ -1551,36 +1779,13 @@
         keysData = data.keys || [];
 
         const totalNodes = data.totalNodes || 0;
-        document.getElementById('statNodesCount').textContent = totalNodes.toLocaleString('vi-VN');
-        document.getElementById('nodesTabBadge').textContent = `${packagesData.length} gói (${totalNodes.toLocaleString('vi-VN')} node)`;
-
-        if (!data.hasKv) {
-          document.getElementById('kvNotice').style.display = 'flex';
-        }
+        document.getElementById('sideBadgePackages').textContent = packagesData.length;
+        document.getElementById('dashTotalNodes').textContent = totalNodes.toLocaleString('vi-VN');
+        document.getElementById('dashTotalPackages').textContent = packagesData.length;
 
         if (data.keepaliveConfig) {
           window.currentKeepaliveConfig = data.keepaliveConfig;
-          const badge = document.getElementById('keepaliveBadge');
-          if (badge) {
-            if (data.keepaliveConfig.autoRunEnabled !== false) {
-              badge.className = 'status-badge status-active';
-              badge.textContent = `Bật 24/7 (Mỗi ${data.keepaliveConfig.intervalDays || 2} Ngày lúc 03:00)`;
-            } else {
-              badge.className = 'status-badge status-suspended';
-              badge.textContent = 'Đã tạm tắt';
-            }
-          }
-        }
-
-        if (data.lastKeepAlive && data.lastKeepAlive.timestamp) {
-          const dateStr = new Date(data.lastKeepAlive.timestamp).toLocaleString('vi-VN');
-          const ref = data.lastKeepAlive.refreshed || 0;
-          const fresh = data.lastKeepAlive.skipped || 0;
-          const exp = data.lastKeepAlive.expired || 0;
-          const el = document.getElementById('keepaliveStatusText');
-          if (el) {
-            el.innerHTML = `Lần chạy gần nhất: <strong>${dateStr}</strong> (Đã làm mới: <strong>${ref}</strong> node, Đang còn hạn: <strong>${fresh}</strong> node${exp > 0 ? `, Hết hạn: <strong style="color: var(--status-error);">${exp}</strong> node` : ''}) • Lịch ngầm: 03:00 AM hàng ngày.`;
-          }
+          updateKeepaliveUI(data.keepaliveConfig, data.lastKeepAlive);
         }
 
         renderPackagesTable();
@@ -1590,118 +1795,108 @@
       }
     }
 
-    async function triggerManualKeepAlive() {
-      const btn = document.getElementById('btnTriggerKeepalive');
-      if (!btn) return;
-      btn.disabled = true;
-      btn.innerHTML = '<span class="spinner" style="width: 12px; height: 12px; border-width: 2px;"></span> Đang làm mới...';
-
+    // Keys
+    async function fetchKeys() {
       try {
-        const res = await fetch('/api/cron-keepalive', {
-          method: 'POST',
-          headers: authHeaders()
-        });
+        const res = await fetch('/api/admin?action=getKeys', { headers: authHeaders() });
         const data = await res.json();
-        if (!res.ok) {
-          showAdminToast(data.error || 'Lỗi kích hoạt Keep-Alive', 'error');
-          return;
-        }
+        if (!res.ok) return;
 
-        const s = data.summary || {};
-        showAdminToast(`Keep-Alive thành công! Đã làm mới ${s.refreshed || 0} node, ${s.skipped || 0} node còn hạn.`, 'success');
-        await fetchPackages();
+        keysData = data.keys || [];
+        document.getElementById('sideBadgeKeys').textContent = keysData.length;
+        document.getElementById('dashTotalKeys').textContent = keysData.length;
+        
+        const activeCount = keysData.filter(k => k.active !== false).length;
+        document.getElementById('dashKeysSub').textContent = `${activeCount} đang hoạt động`;
+
+        renderKeysTable();
+        populateKeyDropdowns();
+        renderDashboardPreviews();
       } catch (err) {
-        showAdminToast('Lỗi kết nối khi chạy Keep-Alive: ' + err.message, 'error');
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = SVG_ICONS.lightning + ' Chạy Keep-Alive ngay';
+        console.error('Fetch keys error:', err);
       }
     }
 
-    let packagesCurrentPage = 1;
-    const packagesPerPage = 10;
+    function updateDashboardStats() {
+      renderDashboardPreviews();
+    }
 
-    function renderPackagesTable() {
-      const tbody = document.getElementById('packagesTableBody');
-      const footer = document.getElementById('packagesTableFooter');
-      const summary = document.getElementById('packagesPageSummary');
-      const info = document.getElementById('packagesPageInfo');
-      const prevBtn = document.getElementById('packagesPrevBtn');
-      const nextBtn = document.getElementById('packagesNextBtn');
-
-      if (packagesData.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 24px; color: var(--text-muted);">Chưa có gói Node nào. Kéo thả file .json lên để bắt đầu.</td></tr>';
-        if (footer) footer.style.display = 'none';
-        return;
+    function renderDashboardPreviews() {
+      // Packages preview in dashboard
+      const pBox = document.getElementById('dashPackagesPreview');
+      if (pBox) {
+        if (packagesData.length === 0) {
+          pBox.innerHTML = '<div style="padding: 16px; text-align: center; color: var(--text-muted);">Chưa có gói node nào.</div>';
+        } else {
+          pBox.innerHTML = packagesData.slice(0, 4).map(p => `
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid var(--border-subtle);">
+              <div>
+                <strong style="color: var(--text-primary);">${escapeHtml(p.name)}</strong>
+                <div style="font-size: 11px; color: var(--text-muted); font-family: var(--font-mono);">${(p.nodeCount || 0).toLocaleString('vi-VN')} node</div>
+              </div>
+              <button class="btn-sm" onclick="testPackageNode('${escapeHtml(p.id)}')">Chạy thử</button>
+            </div>
+          `).join('');
+        }
       }
 
-      if (footer) footer.style.display = 'flex';
-      const totalPages = Math.ceil(packagesData.length / packagesPerPage) || 1;
-      if (packagesCurrentPage > totalPages) packagesCurrentPage = totalPages;
-      if (packagesCurrentPage < 1) packagesCurrentPage = 1;
+      // Keys preview in dashboard
+      const kBox = document.getElementById('dashKeysPreview');
+      if (kBox) {
+        if (keysData.length === 0) {
+          kBox.innerHTML = '<div style="padding: 16px; text-align: center; color: var(--text-muted);">Chưa có license key nào.</div>';
+        } else {
+          kBox.innerHTML = keysData.slice(0, 4).map(k => `
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid var(--border-subtle);">
+              <div>
+                <div class="mono-cell" style="font-weight: 600;">${escapeHtml(k.key)}</div>
+                <div style="font-size: 11px; color: var(--text-muted);">${escapeHtml(k.label || 'Khách hàng')}</div>
+              </div>
+              <span class="status-badge ${k.active !== false ? 'status-active' : 'status-suspended'}">
+                ${k.active !== false ? 'Active' : 'Khóa'}
+              </span>
+            </div>
+          `).join('');
+        }
+      }
+    }
 
-      const startIdx = (packagesCurrentPage - 1) * packagesPerPage;
-      const endIdx = Math.min(startIdx + packagesPerPage, packagesData.length);
-      const pagedPackages = packagesData.slice(startIdx, endIdx);
+    function updateKeepaliveUI(cfg, lastRun) {
+      const isAct = cfg.autoRunEnabled !== false;
+      const hourStr = String(cfg.runHour !== undefined ? cfg.runHour : 3).padStart(2, '0') + ':00';
+      const badge = document.getElementById('keepaliveBadge');
+      const dashBadge = document.getElementById('dashKeepaliveBadge');
+      const topPill = document.getElementById('keepaliveTopText');
+      const subText = document.getElementById('dashKeepaliveSub');
+      const statusText = document.getElementById('keepaliveStatusText');
 
-      summary.textContent = 'Hiển thị ' + (startIdx + 1) + ' - ' + endIdx + ' trên ' + packagesData.length + ' gói';
-      info.textContent = 'Trang ' + packagesCurrentPage + ' / ' + totalPages;
-      prevBtn.disabled = packagesCurrentPage <= 1;
-      nextBtn.disabled = packagesCurrentPage >= totalPages;
+      const label = isAct ? `Bật 24/7 (Mỗi ${cfg.intervalDays || 2} ngày lúc ${hourStr} VN)` : 'Đã tạm tắt';
+      if (badge) {
+        badge.className = isAct ? 'status-badge status-active' : 'status-badge status-suspended';
+        badge.textContent = isAct ? `Bật (${hourStr})` : 'Tắt';
+      }
+      if (dashBadge) {
+        dashBadge.textContent = isAct ? 'Bật 24/7' : 'Đã tắt';
+        dashBadge.style.color = isAct ? 'var(--status-active)' : 'var(--status-suspended)';
+      }
+      if (subText) subText.textContent = `Lịch quét: ${hourStr} VN (${cfg.intervalDays || 2} ngày/lần)`;
+      if (topPill) topPill.textContent = `Keep-Alive: ${isAct ? 'Bật (' + hourStr + ')' : 'Tắt'}`;
 
-      tbody.innerHTML = pagedPackages.map(p => {
-        const assignedKeys = (keysData || []).filter(k => (k.packageId || 'default') === p.id);
-        const keysText = assignedKeys.length > 0
-          ? '<button class="btn-link-underline" onclick="openPackageKeysModal(\'' + escapeHtml(p.id) + '\')" title="Bấm để xem danh sách ' + assignedKeys.length + ' key đang dùng gói này">' +
-              SVG_ICONS.key +
-              '<span style="margin-left: 2px;">Xem ' + assignedKeys.length + ' Key đang dùng</span>' +
-            '</button>'
-          : '<span style="color: var(--text-muted); font-size: 11px;">Chưa gán key</span> <button class="btn-link-underline" style="margin-left: 4px; font-size: 11px;" onclick="openAssignModalForPkg(\'' + escapeHtml(p.id) + '\')">+ Gán key</button>';
-
-        const isDefaultBadge = p.isDefault ? '<span class="status-badge status-active" style="margin-left: 6px; font-size: 10px;">Mặc định</span>' : '';
-        const nodeCountStr = (p.nodeCount || 0).toLocaleString('vi-VN');
-
-        return '<tr>' +
-          '<td>' +
-            '<div style="display: flex; align-items: center; gap: 8px;" class="nowrap">' +
-              '<div style="width: 26px; height: 26px; border-radius: 4px; background: var(--bg-subtle); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--text-primary); flex-shrink: 0;">' +
-                SVG_ICONS.package +
-              '</div>' +
-              '<div>' +
-                '<strong style="color: var(--text-primary);">' + escapeHtml(p.name) + '</strong>' + isDefaultBadge +
-                '<div style="font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); margin-top: 1px;">' + escapeHtml(p.filename || '') + '</div>' +
-              '</div>' +
-            '</div>' +
-          '</td>' +
-          '<td>' +
-            '<span class="node-badge-count">' +
-              SVG_ICONS.check +
-              nodeCountStr + ' Node' +
-            '</span>' +
-          '</td>' +
-          '<td>' +
-            keysText +
-          '</td>' +
-          '<td>' +
-            '<button class="btn-secondary" id="btnTestPkg-' + escapeHtml(p.id) + '" onclick="testPackageNode(\'' + escapeHtml(p.id) + '\')" style="padding: 4px 10px; font-size: 11px; display: inline-flex; align-items: center; gap: 5px; border-radius: 4px;" title="Gửi request thực tế kiểm tra trạng thái xAI của gói này">' +
-              '<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>' +
-              'Chạy thử' +
-            '</button>' +
-          '</td>' +
-          '<td class="nowrap">' + (p.updatedAt ? new Date(p.updatedAt).toLocaleDateString('vi-VN') : '—') + '</td>' +
-          '<td style="text-align: right;" class="nowrap">' +
-            '<button class="btn-dots" data-id="' + escapeHtml(p.id) + '" onclick="openPackageActionMenu(event, this.dataset.id)" title="Tùy chọn thao tác">' +
-              SVG_ICONS.dots +
-            '</button>' +
-          '</td>' +
-        '</tr>';
-      }).join('');
+      if (statusText) {
+        if (lastRun && lastRun.timestamp) {
+          const dStr = new Date(lastRun.timestamp).toLocaleString('vi-VN');
+          statusText.innerHTML = `Lần chạy gần nhất: <strong>${dStr}</strong> (Làm mới: ${lastRun.refreshed || 0} node, Còn hạn: ${lastRun.skipped || 0}) • Lịch: <strong>${hourStr} VN</strong> hàng ngày.`;
+        } else {
+          statusText.textContent = `Tự động kiểm tra và làm mới token lúc ${hourStr} VN định kỳ ${cfg.intervalDays || 2} ngày/lần.`;
+        }
+      }
     }
 
     // Keepalive Config Modal
     function openKeepaliveConfigModal() {
-      const cfg = window.currentKeepaliveConfig || { autoRunEnabled: true, intervalDays: 2, freshThresholdHours: 48 };
+      const cfg = window.currentKeepaliveConfig || { autoRunEnabled: true, intervalDays: 2, runHour: 3, freshThresholdHours: 48 };
       document.getElementById('cfgAutoRunEnabled').checked = cfg.autoRunEnabled !== false;
+      document.getElementById('cfgRunHour').value = String(cfg.runHour !== undefined ? cfg.runHour : 3);
       document.getElementById('cfgIntervalDays').value = String(cfg.intervalDays || 2);
       document.getElementById('cfgFreshHours').value = String(cfg.freshThresholdHours || 48);
       openModal('modalKeepaliveConfig');
@@ -1711,10 +1906,11 @@
       e.preventDefault();
       const btn = document.getElementById('btnSaveKeepaliveCfg');
       btn.disabled = true;
-      btn.innerHTML = '<span class="spinner" style="width: 12px; height: 12px; border-width: 2px;"></span> Đang lưu...';
+      btn.innerHTML = '<span class="spinner" style="width: 12px; height: 12px;"></span> Đang lưu...';
 
       const payload = {
         autoRunEnabled: document.getElementById('cfgAutoRunEnabled').checked,
+        runHour: parseInt(document.getElementById('cfgRunHour').value, 10),
         intervalDays: parseInt(document.getElementById('cfgIntervalDays').value, 10),
         freshThresholdHours: parseInt(document.getElementById('cfgFreshHours').value, 10)
       };
@@ -1735,55 +1931,237 @@
         showAdminToast(err.message, 'error');
       } finally {
         btn.disabled = false;
-        btn.innerHTML = 'Lưu cấu hình';
+        btn.innerHTML = 'Lưu Cấu Hình';
       }
     }
 
-    // Package Keys Modal
-    let currentViewingPkgId = null;
+    async function triggerManualKeepAlive() {
+      const btn = document.getElementById('btnTriggerKeepalive');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner" style="width: 12px; height: 12px;"></span> Đang chạy...';
+      }
+
+      try {
+        const res = await fetch('/api/cron-keepalive', { method: 'POST', headers: authHeaders() });
+        const data = await res.json();
+        if (!res.ok) {
+          showAdminToast(data.error || 'Lỗi chạy Keep-Alive', 'error');
+          return;
+        }
+        const s = data.summary || {};
+        showAdminToast(`Hoàn tất! Làm mới: ${s.refreshed || 0} node, còn hạn: ${s.skipped || 0} node.`, 'success');
+        await fetchPackages();
+      } catch (err) {
+        showAdminToast('Lỗi kết nối: ' + err.message, 'error');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '⚡ Chạy ngay';
+        }
+      }
+    }
+
+    // Packages Table Render
+    function renderPackagesTable() {
+      const tbody = document.getElementById('packagesTableBody');
+      const footer = document.getElementById('packagesTableFooter');
+      const summary = document.getElementById('packagesPageSummary');
+      const info = document.getElementById('packagesPageInfo');
+      const prevBtn = document.getElementById('packagesPrevBtn');
+      const nextBtn = document.getElementById('packagesNextBtn');
+
+      if (packagesData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 24px; color: var(--text-muted);">Chưa có gói node nào. Kéo thả file .json để bắt đầu.</td></tr>';
+        if (footer) footer.style.display = 'none';
+        return;
+      }
+
+      if (footer) footer.style.display = 'flex';
+      const totalPages = Math.ceil(packagesData.length / packagesPerPage) || 1;
+      if (packagesCurrentPage > totalPages) packagesCurrentPage = totalPages;
+      if (packagesCurrentPage < 1) packagesCurrentPage = 1;
+
+      const startIdx = (packagesCurrentPage - 1) * packagesPerPage;
+      const endIdx = Math.min(startIdx + packagesPerPage, packagesData.length);
+      const pagedPackages = packagesData.slice(startIdx, endIdx);
+
+      summary.textContent = `Hiển thị ${startIdx + 1} - ${endIdx} trên ${packagesData.length} gói`;
+      info.textContent = `Trang ${packagesCurrentPage} / ${totalPages}`;
+      prevBtn.disabled = packagesCurrentPage <= 1;
+      nextBtn.disabled = packagesCurrentPage >= totalPages;
+
+      tbody.innerHTML = pagedPackages.map(p => {
+        const assignedKeys = (keysData || []).filter(k => (k.packageId || 'default') === p.id);
+        const keysText = assignedKeys.length > 0
+          ? `<button class="btn-link-underline" onclick="openPackageKeysModal('${escapeHtml(p.id)}')">🔑 Xem ${assignedKeys.length} Key đang dùng</button>`
+          : `<button class="btn-link-underline" onclick="openAssignKeyModalForPkg('${escapeHtml(p.id)}')">+ Gán Key</button>`;
+
+        const isDefaultBadge = p.isDefault ? '<span class="status-badge status-active" style="margin-left: 6px; font-size: 10px;">Mặc định</span>' : '';
+
+        return `
+          <tr>
+            <td>
+              <div>
+                <strong style="color: var(--text-primary);">${escapeHtml(p.name)}</strong>${isDefaultBadge}
+                <div style="font-size: 11px; color: var(--text-muted); font-family: var(--font-mono);">${escapeHtml(p.filename || '')}</div>
+              </div>
+            </td>
+            <td><span class="node-badge-count">${(p.nodeCount || 0).toLocaleString('vi-VN')} Node</span></td>
+            <td>${keysText}</td>
+            <td>
+              <button class="btn-sm" id="btnTestPkg-${escapeHtml(p.id)}" onclick="testPackageNode('${escapeHtml(p.id)}')">
+                ▶ Chạy thử
+              </button>
+            </td>
+            <td class="nowrap">${p.updatedAt ? new Date(p.updatedAt).toLocaleDateString('vi-VN') : '—'}</td>
+            <td style="text-align: right;" class="nowrap">
+              <button class="btn-dots" onclick="openPackageActionMenu(event, '${escapeHtml(p.id)}')">⋮</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function changePackagesPage(delta) {
+      packagesCurrentPage += delta;
+      renderPackagesTable();
+    }
+
+    // Modal Package Keys (Spacious, No horizontal scroll, with Pagination)
     function openPackageKeysModal(pkgId) {
       currentViewingPkgId = pkgId;
       const pkg = (packagesData || []).find(p => p.id === pkgId) || { name: 'Gói Node', nodeCount: 0 };
-      const assigned = (keysData || []).filter(k => (k.packageId || 'default') === pkgId);
+      currentPkgKeysList = (keysData || []).filter(k => (k.packageId || 'default') === pkgId);
+      pkgKeysCurrentPage = 1;
 
       document.getElementById('pkgKeysModalTitle').textContent = `Danh sách License Key: ${pkg.name}`;
-      document.getElementById('pkgKeysModalSubtitle').innerHTML = `Gói: <strong>${escapeHtml(pkg.name)}</strong> (${(pkg.nodeCount || 0).toLocaleString('vi-VN')} node) • Tổng số: <strong>${assigned.length}</strong> key đang liên kết.`;
+      document.getElementById('pkgKeysModalSubtitle').innerHTML = `Gói: <strong>${escapeHtml(pkg.name)}</strong> (${(pkg.nodeCount || 0).toLocaleString('vi-VN')} node) • Tổng: <strong>${currentPkgKeysList.length}</strong> key đang liên kết`;
 
+      renderModalPackageKeysTable();
+      openModal('modalPackageKeys');
+    }
+
+    function renderModalPackageKeysTable() {
       const tbody = document.getElementById('pkgKeysTableBody');
-      if (assigned.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 24px; color: var(--text-muted);">Gói này hiện chưa được gán cho License Key nào. Bấm nút "+ Tạo Key mới" bên trên để tạo.</td></tr>';
-      } else {
-        tbody.innerHTML = assigned.map(k => {
-          const isAct = k.active !== false;
-          const statusBadge = isAct
-            ? '<span class="status-badge status-active">Hoạt động</span>'
-            : '<span class="status-badge status-suspended">Tạm khóa</span>';
+      const footer = document.getElementById('pkgKeysTableFooter');
+      const summary = document.getElementById('pkgKeysPageSummary');
+      const info = document.getElementById('pkgKeysPageInfo');
+      const prevBtn = document.getElementById('pkgKeysPrevBtn');
+      const nextBtn = document.getElementById('pkgKeysNextBtn');
 
-          let expireStr = 'Vĩnh viễn';
-          if (k.expireAt) {
-            const expD = new Date(k.expireAt);
-            const daysLeft = Math.ceil((expD - Date.now()) / (86400000));
-            expireStr = daysLeft > 0 ? `Còn ${daysLeft} ngày` : '<span style="color: var(--status-error);">Hết hạn</span>';
-          }
-
-          const devCount = (k.devices || []).length;
-          const maxDev = k.maxDevices || 1;
-
-          return '<tr>' +
-            '<td><span class="mono-cell" style="font-weight: 600; font-size: 13px;">' + escapeHtml(k.key) + '</span></td>' +
-            '<td><strong style="color: var(--text-primary); font-size: 13px;">' + escapeHtml(k.label || 'Khách hàng') + '</strong></td>' +
-            '<td class="nowrap">' + devCount + ' / ' + maxDev + ' thiết bị</td>' +
-            '<td class="nowrap" style="font-size: 12px;">' + expireStr + '</td>' +
-            '<td>' + statusBadge + '</td>' +
-            '<td style="text-align: right;" class="nowrap">' +
-              '<button class="btn-sm" onclick="copyText(\'' + escapeHtml(k.key) + '\')" title="Sao chép Key" style="margin-right: 4px;">' + SVG_ICONS.copy + ' Copy</button>' +
-              '<button class="btn-sm" onclick="unlinkKeyFromPackage(\'' + escapeHtml(k.id) + '\')" style="color: var(--status-error);" title="Gỡ key khỏi gói này">' + SVG_ICONS.trash + ' Gỡ</button>' +
-            '</td>' +
-          '</tr>';
-        }).join('');
+      if (currentPkgKeysList.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 24px; color: var(--text-muted);">Chưa có License Key nào gán vào gói này. Bấm nút bên trên để gán hoặc tạo mới.</td></tr>';
+        if (footer) footer.style.display = 'none';
+        return;
       }
 
-      openModal('modalPackageKeys');
+      if (footer) footer.style.display = 'flex';
+      const totalPages = Math.ceil(currentPkgKeysList.length / pkgKeysPerPage) || 1;
+      if (pkgKeysCurrentPage > totalPages) pkgKeysCurrentPage = totalPages;
+      if (pkgKeysCurrentPage < 1) pkgKeysCurrentPage = 1;
+
+      const startIdx = (pkgKeysCurrentPage - 1) * pkgKeysPerPage;
+      const endIdx = Math.min(startIdx + pkgKeysPerPage, currentPkgKeysList.length);
+      const paged = currentPkgKeysList.slice(startIdx, endIdx);
+
+      summary.textContent = `Hiển thị ${startIdx + 1} - ${endIdx} trên ${currentPkgKeysList.length} key`;
+      info.textContent = `Trang ${pkgKeysCurrentPage} / ${totalPages}`;
+      prevBtn.disabled = pkgKeysCurrentPage <= 1;
+      nextBtn.disabled = pkgKeysCurrentPage >= totalPages;
+
+      tbody.innerHTML = paged.map(k => {
+        const isAct = k.active !== false;
+        let expireStr = 'Vĩnh viễn';
+        if (k.expireAt) {
+          const days = Math.ceil((new Date(k.expireAt) - Date.now()) / 86400000);
+          expireStr = days > 0 ? `Còn ${days} ngày` : '<span style="color: var(--status-error);">Hết hạn</span>';
+        }
+        const devCount = (k.devices || []).length;
+        const maxDev = k.maxDevices || 1;
+
+        return `
+          <tr>
+            <td><span class="mono-cell" style="font-weight: 600;">${escapeHtml(k.key)}</span></td>
+            <td><strong style="color: var(--text-primary);">${escapeHtml(k.label || 'Khách hàng')}</strong></td>
+            <td class="nowrap">${devCount} / ${maxDev} máy</td>
+            <td class="nowrap">${expireStr}</td>
+            <td>
+              <span class="status-badge ${isAct ? 'status-active' : 'status-suspended'}">
+                ${isAct ? 'Hoạt động' : 'Tạm khóa'}
+              </span>
+            </td>
+            <td style="text-align: right;" class="nowrap">
+              <button class="btn-sm" onclick="copyText('${escapeHtml(k.key)}')">Copy</button>
+              <button class="btn-sm" onclick="unlinkKeyFromPackage('${escapeHtml(k.id)}')" style="color: var(--status-error);">Gỡ</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function changePkgKeysPage(delta) {
+      pkgKeysCurrentPage += delta;
+      renderModalPackageKeysTable();
+    }
+
+    // Modal Assign Key into Package (Interactive selection)
+    function openAssignKeyModalForPkg(pkgId) {
+      populatePackageDropdowns();
+      populateKeyDropdowns();
+      
+      const pkgSelect = document.getElementById('assignTargetPackageSelect');
+      if (pkgSelect && pkgId) pkgSelect.value = pkgId;
+
+      openModal('modalAssignKeyToPackage');
+    }
+    const openAssignModalFromBtn = () => openAssignKeyModalForPkg('default');
+
+    function populateKeyDropdowns() {
+      const select = document.getElementById('assignTargetKeySelect');
+      if (!select) return;
+
+      if (keysData.length === 0) {
+        select.innerHTML = '<option value="">Chưa có License Key nào</option>';
+        return;
+      }
+
+      select.innerHTML = keysData.map(k => {
+        const pkg = packagesData.find(p => p.id === (k.packageId || 'default'));
+        const pkgName = pkg ? pkg.name : 'Kho Mặc Định';
+        return `<option value="${escapeHtml(k.id)}">${escapeHtml(k.key)} — ${escapeHtml(k.label || 'Khách hàng')} (Đang ở: ${escapeHtml(pkgName)})</option>`;
+      }).join('');
+    }
+
+    async function submitAssignKeyToPackage(e) {
+      e.preventDefault();
+      const keyId = document.getElementById('assignTargetKeySelect').value;
+      const packageId = document.getElementById('assignTargetPackageSelect').value;
+
+      if (!keyId || !packageId) {
+        showAdminToast('Vui lòng chọn Key và Gói Node', 'warning');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/admin?action=assignKeyPackage', {
+          method: 'POST',
+          headers: authHeaders(),
+          body: JSON.stringify({ keyId, packageId })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          closeModal('modalAssignKeyToPackage');
+          showAdminToast('Đã gán Key vào gói node thành công!', 'success');
+          await fetchPackages();
+          await fetchKeys();
+          if (currentViewingPkgId) openPackageKeysModal(currentViewingPkgId);
+        } else {
+          showAdminToast(data.error || 'Lỗi gán key', 'error');
+        }
+      } catch (err) {
+        showAdminToast('Lỗi: ' + err.message, 'error');
+      }
     }
 
     function createNewKeyForCurrentPkg() {
@@ -1795,23 +2173,9 @@
       openCreateKeyModal();
     }
 
-    function openAssignModalForPkg(pkgId) {
-      if (keysData && keysData.length > 0) {
-        const k = keysData[0];
-        openAssignModal(k.id, pkgId, k.key);
-      } else {
-        openCreateKeyModal();
-      }
-    }
-
     async function unlinkKeyFromPackage(keyId) {
-      const confirmed = await customConfirm(
-        'Bạn có chắc muốn gỡ key này khỏi gói? Key sẽ được chuyển về gói mặc định.',
-        'Xác nhận gỡ Key',
-        true,
-        'Gỡ key'
-      );
-      if (!confirmed) return;
+      const ok = await customConfirm('Bạn có chắc muốn gỡ key này khỏi gói? Key sẽ được chuyển về gói mặc định.', 'Gỡ Key khỏi gói');
+      if (!ok) return;
 
       try {
         const res = await fetch('/api/admin?action=assignKeyPackage', {
@@ -1830,12 +2194,12 @@
       }
     }
 
-    // Live Node Testing (Chạy thử)
+    // Live Testing
     async function testPackageNode(pkgId) {
       const btn = document.getElementById('btnTestPkg-' + pkgId);
       if (btn) {
         btn.disabled = true;
-        btn.innerHTML = '<span class="spinner" style="width: 11px; height: 11px; border-width: 2px;"></span> Đang test...';
+        btn.innerHTML = '<span class="spinner" style="width: 10px; height: 10px;"></span> Đang test...';
       }
 
       const content = document.getElementById('testResultContent');
@@ -1846,308 +2210,49 @@
           body: JSON.stringify({ packageId: pkgId })
         });
         const data = await res.json();
-        
         if (data.ok) {
           content.innerHTML = `
-            <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 14px; margin-bottom: 16px;">
-              <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; color: #10b981; font-size: 15px;">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>HTTP 200 OK — Hoạt Động Hoàn Hảo!</span>
+            <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 7px; padding: 12px; margin-bottom: 14px;">
+              <div style="font-weight: 700; color: #10b981; font-size: 14px;">✔ HTTP 200 OK — Hoạt Động Hoàn Hảo</div>
+              <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 3px;">Node đã kết nối thành công tới máy chủ xAI.</div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
+              <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px;">
+                <div style="font-size: 11px; color: var(--text-muted);">Tài khoản:</div>
+                <div style="font-weight: 600; font-size: 11.5px; word-break: break-all;">${escapeHtml(data.node?.email || 'AI Node')}</div>
               </div>
-              <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">
-                ${escapeHtml(data.message || 'Node đã kết nối thành công tới máy chủ xAI.')}
+              <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px;">
+                <div style="font-size: 11px; color: var(--text-muted);">Độ trễ:</div>
+                <div style="font-weight: 700; font-size: 13px; color: #10b981;">⚡ ${data.latencyMs} ms</div>
               </div>
             </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px;">
-              <div style="background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 6px; padding: 10px;">
-                <div style="font-size: 11px; color: var(--text-muted);">Tài khoản kiểm tra:</div>
-                <div style="font-weight: 600; font-size: 12px; margin-top: 2px; word-break: break-all;">${escapeHtml(data.node?.email || 'AI Node')}</div>
-              </div>
-              <div style="background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 6px; padding: 10px;">
-                <div style="font-size: 11px; color: var(--text-muted);">Độ trễ phản hồi (Latency):</div>
-                <div style="font-weight: 700; font-size: 14px; color: #10b981; margin-top: 2px;">⚡ ${data.latencyMs} ms</div>
-              </div>
-            </div>
-
-            <div style="background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 6px; padding: 10px;">
-              <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">Mô hình xAI sẵn sàng phục vụ Claude Code:</div>
-              <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-                ${(data.models || ['grok-4.6']).map(m => `<span class="status-badge status-active" style="font-size: 11px; font-family: var(--font-mono);">${escapeHtml(m)}</span>`).join('')}
+            <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px;">
+              <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">Model sẵn sàng:</div>
+              <div style="display: flex; gap: 5px;">
+                ${(data.models || ['grok-4.6']).map(m => `<span class="status-badge status-active">${escapeHtml(m)}</span>`).join('')}
               </div>
             </div>
           `;
         } else {
           content.innerHTML = `
-            <div style="background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px; padding: 14px; margin-bottom: 16px;">
-              <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; color: #ef4444; font-size: 15px;">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
-                <span>Kiểm tra thất bại (Mã ${data.status || 500})</span>
-              </div>
-              <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">
-                ${escapeHtml(data.error || 'Không thể xác thực với máy chủ xAI.')}
-              </div>
-            </div>
-            <div style="font-size: 12px; color: var(--text-muted);">
-              Tài khoản kiểm tra: <strong>${escapeHtml(data.node?.email || 'AI Node')}</strong> (Độ trễ: ${data.latencyMs || 0} ms)
+            <div style="background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 7px; padding: 12px;">
+              <div style="font-weight: 700; color: #ef4444; font-size: 14px;">✖ Thất bại (Mã ${data.status || 500})</div>
+              <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 3px;">${escapeHtml(data.error || 'Lỗi kết nối xAI')}</div>
             </div>
           `;
         }
-
         openModal('modalTestResult');
       } catch (err) {
-        showAdminToast('Lỗi kết nối kiểm tra: ' + err.message, 'error');
+        showAdminToast('Lỗi test: ' + err.message, 'error');
       } finally {
         if (btn) {
           btn.disabled = false;
-          btn.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Chạy thử';
+          btn.innerHTML = '▶ Chạy thử';
         }
       }
     }
 
-    function changePackagesPage(delta) {
-      packagesCurrentPage += delta;
-      renderPackagesTable();
-    }
-
-    function populatePackageDropdowns() {
-      const overwriteSelect = document.getElementById('overwriteTargetPkgSelect');
-      const createKeySelect = document.getElementById('newKeyPackage');
-      const assignKeySelect = document.getElementById('assignModalPackageSelect');
-
-      const options = packagesData.map(p => {
-        const count = (p.nodeCount || 0).toLocaleString('vi-VN');
-        return '<option value="' + p.id + '">' + escapeHtml(p.name) + ' (' + count + ' Node)' + (p.isDefault ? ' [Mặc định]' : '') + '</option>';
-      }).join('');
-
-      if (overwriteSelect) overwriteSelect.innerHTML = options;
-      if (createKeySelect) createKeySelect.innerHTML = options;
-      if (assignKeySelect) assignKeySelect.innerHTML = options;
-    }
-
-    async function exportPackage(id, filename) {
-      try {
-        const res = await fetch('/api/admin?action=exportPackage&id=' + id, { headers: authHeaders() });
-        const blob = await res.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename || ('nodes-' + id + '.json');
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        window.URL.revokeObjectURL(url);
-      } catch (err) {
-        customAlert('Lỗi khi tải file: ' + err.message, 'Lỗi tải file', 'error');
-      }
-    }
-
-    async function deletePackage(id) {
-      const ok = await customConfirm(
-        'Bạn có chắc muốn xóa gói Node này? Các Key đang dùng gói này sẽ chuyển về dùng Gói Mặc Định.',
-        'Xác nhận xóa Gói Node',
-        true,
-        'Xóa gói'
-      );
-      if (!ok) return;
-      try {
-        const res = await fetch('/api/admin?action=deleteNodePackage&id=' + id, {
-          method: 'DELETE',
-          headers: authHeaders()
-        });
-        const data = await res.json();
-        if (res.ok) {
-          showAdminToast('🗑️ Đã xóa gói Node thành công', 'info');
-          await loadAllData();
-        } else {
-          customAlert(data.error || 'Lỗi khi xóa gói', 'Lỗi thao tác', 'error');
-        }
-      } catch (err) {
-        customAlert('Lỗi kết nối: ' + err.message, 'Lỗi kết nối', 'error');
-      }
-    }
-
-    // 2. File Upload & Processing
-    function handleDragOver(e) {
-      e.preventDefault();
-      document.getElementById('fileDropzone').classList.add('dragover');
-    }
-    function handleDragLeave(e) {
-      e.preventDefault();
-      document.getElementById('fileDropzone').classList.remove('dragover');
-    }
-    function handleFileDrop(e) {
-      e.preventDefault();
-      document.getElementById('fileDropzone').classList.remove('dragover');
-      const files = e.dataTransfer.files;
-      if (files && files.length > 0) {
-        processSelectedFile(files[0]);
-      }
-    }
-    function handleFileInputChange(input) {
-      if (input.files && input.files.length > 0) {
-        processSelectedFile(input.files[0]);
-      }
-    }
-
-    function processSelectedFile(file) {
-      if (!file.name.toLowerCase().endsWith('.json')) {
-        customAlert('Vui lòng chọn file dữ liệu có định dạng .json', 'Định dạng file không hỗ trợ', 'warning');
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const parsed = JSON.parse(e.target.result);
-          let rawNodes = [];
-          if (Array.isArray(parsed)) {
-            rawNodes = parsed;
-          } else if (parsed && Array.isArray(parsed.accounts)) {
-            rawNodes = parsed.accounts;
-          } else if (parsed && Array.isArray(parsed.nodes)) {
-            rawNodes = parsed.nodes;
-          } else {
-            customAlert('File JSON không chứa danh sách Node hợp lệ. Vui lòng kiểm tra lại cấu trúc file.', 'Cấu trúc file không đúng', 'warning');
-            return;
-          }
-
-          const validNodes = rawNodes.filter(n => n && (n.ssoToken || n.apiKey || n.token || n.access_token));
-          if (validNodes.length === 0) {
-            customAlert('Không tìm thấy Node nào có chứa token hợp lệ (ssoToken, apiKey hoặc access_token) trong file được chọn.', 'Không tìm thấy dữ liệu', 'warning');
-            return;
-          }
-
-          currentUploadNodes = validNodes;
-          currentUploadFilename = file.name;
-
-          document.getElementById('uploadModalFileName').textContent = file.name;
-          document.getElementById('uploadModalNodeCount').innerHTML = SVG_ICONS.check + ' ' + validNodes.length.toLocaleString('vi-VN') + ' Node';
-          document.getElementById('newPkgNameInput').value = file.name.replace(/\.json$/i, '');
-
-          populateKeyTargetSelects();
-          selectUploadOption('overwrite');
-          document.getElementById('uploadPackageModal').style.display = 'flex';
-        } catch (err) {
-          customAlert('Không thể đọc file JSON: ' + err.message, 'Lỗi đọc file', 'error');
-        }
-      };
-      reader.readAsText(file);
-    }
-
-    function populateKeyTargetSelects() {
-      const overwriteKeySelect = document.getElementById('overwriteTargetKeySelect');
-      const newPkgKeySelect = document.getElementById('newPkgKeySelect');
-
-      let optionsHtml = '<option value="">Chưa gán / Giữ nguyên</option>';
-      (keysData || []).forEach(k => {
-        optionsHtml += '<option value="' + k.id + '">' + escapeHtml(k.key) + ' (' + escapeHtml(k.label) + ')</option>';
-      });
-
-      if (overwriteKeySelect) overwriteKeySelect.innerHTML = optionsHtml;
-      if (newPkgKeySelect) newPkgKeySelect.innerHTML = optionsHtml;
-    }
-
-    function selectUploadOption(opt) {
-      const cardOverwrite = document.getElementById('optCardOverwrite');
-      const cardNew = document.getElementById('optCardNew');
-      const radioOverwrite = document.getElementById('radioOverwrite');
-      const radioNew = document.getElementById('radioNew');
-      const overwriteFields = document.getElementById('overwriteFields');
-      const newPkgFields = document.getElementById('newPkgFields');
-
-      if (opt === 'overwrite') {
-        cardOverwrite.classList.add('selected');
-        cardNew.classList.remove('selected');
-        radioOverwrite.checked = true;
-        overwriteFields.style.display = 'grid';
-        newPkgFields.style.display = 'none';
-      } else {
-        cardNew.classList.add('selected');
-        cardOverwrite.classList.remove('selected');
-        radioNew.checked = true;
-        newPkgFields.style.display = 'grid';
-        overwriteFields.style.display = 'none';
-      }
-    }
-
-    async function submitUploadPackage() {
-      const mode = document.querySelector('input[name="uploadOption"]:checked').value;
-      const targetPackageId = document.getElementById('overwriteTargetPkgSelect').value;
-      const overwriteKeyId = document.getElementById('overwriteTargetKeySelect').value;
-      const newName = document.getElementById('newPkgNameInput').value.trim();
-      const newKeyId = document.getElementById('newPkgKeySelect').value;
-
-      const targetKeyId = mode === 'overwrite' ? (overwriteKeyId || null) : (newKeyId || null);
-
-      const btn = document.getElementById('submitUploadBtn');
-      btn.disabled = true;
-      btn.innerHTML = 'Đang nạp dữ liệu...';
-
-      const minifiedNodes = currentUploadNodes.map(n => ({
-        id: n.id,
-        name: n.name || n.email || 'AI Node',
-        email: n.email || '',
-        ssoToken: n.ssoToken || n.apiKey || n.token || n.access_token,
-        refreshToken: n.refreshToken || n.refresh_token || n.ssoRwCookie || '',
-        status: n.status || 'active'
-      }));
-
-      try {
-        const res = await fetch('/api/admin?action=uploadNodePackage', {
-          method: 'POST',
-          headers: authHeaders(),
-          body: JSON.stringify({
-            mode,
-            targetPackageId,
-            targetKeyId,
-            name: newName,
-            filename: currentUploadFilename,
-            nodes: minifiedNodes
-          })
-        });
-
-        const data = await res.json();
-        if (res.ok && data.ok) {
-          closeModal('uploadPackageModal');
-          document.getElementById('jsonFileInput').value = '';
-          await loadAllData();
-          await customAlert('Đã nạp thành công <strong>' + data.nodeCount.toLocaleString('vi-VN') + '</strong> node vào hệ thống!', 'Nạp Node thành công', 'success');
-        } else {
-          customAlert(data.error || 'Lỗi khi nạp node', 'Lỗi nạp node', 'error');
-        }
-      } catch (err) {
-        customAlert('Lỗi kết nối máy chủ: ' + err.message, 'Lỗi kết nối', 'error');
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = SVG_ICONS.check + ' Xác nhận Nạp Node';
-      }
-    }
-
-    // 3. License Keys Data & Management
-    async function fetchKeys() {
-      try {
-        const res = await fetch('/api/admin?action=getKeys', { headers: authHeaders() });
-        const data = await res.json();
-        if (!res.ok) return;
-
-        keysData = data.keys || [];
-        document.getElementById('statKeysCount').textContent = keysData.length;
-        document.getElementById('keysTabBadge').textContent = keysData.length;
-
-        let totalDevices = 0;
-        keysData.forEach(k => { totalDevices += (k.devices || []).length; });
-        document.getElementById('statDevicesCount').textContent = totalDevices;
-
-        renderKeysTable();
-      } catch (err) {
-        console.error(err);
-      }
-    }
-
-    let keysCurrentPage = 1;
-    const keysPerPage = 10;
-
+    // Keys Table Render
     function renderKeysTable() {
       const tbody = document.getElementById('keysTableBody');
       const footer = document.getElementById('keysTableFooter');
@@ -2157,7 +2262,7 @@
       const nextBtn = document.getElementById('keysNextBtn');
 
       if (keysData.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 24px; color: var(--text-muted);">Chưa có mã License nào. Bấm "Tạo Mã License" để cấp cho khách.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 24px; color: var(--text-muted);">Chưa có License Key nào. Bấm nút Tạo Mã License bên trên để cấp mã.</td></tr>';
         if (footer) footer.style.display = 'none';
         return;
       }
@@ -2171,52 +2276,45 @@
       const endIdx = Math.min(startIdx + keysPerPage, keysData.length);
       const pagedKeys = keysData.slice(startIdx, endIdx);
 
-      summary.textContent = 'Hiển thị ' + (startIdx + 1) + ' - ' + endIdx + ' trên ' + keysData.length + ' mã';
-      info.textContent = 'Trang ' + keysCurrentPage + ' / ' + totalPages;
+      summary.textContent = `Hiển thị ${startIdx + 1} - ${endIdx} trên ${keysData.length} mã`;
+      info.textContent = `Trang ${keysCurrentPage} / ${totalPages}`;
       prevBtn.disabled = keysCurrentPage <= 1;
       nextBtn.disabled = keysCurrentPage >= totalPages;
 
       tbody.innerHTML = pagedKeys.map(k => {
-        const deviceCount = (k.devices || []).length;
-        const maxAllowed = k.maxDevices >= 999 ? '∞' : k.maxDevices;
-        const isFull = deviceCount >= k.maxDevices;
-        const expireStr = k.expireAt ? new Date(k.expireAt).toLocaleDateString('vi-VN') : 'Vĩnh viễn';
+        const isAct = k.active !== false;
+        let expireStr = 'Vĩnh viễn';
+        if (k.expireAt) {
+          const days = Math.ceil((new Date(k.expireAt) - Date.now()) / 86400000);
+          expireStr = days > 0 ? `Còn ${days} ngày` : '<span style="color: var(--status-error);">Hết hạn</span>';
+        }
+        const pkg = packagesData.find(p => p.id === (k.packageId || 'default'));
+        const pkgName = pkg ? pkg.name : 'Kho Mặc Định';
+        const devCount = (k.devices || []).length;
+        const maxDev = k.maxDevices || 1;
 
-        const assignedPkg = packagesData.find(p => p.id === (k.packageId || 'default'));
-        const pkgName = assignedPkg ? assignedPkg.name : 'Kho Mặc Định';
-        const pkgNodeCount = assignedPkg ? (assignedPkg.nodeCount || 0).toLocaleString('vi-VN') : '0';
-
-        return '<tr>' +
-          '<td>' +
-            '<div style="display: flex; align-items: center; gap: 6px;" class="nowrap">' +
-              '<span class="mono-cell" style="font-size: 13px;">' + escapeHtml(k.key) + '</span>' +
-              '<button class="btn-sm" data-copy="' + escapeHtml(k.key) + '" onclick="copyText(this.dataset.copy)" title="Sao chép mã" style="padding: 2px 6px;">' + SVG_ICONS.copy + '</button>' +
-            '</div>' +
-          '</td>' +
-          '<td class="nowrap">' + escapeHtml(k.label) + '</td>' +
-          '<td>' +
-            '<span class="node-badge-count" title="Gói: ' + escapeHtml(pkgName) + '">' +
-              SVG_ICONS.package +
-              '<strong>' + pkgNodeCount + ' Node</strong>' +
-            '</span>' +
-          '</td>' +
-          '<td class="nowrap">' +
-            '<span style="font-family: var(--font-mono); font-weight: 600; color: ' + (isFull ? 'var(--danger-red)' : 'var(--text-primary)') + '">' +
-              deviceCount + ' / ' + maxAllowed + ' máy' +
-            '</span>' +
-          '</td>' +
-          '<td class="nowrap">' + expireStr + '</td>' +
-          '<td class="nowrap">' +
-            '<span class="status-badge ' + (k.active ? 'status-active' : 'status-disabled') + '">' +
-              (k.active ? SVG_ICONS.check + ' Hoạt động' : SVG_ICONS.lock + ' Đã khóa') +
-            '</span>' +
-          '</td>' +
-          '<td style="text-align: right;" class="nowrap">' +
-            '<button class="btn-dots" data-id="' + escapeHtml(k.id) + '" onclick="openKeyActionMenu(event, this.dataset.id)" title="Tùy chọn thao tác">' +
-              SVG_ICONS.dots +
-            '</button>' +
-          '</td>' +
-        '</tr>';
+        return `
+          <tr>
+            <td>
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <span class="mono-cell" style="font-weight: 600;">${escapeHtml(k.key)}</span>
+                <button class="btn-sm" onclick="copyText('${escapeHtml(k.key)}')" title="Copy" style="padding: 2px 5px;">📋</button>
+              </div>
+            </td>
+            <td><strong style="color: var(--text-primary);">${escapeHtml(k.label || 'Khách hàng')}</strong></td>
+            <td><span class="status-badge" style="background: var(--bg-card);">${escapeHtml(pkgName)}</span></td>
+            <td class="nowrap">${devCount} / ${maxDev} máy</td>
+            <td class="nowrap">${expireStr}</td>
+            <td>
+              <span class="status-badge ${isAct ? 'status-active' : 'status-suspended'}">
+                ${isAct ? 'Hoạt động' : 'Tạm khóa'}
+              </span>
+            </td>
+            <td style="text-align: right;" class="nowrap">
+              <button class="btn-dots" onclick="openKeyActionMenu(event, '${escapeHtml(k.id)}')">⋮</button>
+            </td>
+          </tr>
+        `;
       }).join('');
     }
 
@@ -2225,7 +2323,7 @@
       renderKeysTable();
     }
 
-    // 4. Action Dropdown Menu Handlers
+    // Dropdown Actions Menu Handlers
     let currentActionKeyId = null;
     let currentActionPackageId = null;
     let currentActionMenuTarget = null;
@@ -2234,11 +2332,6 @@
       e.stopPropagation();
       const btn = e.currentTarget;
       const menu = document.getElementById('actionDropdownMenu');
-
-      if (currentActionMenuTarget === btn && menu.style.display === 'block') {
-        closeActionMenu();
-        return;
-      }
       closeActionMenu();
 
       const k = keysData.find(item => item.id === keyId);
@@ -2249,30 +2342,21 @@
       currentActionMenuTarget = btn;
 
       const lockText = k.active ? 'Khóa mã này' : 'Mở khóa mã';
-      const lockIcon = k.active ? SVG_ICONS.lock : SVG_ICONS.unlock;
 
-      menu.innerHTML = 
-        '<div class="action-dropdown-item" onclick="onMenuAssignClick()">' +
-          SVG_ICONS.edit + ' <span>Đổi gói Node</span>' +
-        '</div>' +
-        '<div class="action-dropdown-item" onclick="onMenuToggleClick()">' +
-          lockIcon + ' <span>' + lockText + '</span>' +
-        '</div>' +
-        '<div class="action-dropdown-item" onclick="onMenuResetClick()">' +
-          SVG_ICONS.reset + ' <span>Reset máy</span>' +
-        '</div>' +
-        '<div class="action-dropdown-divider"></div>' +
-        '<div class="action-dropdown-item danger" onclick="onMenuDeleteClick()">' +
-          SVG_ICONS.trash + ' <span>Xóa License Key</span>' +
-        '</div>';
-
+      menu.innerHTML = `
+        <div class="action-dropdown-item" onclick="onMenuAssignClick()">Đổi gói Node</div>
+        <div class="action-dropdown-item" onclick="onMenuToggleClick()">${lockText}</div>
+        <div class="action-dropdown-item" onclick="onMenuResetClick()">Reset máy</div>
+        <div class="action-dropdown-divider"></div>
+        <div class="action-dropdown-item danger" onclick="onMenuDeleteClick()">Xóa Key</div>
+      `;
       positionDropdown(btn, menu);
     }
 
     function onMenuAssignClick() {
       const k = keysData.find(item => item.id === currentActionKeyId);
       closeActionMenu();
-      if (k) openAssignModal(k.id, k.packageId || 'default', k.key);
+      if (k) openAssignKeyModalForPkg(k.packageId || 'default');
     }
     function onMenuToggleClick() {
       const id = currentActionKeyId;
@@ -2294,11 +2378,6 @@
       e.stopPropagation();
       const btn = e.currentTarget;
       const menu = document.getElementById('actionDropdownMenu');
-
-      if (currentActionMenuTarget === btn && menu.style.display === 'block') {
-        closeActionMenu();
-        return;
-      }
       closeActionMenu();
 
       const p = packagesData.find(item => item.id === pkgId);
@@ -2308,17 +2387,12 @@
       btn.classList.add('active');
       currentActionMenuTarget = btn;
 
-      let html = 
-        '<div class="action-dropdown-item" onclick="onMenuExportClick()">' +
-          SVG_ICONS.download + ' <span>Tải file .json</span>' +
-        '</div>';
-
+      let html = `<div class="action-dropdown-item" onclick="onMenuExportClick()">Tải file .json</div>`;
       if (p.id !== 'default') {
-        html += 
-          '<div class="action-dropdown-divider"></div>' +
-          '<div class="action-dropdown-item danger" onclick="onMenuDeletePackageClick()">' +
-            SVG_ICONS.trash + ' <span>Xóa gói Node</span>' +
-          '</div>';
+        html += `
+          <div class="action-dropdown-divider"></div>
+          <div class="action-dropdown-item danger" onclick="onMenuDeletePackageClick()">Xóa gói Node</div>
+        `;
       }
 
       menu.innerHTML = html;
@@ -2339,84 +2413,26 @@
     function positionDropdown(btn, menu) {
       menu.style.visibility = 'hidden';
       menu.style.display = 'block';
-
       const rect = btn.getBoundingClientRect();
       const menuWidth = menu.offsetWidth || 160;
-      const menuHeight = menu.offsetHeight || 38;
-
       let left = rect.right - menuWidth;
       if (left < 10) left = 10;
-      if (left + menuWidth > window.innerWidth - 10) {
-        left = window.innerWidth - menuWidth - 10;
-      }
-
-      const spaceBelow = window.innerHeight - rect.bottom;
-      const spaceAbove = rect.top;
-
-      let top;
-      if (spaceBelow >= menuHeight + 6 || spaceBelow >= spaceAbove) {
-        top = rect.bottom + 4;
-      } else {
-        top = rect.top - menuHeight - 4;
-      }
-
-      if (top < 8) top = 8;
-      if (top + menuHeight > window.innerHeight - 8) {
-        top = window.innerHeight - menuHeight - 8;
-      }
-
       menu.style.left = Math.round(left) + 'px';
-      menu.style.top = Math.round(top) + 'px';
+      menu.style.top = Math.round(rect.bottom + 4) + 'px';
       menu.style.visibility = 'visible';
     }
 
     function closeActionMenu() {
       const menu = document.getElementById('actionDropdownMenu');
-      if (menu) {
-        menu.style.display = 'none';
-        menu.style.visibility = 'visible';
-      }
+      if (menu) menu.style.display = 'none';
       if (currentActionMenuTarget) {
         currentActionMenuTarget.classList.remove('active');
         currentActionMenuTarget = null;
       }
     }
-
     document.addEventListener('click', closeActionMenu);
-    window.addEventListener('resize', closeActionMenu);
-    window.addEventListener('scroll', closeActionMenu, true);
 
-    function openAssignModal(keyId, currentPkgId, keyString) {
-      currentAssignKeyId = keyId;
-      document.getElementById('assignModalKeyString').textContent = keyString;
-      document.getElementById('assignModalPackageSelect').value = currentPkgId;
-      document.getElementById('assignPackageModal').style.display = 'flex';
-    }
-
-    async function submitAssignPackage() {
-      if (!currentAssignKeyId) return;
-      const packageId = document.getElementById('assignModalPackageSelect').value;
-      const selectEl = document.getElementById('assignModalPackageSelect');
-      const pkgName = selectEl.options[selectEl.selectedIndex]?.text || packageId;
-      try {
-        const res = await fetch('/api/admin?action=assignKeyPackage', {
-          method: 'POST',
-          headers: authHeaders(),
-          body: JSON.stringify({ keyId: currentAssignKeyId, packageId })
-        });
-        const data = await res.json();
-        if (res.ok) {
-          closeModal('assignPackageModal');
-          await loadAllData();
-          showAdminToast(`✔ Đã đổi sang "${pkgName}" cho Key! Client sẽ tự động cập nhật trong lần ping tiếp theo.`, 'success');
-        } else {
-          showAdminToast(data.error || 'Lỗi khi đổi gói node', 'error');
-        }
-      } catch (err) {
-        showAdminToast('Lỗi kết nối: ' + err.message, 'error');
-      }
-    }
-
+    // CRUD Key
     async function submitCreateKey(e) {
       e.preventDefault();
       const label = document.getElementById('newKeyLabel').value;
@@ -2425,149 +2441,270 @@
       const maxDevices = document.getElementById('newKeyMaxDevices').value;
       const expireDays = document.getElementById('newKeyExpireDays').value;
 
-      const res = await fetch('/api/admin?action=createKey', {
-        method: 'POST',
-        headers: authHeaders(),
-        body: JSON.stringify({ label, keyString, packageId, maxDevices, expireDays })
-      });
-      const data = await res.json();
-      if (res.ok) {
-        closeModal('createKeyModal');
-        await loadAllData();
-        showAdminToast(`✔ Đã tạo Key mới "${label || keyString}" thành công!`, 'success');
-      } else {
-        showAdminToast(data.error || 'Lỗi khi tạo key', 'error');
+      try {
+        const res = await fetch('/api/admin?action=createKey', {
+          method: 'POST',
+          headers: authHeaders(),
+          body: JSON.stringify({ label, keyString, packageId, maxDevices, expireDays })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          closeModal('createKeyModal');
+          showAdminToast('Đã tạo Key mới thành công!', 'success');
+          await fetchKeys();
+          await fetchPackages();
+        } else {
+          showAdminToast(data.error || 'Lỗi tạo key', 'error');
+        }
+      } catch (err) {
+        showAdminToast('Lỗi: ' + err.message, 'error');
       }
     }
 
     async function toggleKey(id) {
-      const k = keysData.find(item => item.id === id);
-      const willDeactivate = k && k.active !== false;
-      const res = await fetch('/api/admin?action=toggleKey', {
-        method: 'POST',
-        headers: authHeaders(),
-        body: JSON.stringify({ id })
-      });
-      const data = await res.json();
-      if (res.ok) {
-        if (willDeactivate) {
-          showAdminToast(`⚠️ Đã thu hồi & tạm khóa Key "${k?.label || id}". Client sẽ tự động xóa sạch toàn bộ node để bảo mật!`, 'warning');
-        } else {
-          showAdminToast(`✔ Đã kích hoạt lại Key "${k?.label || id}".`, 'success');
+      try {
+        const res = await fetch('/api/admin?action=toggleKey', {
+          method: 'POST',
+          headers: authHeaders(),
+          body: JSON.stringify({ id })
+        });
+        if (res.ok) {
+          showAdminToast('Đã cập nhật trạng thái Key', 'success');
+          fetchKeys();
         }
-      } else {
-        showAdminToast(data.error || 'Lỗi thay đổi trạng thái Key', 'error');
+      } catch (err) {
+        showAdminToast('Lỗi: ' + err.message, 'error');
       }
-      fetchKeys();
     }
 
     async function resetKeyDevices(id) {
-      const ok = await customConfirm(
-        'Bạn có chắc muốn xóa các thiết bị đã đăng ký cho key này? User sẽ có thể kích hoạt lại trên máy mới.',
-        'Ngắt kết nối thiết bị',
-        false,
-        'Ngắt thiết bị'
-      );
+      const ok = await customConfirm('Bạn có chắc muốn ngắt kết nối các thiết bị cho key này?', 'Reset thiết bị');
       if (!ok) return;
-      const res = await fetch('/api/admin?action=resetDevices', {
-        method: 'POST',
-        headers: authHeaders(),
-        body: JSON.stringify({ id })
-      });
-      if (res.ok) {
-        showAdminToast('✔ Đã ngắt kết nối các thiết bị cho Key này thành công!', 'info');
-      } else {
-        showAdminToast('Lỗi khi xóa thiết bị', 'error');
+
+      try {
+        const res = await fetch('/api/admin?action=resetDevices', {
+          method: 'POST',
+          headers: authHeaders(),
+          body: JSON.stringify({ id })
+        });
+        if (res.ok) {
+          showAdminToast('Đã reset thiết bị cho key thành công', 'success');
+          fetchKeys();
+        }
+      } catch (err) {
+        showAdminToast('Lỗi: ' + err.message, 'error');
       }
-      fetchKeys();
     }
 
     async function deleteKey(id) {
-      const ok = await customConfirm(
-        'Bạn có chắc muốn xóa mã License này vĩnh viễn? Thiết bị đang sử dụng mã này sẽ bị từ chối kết nối ngay lập tức.',
-        'Xóa mã License',
-        true,
-        'Xóa vĩnh viễn'
-      );
+      const ok = await customConfirm('Bạn có chắc muốn xóa vĩnh viễn mã License này?', 'Xóa Key');
       if (!ok) return;
-      const res = await fetch('/api/admin?action=deleteKey&id=' + id, {
-        method: 'DELETE',
-        headers: authHeaders()
-      });
-      if (res.ok) {
-        showAdminToast('🗑️ Đã xóa mã License vĩnh viễn.', 'info');
-      } else {
-        showAdminToast('Lỗi khi xóa Key', 'error');
+
+      try {
+        const res = await fetch('/api/admin?action=deleteKey&id=' + id, {
+          method: 'DELETE',
+          headers: authHeaders()
+        });
+        if (res.ok) {
+          showAdminToast('Đã xóa mã License', 'success');
+          loadAllData();
+        }
+      } catch (err) {
+        showAdminToast('Lỗi: ' + err.message, 'error');
       }
-      await loadAllData();
     }
 
-    // 4. Single / Bulk Node (Legacy compatibility)
+    // Node Package Upload & Add
+    function handleDragOver(e) {
+      e.preventDefault();
+      document.getElementById('fileDropzone')?.classList.add('dragover');
+    }
+    function handleDragLeave(e) {
+      e.preventDefault();
+      document.getElementById('fileDropzone')?.classList.remove('dragover');
+    }
+    function handleFileDrop(e) {
+      e.preventDefault();
+      document.getElementById('fileDropzone')?.classList.remove('dragover');
+      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+        processUploadedFile(e.dataTransfer.files[0]);
+      }
+    }
+    function handleFileInputChange(input) {
+      if (input.files && input.files[0]) {
+        processUploadedFile(input.files[0]);
+      }
+    }
+
+    function processUploadedFile(file) {
+      if (!file.name.endsWith('.json')) {
+        customAlert('Vui lòng chọn file định dạng .json', 'Định dạng không hợp lệ');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const raw = JSON.parse(e.target.result);
+          let nodes = [];
+          if (Array.isArray(raw)) nodes = raw;
+          else if (raw.nodes && Array.isArray(raw.nodes)) nodes = raw.nodes;
+          else if (raw.accounts && Array.isArray(raw.accounts)) nodes = raw.accounts;
+          else throw new Error('Không tìm thấy danh sách node hợp lệ');
+
+          currentUploadNodes = nodes;
+          currentUploadFilename = file.name;
+          document.getElementById('uploadModalFileName').textContent = file.name;
+          document.getElementById('uploadModalNodeCount').textContent = `${nodes.length.toLocaleString('vi-VN')} Node`;
+          openModal('uploadPackageModal');
+        } catch (err) {
+          customAlert('File JSON không hợp lệ: ' + err.message, 'Lỗi đọc file');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function toggleUploadOpt(val) {
+      document.getElementById('uploadOptOverwriteFields').style.display = val === 'overwrite' ? 'block' : 'none';
+      document.getElementById('uploadOptNewFields').style.display = val === 'new' ? 'block' : 'none';
+    }
+
+    async function submitUploadPackage() {
+      const mode = document.querySelector('input[name="uploadOpt"]:checked')?.value || 'overwrite';
+      const btn = document.getElementById('submitUploadBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner" style="width: 12px; height: 12px;"></span> Đang nạp...';
+
+      let targetPackageId = 'default';
+      let name = '';
+
+      if (mode === 'overwrite') {
+        targetPackageId = document.getElementById('overwriteTargetPkgSelect').value || 'default';
+      } else {
+        name = document.getElementById('newPkgNameInput').value.trim() || currentUploadFilename.replace('.json', '');
+      }
+
+      try {
+        const res = await fetch('/api/admin?action=uploadNodePackage', {
+          method: 'POST',
+          headers: authHeaders(),
+          body: JSON.stringify({
+            mode,
+            targetPackageId,
+            name,
+            filename: currentUploadFilename,
+            nodes: currentUploadNodes
+          })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          closeModal('uploadPackageModal');
+          showAdminToast(`Đã nạp thành công ${data.nodeCount || currentUploadNodes.length} node!`, 'success');
+          await fetchPackages();
+          await fetchKeys();
+        } else {
+          showAdminToast(data.error || 'Lỗi nạp node', 'error');
+        }
+      } catch (err) {
+        showAdminToast('Lỗi: ' + err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Xác nhận Nạp';
+      }
+    }
+
+    async function exportPackage(pkgId, filename) {
+      try {
+        const res = await fetch('/api/admin?action=exportPackage&packageId=' + pkgId, { headers: authHeaders() });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Lỗi xuất file');
+        const blob = new Blob([JSON.stringify(data.nodes || [], null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename || 'package-nodes.json';
+        a.click();
+        URL.revokeObjectURL(url);
+        showAdminToast('Đã tải file .json thành công', 'success');
+      } catch (err) {
+        showAdminToast('Lỗi xuất: ' + err.message, 'error');
+      }
+    }
+
+    async function deletePackage(pkgId) {
+      const ok = await customConfirm('Bạn có chắc muốn xóa vĩnh viễn gói node này? Các key liên kết sẽ được chuyển về gói mặc định.', 'Xóa Gói Node');
+      if (!ok) return;
+
+      try {
+        const res = await fetch('/api/admin?action=deletePackage&packageId=' + pkgId, {
+          method: 'POST',
+          headers: authHeaders()
+        });
+        if (res.ok) {
+          showAdminToast('Đã xóa gói node thành công', 'success');
+          await fetchPackages();
+          await fetchKeys();
+        }
+      } catch (err) {
+        showAdminToast('Lỗi xóa: ' + err.message, 'error');
+      }
+    }
+
     async function submitAddNode(e) {
       e.preventDefault();
       const name = document.getElementById('nodeNameInput').value;
       const apiKey = document.getElementById('nodeKeyInput').value;
-
-      const res = await fetch('/api/admin?action=addNode', {
-        method: 'POST',
-        headers: authHeaders(),
-        body: JSON.stringify({ name, apiKey })
-      });
-      if (res.ok) {
-        closeModal('addNodeModal');
-        await loadAllData();
-        showAdminToast('✔ Đã thêm Node mới thành công', 'success');
-      } else {
-        customAlert('Lỗi khi thêm node mới', 'Lỗi thao tác', 'error');
+      try {
+        const res = await fetch('/api/admin?action=addNode', {
+          method: 'POST',
+          headers: authHeaders(),
+          body: JSON.stringify({ name, apiKey })
+        });
+        if (res.ok) {
+          closeModal('addNodeModal');
+          showAdminToast('Đã thêm 1 node mới thành công', 'success');
+          loadAllData();
+        }
+      } catch (err) {
+        showAdminToast('Lỗi: ' + err.message, 'error');
       }
     }
 
     async function submitBulkImport(e) {
       e.preventDefault();
       const text = document.getElementById('bulkNodesInput').value;
-      const res = await fetch('/api/admin?action=bulkImportNodes', {
-        method: 'POST',
-        headers: authHeaders(),
-        body: JSON.stringify({ text })
-      });
-      const data = await res.json();
-      if (res.ok) {
-        closeModal('bulkImportModal');
-        await loadAllData();
-        await customAlert('Đã nạp thành công <strong>' + data.addedCount + '</strong> node mới vào kho mặc định!', 'Nạp Node thành công', 'success');
-      } else {
-        customAlert(data.error || 'Lỗi khi nạp node', 'Lỗi nạp node', 'error');
+      try {
+        const res = await fetch('/api/admin?action=bulkImportNodes', {
+          method: 'POST',
+          headers: authHeaders(),
+          body: JSON.stringify({ text })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          closeModal('bulkImportModal');
+          showAdminToast(`Đã nạp ${data.addedCount} node mới vào kho mặc định`, 'success');
+          loadAllData();
+        }
+      } catch (err) {
+        showAdminToast('Lỗi: ' + err.message, 'error');
       }
     }
 
-    // 5. Navigation & UI Helpers
-    function switchAdminTab(tabId, btn) {
-      document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById('keysTab').style.display = tabId === 'keysTab' ? 'block' : 'none';
-      document.getElementById('nodesTab').style.display = tabId === 'nodesTab' ? 'block' : 'none';
-    }
+    // Helper Functions
+    function populatePackageDropdowns() {
+      const selects = [
+        document.getElementById('newKeyPackage'),
+        document.getElementById('assignTargetPackageSelect'),
+        document.getElementById('overwriteTargetPkgSelect')
+      ];
 
-    function openModal(id) {
-      const el = document.getElementById(id);
-      if (el) el.style.display = 'flex';
-    }
-
-    function closeModal(id) {
-      const el = document.getElementById(id);
-      if (el) el.style.display = 'none';
-    }
-
-    function showToast(message, type = 'success') {
-      showAdminToast(message, type);
-    }
-
-    function copyKeyText(txt) {
-      copyText(txt);
-    }
-
-    function openAdminPopup(options) {
-      return showAdminPopup(options);
+      selects.forEach(sel => {
+        if (!sel) return;
+        const curVal = sel.value;
+        sel.innerHTML = packagesData.map(p => `
+          <option value="${escapeHtml(p.id)}">${escapeHtml(p.name)} (${(p.nodeCount || 0).toLocaleString('vi-VN')} node)</option>
+        `).join('');
+        if (curVal) sel.value = curVal;
+      });
     }
 
     function openCreateKeyModal() {
@@ -2578,31 +2715,9 @@
     function openBulkImportModal() { openModal('bulkImportModal'); }
     function openAddNodeModal() { openModal('addNodeModal'); }
 
-    function copyText(txt) {
-      navigator.clipboard.writeText(txt).then(() => showAdminToast('✔ Đã sao chép mã: ' + txt, 'success'));
-    }
-
     function escapeHtml(s) {
       return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
-
-    // Theme toggle
-    const themeBtn = document.getElementById('themeToggle');
-    const themeIcon = document.getElementById('themeIcon');
-    function applyTheme(t) {
-      document.documentElement.setAttribute('data-theme', t);
-      localStorage.setItem('theme', t);
-      if (t === 'dark') {
-        themeIcon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
-      } else {
-        themeIcon.innerHTML = '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>';
-      }
-    }
-    applyTheme(localStorage.getItem('theme') || 'dark');
-    themeBtn.addEventListener('click', () => {
-      const cur = document.documentElement.getAttribute('data-theme');
-      applyTheme(cur === 'dark' ? 'light' : 'dark');
-    });
   </script>
 </body>
 </html>

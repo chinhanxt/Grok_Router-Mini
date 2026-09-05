@@ -160,6 +160,7 @@ export default async function handler(req, res) {
     const keepaliveConfig = (await kvGet('keepalive_config')) || {
       autoRunEnabled: true,
       intervalDays: 2,
+      runHour: 3,
       freshThresholdHours: 48
     };
     return res.status(200).json({ ok: true, packages, totalNodes, keys, lastKeepAlive, keepaliveConfig, hasKv: hasKvConfigured() });
@@ -441,6 +442,7 @@ export default async function handler(req, res) {
     const config = (await kvGet('keepalive_config')) || {
       autoRunEnabled: true,
       intervalDays: 2,
+      runHour: 3,
       freshThresholdHours: 48
     };
     return res.status(200).json({ ok: true, config });
@@ -448,10 +450,11 @@ export default async function handler(req, res) {
 
   // 5.9. Lưu Cấu hình Tự động Keep-Alive
   if (action === 'saveKeepAliveConfig' && req.method === 'POST') {
-    const { autoRunEnabled, intervalDays, freshThresholdHours } = body || {};
+    const { autoRunEnabled, intervalDays, runHour, freshThresholdHours } = body || {};
     const newConfig = {
       autoRunEnabled: autoRunEnabled !== false,
       intervalDays: parseInt(intervalDays, 10) || 2,
+      runHour: runHour !== undefined ? parseInt(runHour, 10) : 3,
       freshThresholdHours: parseInt(freshThresholdHours, 10) || 48,
       updatedAt: new Date().toISOString()
     };
