@@ -1,5 +1,9 @@
 {
   "framework": null,
   "outputDirectory": "docs",
-  "cleanUrls": true
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/install.ps1", "destination": "/api/install?type=ps1" },
+    { "source": "/install.sh", "destination": "/api/install?type=sh" }
+  ]
 }
