@@ -637,8 +637,9 @@
           <div class="tab-nav">
             <button class="tab-btn active" onclick="pickTab('cmd', 0, this)">Cài đặt (Khuyên dùng)</button>
             <button class="tab-btn" onclick="pickTab('cmd', 1, this)">Khởi động (aiclaude)</button>
-            <button class="tab-btn" onclick="pickTab('cmd', 2, this)">Chạy qua NPX</button>
-            <button class="tab-btn" onclick="pickTab('cmd', 3, this)">Chỉ định Cổng (Port)</button>
+            <button class="tab-btn" onclick="pickTab('cmd', 2, this)">Cập nhật (Update)</button>
+            <button class="tab-btn" onclick="pickTab('cmd', 3, this)">Chạy qua NPX</button>
+            <button class="tab-btn" onclick="pickTab('cmd', 4, this)">Chỉ định Cổng (Port)</button>
           </div>
           <button class="btn-copy" onclick="copyCurrentTab('cmdWrap')">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
@@ -648,6 +649,7 @@
         <div class="tab-pane-wrap" id="cmdWrap">
           <pre class="tab-content" style="display: block;"><code>npm install -g ai-claude-keyapi</code></pre>
           <pre class="tab-content" style="display: none;"><code>aiclaude</code></pre>
+          <pre class="tab-content" style="display: none;"><code>npm install -g ai-claude-keyapi@latest</code></pre>
           <pre class="tab-content" style="display: none;"><code>npx ai-claude-keyapi</code></pre>
           <pre class="tab-content" style="display: none;"><code>aiclaude --port 3006</code></pre>
         </div>
@@ -841,7 +843,7 @@
   </footer>
 
   <script>
-    // 🛡️ Anti-DevTools & Anti-Inspection Shield
+    // Anti-DevTools & Anti-Inspection Shield
 
 
     function copyCode(id, btn) {
