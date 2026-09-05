@@ -594,6 +594,90 @@
       margin-top: 20px;
     }
 
+    /* Modern Admin Popup / Notification Modal */
+    .admin-popup-box {
+      max-width: 440px;
+      text-align: center;
+      padding: 30px 24px 24px;
+      border-radius: 12px;
+      animation: popupScaleIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.65);
+      position: relative;
+    }
+    @keyframes popupScaleIn {
+      from {
+        opacity: 0;
+        transform: scale(0.92) translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+    .popup-icon-wrap {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      transition: all 0.2s ease;
+    }
+    .popup-icon-wrap.type-danger {
+      background: rgba(239, 68, 68, 0.12);
+      color: var(--danger-red);
+      border: 1px solid rgba(239, 68, 68, 0.25);
+    }
+    .popup-icon-wrap.type-warning {
+      background: rgba(245, 158, 11, 0.12);
+      color: #f59e0b;
+      border: 1px solid rgba(245, 158, 11, 0.25);
+    }
+    .popup-icon-wrap.type-success {
+      background: rgba(16, 185, 129, 0.12);
+      color: var(--success-green);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+    .popup-icon-wrap.type-info {
+      background: rgba(59, 130, 246, 0.12);
+      color: #3b82f6;
+      border: 1px solid rgba(59, 130, 246, 0.25);
+    }
+    .popup-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 10px;
+    }
+    .popup-message {
+      font-size: 13.5px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 22px;
+      word-break: break-word;
+    }
+    .popup-foot {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 0;
+    }
+    .popup-foot button {
+      min-width: 105px;
+      padding: 9px 20px;
+      font-size: 13px;
+    }
+    .btn-danger-solid {
+      background: var(--danger-red) !important;
+      color: #ffffff !important;
+      border: 1px solid var(--danger-red) !important;
+      font-weight: 600;
+    }
+    .btn-danger-solid:hover {
+      opacity: 0.9 !important;
+    }
+
     /* Password gate overlay */
     #authOverlay {
       position: fixed;
@@ -1040,7 +1124,24 @@
     </div>
   </div>
 
-    <!-- Floating Action Menu Dropdown -->
+  <!-- Modern Admin Popup / Confirm Modal -->
+  <div id="adminNotifyModal" class="modal-overlay" style="z-index: 100000;" onclick="if(event.target===this)closeAdminPopup(false)">
+    <div class="modal-box admin-popup-box">
+      <div class="popup-icon-wrap" id="popupIconWrap">
+        <span id="popupIcon"></span>
+      </div>
+      <div class="popup-content">
+        <h3 id="popupTitle" class="popup-title">Thông báo</h3>
+        <p id="popupMessage" class="popup-message"></p>
+      </div>
+      <div class="modal-foot popup-foot">
+        <button type="button" id="popupCancelBtn" class="btn-secondary" onclick="closeAdminPopup(false)">Hủy</button>
+        <button type="button" id="popupConfirmBtn" class="btn-primary" onclick="closeAdminPopup(true)">Đồng ý</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Action Menu Dropdown -->
   <div id="actionDropdownMenu" class="action-dropdown"></div>
 
   <script>
@@ -1083,6 +1184,107 @@
         setTimeout(() => toast.remove(), 320);
       }, 4500);
     }
+
+    // Modern Custom Dialog & Notification Popup System for Admin
+    let popupResolveHandler = null;
+
+    function showAdminPopup({
+      title = 'Thông báo',
+      message = '',
+      type = 'info', // 'danger' | 'warning' | 'success' | 'info' | 'error'
+      confirmText = 'Đồng ý',
+      cancelText = 'Hủy',
+      showCancel = false,
+      dangerConfirm = false
+    }) {
+      return new Promise((resolve) => {
+        popupResolveHandler = resolve;
+        const modal = document.getElementById('adminNotifyModal');
+        const iconWrap = document.getElementById('popupIconWrap');
+        const iconEl = document.getElementById('popupIcon');
+        const titleEl = document.getElementById('popupTitle');
+        const msgEl = document.getElementById('popupMessage');
+        const cancelBtn = document.getElementById('popupCancelBtn');
+        const confirmBtn = document.getElementById('popupConfirmBtn');
+
+        const resolvedType = (type === 'error' || type === 'delete') ? 'danger' : type;
+        iconWrap.className = 'popup-icon-wrap type-' + resolvedType;
+
+        let iconSvg = '';
+        if (resolvedType === 'danger') {
+          iconSvg = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>';
+        } else if (resolvedType === 'warning') {
+          iconSvg = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>';
+        } else if (resolvedType === 'success') {
+          iconSvg = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>';
+        } else {
+          iconSvg = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>';
+        }
+
+        iconEl.innerHTML = iconSvg;
+        titleEl.textContent = title;
+        msgEl.innerHTML = message;
+
+        cancelBtn.textContent = cancelText;
+        cancelBtn.style.display = showCancel ? 'inline-block' : 'none';
+
+        confirmBtn.textContent = confirmText;
+        if (dangerConfirm) {
+          confirmBtn.className = 'btn-primary btn-danger-solid';
+        } else {
+          confirmBtn.className = 'btn-primary';
+        }
+
+        modal.style.display = 'flex';
+      });
+    }
+
+    function closeAdminPopup(result) {
+      const modal = document.getElementById('adminNotifyModal');
+      if (modal) modal.style.display = 'none';
+      if (popupResolveHandler) {
+        const handler = popupResolveHandler;
+        popupResolveHandler = null;
+        handler(result);
+      }
+    }
+
+    function customAlert(message, title = 'Thông báo', type = 'info') {
+      return showAdminPopup({
+        title,
+        message,
+        type,
+        confirmText: 'Đóng',
+        showCancel: false
+      });
+    }
+
+    function customConfirm(message, title = 'Xác nhận', danger = false, confirmText = 'Xác nhận') {
+      return showAdminPopup({
+        title,
+        message,
+        type: danger ? 'danger' : 'warning',
+        confirmText,
+        cancelText: 'Hủy',
+        showCancel: true,
+        dangerConfirm: danger
+      });
+    }
+
+    // Override native window.alert
+    window.alert = function(msg) {
+      customAlert(msg, 'Thông báo', 'info');
+    };
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const modal = document.getElementById('adminNotifyModal');
+        if (modal && modal.style.display === 'flex') {
+          closeAdminPopup(false);
+        }
+      }
+    });
 
     let packagesData = [];
     let keysData = [];
@@ -1286,12 +1488,18 @@
         a.remove();
         window.URL.revokeObjectURL(url);
       } catch (err) {
-        alert('Lỗi khi tải file: ' + err.message);
+        customAlert('Lỗi khi tải file: ' + err.message, 'Lỗi tải file', 'error');
       }
     }
 
     async function deletePackage(id) {
-      if (!confirm('Bạn có chắc muốn xóa gói Node này? Các Key đang dùng gói này sẽ chuyển về dùng Gói Mặc Định.')) return;
+      const ok = await customConfirm(
+        'Bạn có chắc muốn xóa gói Node này? Các Key đang dùng gói này sẽ chuyển về dùng Gói Mặc Định.',
+        'Xác nhận xóa Gói Node',
+        true,
+        'Xóa gói'
+      );
+      if (!ok) return;
       try {
         const res = await fetch('/api/admin?action=deleteNodePackage&id=' + id, {
           method: 'DELETE',
@@ -1299,12 +1507,13 @@
         });
         const data = await res.json();
         if (res.ok) {
+          showAdminToast('🗑️ Đã xóa gói Node thành công', 'info');
           await loadAllData();
         } else {
-          alert(data.error || 'Lỗi khi xóa gói');
+          customAlert(data.error || 'Lỗi khi xóa gói', 'Lỗi thao tác', 'error');
         }
       } catch (err) {
-        alert('Lỗi kết nối: ' + err.message);
+        customAlert('Lỗi kết nối: ' + err.message, 'Lỗi kết nối', 'error');
       }
     }
 
@@ -1333,7 +1542,7 @@
 
     function processSelectedFile(file) {
       if (!file.name.toLowerCase().endsWith('.json')) {
-        alert('Vui lòng chọn file định dạng .json');
+        customAlert('Vui lòng chọn file dữ liệu có định dạng .json', 'Định dạng file không hỗ trợ', 'warning');
         return;
       }
 
@@ -1349,13 +1558,13 @@
           } else if (parsed && Array.isArray(parsed.nodes)) {
             rawNodes = parsed.nodes;
           } else {
-            alert('File JSON không chứa danh sách Node hợp lệ.');
+            customAlert('File JSON không chứa danh sách Node hợp lệ. Vui lòng kiểm tra lại cấu trúc file.', 'Cấu trúc file không đúng', 'warning');
             return;
           }
 
           const validNodes = rawNodes.filter(n => n && (n.ssoToken || n.apiKey || n.token));
           if (validNodes.length === 0) {
-            alert('Không tìm thấy node nào có ssoToken hoặc apiKey trong file.');
+            customAlert('Không tìm thấy Node nào có chứa ssoToken hoặc apiKey trong file được chọn.', 'Không tìm thấy dữ liệu', 'warning');
             return;
           }
 
@@ -1370,7 +1579,7 @@
           selectUploadOption('overwrite');
           document.getElementById('uploadPackageModal').style.display = 'flex';
         } catch (err) {
-          alert('Không thể đọc file JSON: ' + err.message);
+          customAlert('Không thể đọc file JSON: ' + err.message, 'Lỗi đọc file', 'error');
         }
       };
       reader.readAsText(file);
@@ -1450,15 +1659,15 @@
 
         const data = await res.json();
         if (res.ok && data.ok) {
-          alert('Đã nạp thành công ' + data.nodeCount.toLocaleString('vi-VN') + ' node vào hệ thống!');
           closeModal('uploadPackageModal');
           document.getElementById('jsonFileInput').value = '';
           await loadAllData();
+          await customAlert('Đã nạp thành công <strong>' + data.nodeCount.toLocaleString('vi-VN') + '</strong> node vào hệ thống!', 'Nạp Node thành công', 'success');
         } else {
-          alert(data.error || 'Lỗi khi nạp node');
+          customAlert(data.error || 'Lỗi khi nạp node', 'Lỗi nạp node', 'error');
         }
       } catch (err) {
-        alert('Lỗi kết nối máy chủ: ' + err.message);
+        customAlert('Lỗi kết nối máy chủ: ' + err.message, 'Lỗi kết nối', 'error');
       } finally {
         btn.disabled = false;
         btn.innerHTML = SVG_ICONS.check + ' Xác nhận Nạp Node';
@@ -1803,7 +2012,13 @@
     }
 
     async function resetKeyDevices(id) {
-      if (!confirm('Bạn có chắc muốn xóa các thiết bị đã đăng ký cho key này? User sẽ có thể kích hoạt lại trên máy mới.')) return;
+      const ok = await customConfirm(
+        'Bạn có chắc muốn xóa các thiết bị đã đăng ký cho key này? User sẽ có thể kích hoạt lại trên máy mới.',
+        'Ngắt kết nối thiết bị',
+        false,
+        'Ngắt thiết bị'
+      );
+      if (!ok) return;
       const res = await fetch('/api/admin?action=resetDevices', {
         method: 'POST',
         headers: authHeaders(),
@@ -1818,7 +2033,13 @@
     }
 
     async function deleteKey(id) {
-      if (!confirm('Xóa mã License này vĩnh viễn?')) return;
+      const ok = await customConfirm(
+        'Bạn có chắc muốn xóa mã License này vĩnh viễn? Thiết bị đang sử dụng mã này sẽ bị từ chối kết nối ngay lập tức.',
+        'Xóa mã License',
+        true,
+        'Xóa vĩnh viễn'
+      );
+      if (!ok) return;
       const res = await fetch('/api/admin?action=deleteKey&id=' + id, {
         method: 'DELETE',
         headers: authHeaders()
@@ -1845,8 +2066,9 @@
       if (res.ok) {
         closeModal('addNodeModal');
         await loadAllData();
+        showAdminToast('✔ Đã thêm Node mới thành công', 'success');
       } else {
-        alert('Lỗi khi thêm node');
+        customAlert('Lỗi khi thêm node mới', 'Lỗi thao tác', 'error');
       }
     }
 
@@ -1861,10 +2083,10 @@
       const data = await res.json();
       if (res.ok) {
         closeModal('bulkImportModal');
-        alert('Đã nạp thành công ' + data.addedCount + ' node mới vào kho mặc định!');
         await loadAllData();
+        await customAlert('Đã nạp thành công <strong>' + data.addedCount + '</strong> node mới vào kho mặc định!', 'Nạp Node thành công', 'success');
       } else {
-        alert(data.error || 'Lỗi khi nạp node');
+        customAlert(data.error || 'Lỗi khi nạp node', 'Lỗi nạp node', 'error');
       }
     }
 
@@ -1886,7 +2108,7 @@
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
     function copyText(txt) {
-      navigator.clipboard.writeText(txt).then(() => alert('Đã sao chép mã: ' + txt));
+      navigator.clipboard.writeText(txt).then(() => showAdminToast('✔ Đã sao chép mã: ' + txt, 'success'));
     }
 
     function escapeHtml(s) {
