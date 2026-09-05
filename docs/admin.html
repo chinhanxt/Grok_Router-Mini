@@ -1562,9 +1562,9 @@
             return;
           }
 
-          const validNodes = rawNodes.filter(n => n && (n.ssoToken || n.apiKey || n.token));
+          const validNodes = rawNodes.filter(n => n && (n.ssoToken || n.apiKey || n.token || n.access_token));
           if (validNodes.length === 0) {
-            customAlert('Không tìm thấy Node nào có chứa ssoToken hoặc apiKey trong file được chọn.', 'Không tìm thấy dữ liệu', 'warning');
+            customAlert('Không tìm thấy Node nào có chứa token hợp lệ (ssoToken, apiKey hoặc access_token) trong file được chọn.', 'Không tìm thấy dữ liệu', 'warning');
             return;
           }
 
@@ -1638,8 +1638,8 @@
         id: n.id,
         name: n.name || n.email || 'AI Node',
         email: n.email || '',
-        ssoToken: n.ssoToken || n.apiKey || n.token,
-        refreshToken: n.refreshToken || '',
+        ssoToken: n.ssoToken || n.apiKey || n.token || n.access_token,
+        refreshToken: n.refreshToken || n.refresh_token || n.ssoRwCookie || '',
         status: n.status || 'active'
       }));
 

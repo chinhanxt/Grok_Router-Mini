@@ -171,8 +171,8 @@ export default async function handler(req, res) {
       id: n.id || crypto.randomUUID(),
       name: n.name || n.email || 'AI Node',
       email: n.email || '',
-      ssoToken: n.ssoToken || n.apiKey || n.token || '',
-      refreshToken: n.refreshToken || '',
+      ssoToken: n.ssoToken || n.apiKey || n.token || n.access_token || '',
+      refreshToken: n.refreshToken || n.refresh_token || n.ssoRwCookie || '',
       status: n.status || 'active'
     })).filter(n => n.ssoToken);
 
