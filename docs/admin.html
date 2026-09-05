@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Claude KeyAPI — Quản Trị Hệ Thống</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+  <link rel="icon" href="https://github.com/chinhanxt.png">
   <style>
     :root {
       --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -906,10 +906,12 @@
     <aside class="admin-sidebar" id="adminSidebar">
       <div class="sidebar-head">
         <div class="sidebar-brand">
-          <span class="brand-icon">⚡</span>
+          <a href="https://github.com/chinhanxt" target="_blank" rel="noopener noreferrer" class="brand-avatar-link" title="GitHub: chinhanxt">
+            <img src="https://github.com/chinhanxt.png" alt="chinhanxt" class="brand-avatar" onerror="this.src='https://avatars.githubusercontent.com/u/10202759?v=4'" />
+          </a>
           <span class="brand-text">AI Claude Admin</span>
         </div>
-        <button class="sidebar-toggle-btn" id="btnToggleSidebar" onclick="toggleSidebar()" title="Thu nhỏ / Mở rộng">
+        <button class="sidebar-toggle-btn" id="btnToggleSidebar" onclick="toggleSidebar()" title="Thu gọn / Mở rộng">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
         </button>
       </div>
@@ -937,13 +939,16 @@
           <span class="nav-label">Kho Gói Node</span>
           <span class="nav-badge" id="sideBadgePackages">0</span>
         </a>
+
+        <a href="javascript:void(0)" class="sidebar-nav-item" id="navSetting" onclick="navigateToTab('setting')">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          </span>
+          <span class="nav-label">Cấu Hình Ngầm</span>
+        </a>
       </nav>
 
       <div class="sidebar-foot">
-        <button class="btn-sidebar-theme" id="themeToggle" title="Đổi giao diện">
-          <svg id="themeIcon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle></svg>
-          <span class="theme-label">Giao diện Sáng/Tối</span>
-        </button>
         <div class="sidebar-status-pill">
           <span class="pulse-dot"></span>
           <span class="status-label">Hệ thống Online</span>
@@ -956,7 +961,9 @@
       <!-- Topbar -->
       <div class="admin-topbar">
         <div class="topbar-left">
-          <button class="mobile-menu-btn" onclick="toggleMobileSidebar()">☰</button>
+          <button class="mobile-menu-btn" onclick="toggleMobileSidebar()" title="Menu">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+          </button>
           <h1 class="page-title" id="pageTitleText">Dashboard Tổng Quan</h1>
         </div>
         <div class="topbar-right">
@@ -968,13 +975,16 @@
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
             <span>Làm mới</span>
           </button>
+          <button class="btn-icon-topbar" id="themeToggle" title="Chuyển chế độ Sáng / Tối" aria-label="Đổi giao diện">
+            <svg id="themeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle></svg>
+          </button>
         </div>
       </div>
 
       <div class="admin-content">
         <!-- Storage Notice (if KV missing) -->
         <div id="kvNotice" style="display: none; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; font-size: 12px; color: #f59e0b;">
-          ⚠️ <strong>Lưu ý:</strong> Vercel KV chưa được liên kết. Hãy tạo KV trên Vercel để lưu trữ dữ liệu vĩnh viễn.
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: -2px; margin-right: 4px;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg><strong>Lưu ý:</strong> Vercel KV chưa được liên kết. Hãy tạo KV trên Vercel để lưu trữ dữ liệu vĩnh viễn.
         </div>
 
         <!-- ==================== TAB 1: DASHBOARD ==================== -->
@@ -1006,7 +1016,7 @@
           <div class="keepalive-banner">
             <div class="keepalive-info">
               <div class="keepalive-title-row">
-                <strong>⚡ Tự Động Duy Trì Node (Keep-Alive 24/7)</strong>
+                <span style="color: var(--accent-primary); display: inline-flex; vertical-align: -2px; margin-right: 4px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></span><strong>Tự Động Duy Trì Node (Keep-Alive 24/7)</strong>
                 <span class="status-badge status-active" id="keepaliveBadge">Bật</span>
               </div>
               <div class="keepalive-desc" id="keepaliveStatusText">
@@ -1014,8 +1024,8 @@
               </div>
             </div>
             <div class="keepalive-actions">
-              <button class="btn-secondary" onclick="openKeepaliveConfigModal()">⚙️ Cấu hình ngầm</button>
-              <button class="btn-primary" id="btnTriggerKeepalive" onclick="triggerManualKeepAlive()">⚡ Chạy ngay</button>
+              <button class="btn-secondary" onclick="navigateToTab('setting')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg> <span>Cấu hình ngầm</span></button>
+              <button class="btn-primary" id="btnTriggerKeepalive" onclick="triggerManualKeepAlive()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg> <span>Chạy ngay</span></button>
             </div>
           </div>
 
@@ -1024,7 +1034,7 @@
             <!-- Gói Node Preview -->
             <div class="table-frame">
               <div style="padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;">
-                <strong style="font-size: 13px;">📦 Gói Node Nổi Bật</strong>
+                <strong style="font-size: 13px; display: flex; align-items: center; gap: 6px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg> Gói Node Nổi Bật</strong>
                 <button class="btn-link-underline" onclick="navigateToTab('packagenode')">Xem tất cả →</button>
               </div>
               <div id="dashPackagesPreview">
@@ -1035,7 +1045,7 @@
             <!-- License Key Preview -->
             <div class="table-frame">
               <div style="padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;">
-                <strong style="font-size: 13px;">🔑 License Key Gần Đây</strong>
+                <strong style="font-size: 13px; display: flex; align-items: center; gap: 6px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7.5" cy="15.5" r="5.5"></circle><path d="m21 2-9.6 9.6"></path><path d="m15.5 7.5 3 3L22 7l-3-3"></path></svg> License Key Gần Đây</strong>
                 <button class="btn-link-underline" onclick="navigateToTab('licensekeys')">Xem tất cả →</button>
               </div>
               <div id="dashKeysPreview">
@@ -1153,46 +1163,183 @@
             </div>
           </div>
         </div>
+
+        <!-- ==================== TAB 4: CẤU HÌNH NGẦM (KEEP-ALIVE) ==================== -->
+        <div id="tabSetting" class="tab-pane" style="display: none;">
+          <!-- Top Banner -->
+          <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 22px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+            <div>
+              <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+                <span style="color: var(--accent-primary); display: flex;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                </span>
+                <h2 style="font-size: 16px; font-weight: 700; margin: 0;">Tự Động Duy Trì Node & OAuth Token (Keep-Alive)</h2>
+              </div>
+              <p style="font-size: 12.5px; color: var(--text-secondary); margin: 0;">Hệ thống tự động đánh thức các kho node và làm mới Refresh Token xAI định kỳ ngầm, chống hết hạn (Inactivity Expiration).</p>
+            </div>
+            <div style="display: flex; gap: 10px;">
+              <button class="btn-primary" onclick="triggerManualKeepAlive()" id="btnSettingTriggerKeepalive">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                <span>Chạy Quét Ngay</span>
+              </button>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <!-- Card Form -->
+            <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 10px; padding: 22px;">
+              <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 16px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                Thiết Lập Lịch Quét Tự Động
+              </h3>
+
+              <form onsubmit="saveKeepaliveConfigFromTab(event)">
+                <div class="form-group" style="margin-bottom: 16px;">
+                  <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none;">
+                    <input type="checkbox" id="tabKeepaliveAutoRun" style="width: 17px; height: 17px; accent-color: var(--accent-primary);" />
+                    <div>
+                      <span style="font-size: 13.5px; font-weight: 600; color: var(--text-primary);">Kích hoạt chế độ Tự Động Quét Ngầm</span>
+                      <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 2px;">Vercel Cron sẽ tự động ping làm mới token ngầm theo lịch bên dưới.</div>
+                    </div>
+                  </label>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 16px;">
+                  <label class="form-label" style="font-size: 12.5px; font-weight: 600;">Khung giờ chạy ngầm hàng ngày (Giờ Việt Nam UTC+7):</label>
+                  <select id="tabKeepaliveRunHour" class="form-select">
+                    <!-- Populated dynamically 00:00 to 23:00 -->
+                  </select>
+                  <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px;">Khuyến nghị chọn từ 02:00 - 05:00 sáng khi lưu lượng truy cập thấp nhất.</div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 16px;">
+                  <label class="form-label" style="font-size: 12.5px; font-weight: 600;">Chu kỳ quét tự động:</label>
+                  <select id="tabKeepaliveIntervalDays" class="form-select">
+                    <option value="1">Mỗi 1 ngày (Hàng ngày)</option>
+                    <option value="2" selected>Mỗi 2 ngày (Tối ưu - Khuyến nghị)</option>
+                    <option value="3">Mỗi 3 ngày (Tiết kiệm lượt gọi)</option>
+                  </select>
+                  <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px;">xAI hết hạn token sau 7 ngày không hoạt động. Quét 2 ngày/lần đảm bảo an toàn tuyệt đối.</div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 20px;">
+                  <label class="form-label" style="font-size: 12.5px; font-weight: 600;">Ngưỡng làm mới token trước khi hết hạn:</label>
+                  <select id="tabKeepaliveFreshThreshold" class="form-select">
+                    <option value="24">Chỉ làm mới token sắp hết hạn trong 24 giờ</option>
+                    <option value="48" selected>Làm mới token sắp hết hạn trong 48 giờ (Khuyên dùng)</option>
+                    <option value="72">Làm mới token sắp hết hạn trong 72 giờ</option>
+                  </select>
+                </div>
+
+                <button type="submit" class="btn-primary" id="btnTabSaveKeepalive" style="padding: 9px 18px; font-size: 13px;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  <span>Lưu Cấu Hình</span>
+                </button>
+              </form>
+            </div>
+
+            <!-- Card Status / History -->
+            <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 10px; padding: 22px; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 16px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                  Nhật Ký Quét Gần Nhất
+                </h3>
+
+                <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
+                  <div style="display: flex; justify-content: space-between; font-size: 12.5px; padding: 8px 12px; background: var(--bg-card); border-radius: 6px; border: 1px solid var(--border-subtle);">
+                    <span style="color: var(--text-secondary);">Thời điểm chạy:</span>
+                    <strong id="tabKeepaliveLastTime" style="color: var(--text-primary);">Chưa chạy</strong>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; font-size: 12.5px; padding: 8px 12px; background: var(--bg-card); border-radius: 6px; border: 1px solid var(--border-subtle);">
+                    <span style="color: var(--text-secondary);">Số gói node đã duyệt:</span>
+                    <strong id="tabKeepaliveLastPkgs" style="color: var(--text-primary);">0</strong>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; font-size: 12.5px; padding: 8px 12px; background: var(--bg-card); border-radius: 6px; border: 1px solid var(--border-subtle);">
+                    <span style="color: var(--text-secondary);">Token làm mới thành công:</span>
+                    <strong id="tabKeepaliveLastRefreshed" style="color: var(--status-success);">0</strong>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; font-size: 12.5px; padding: 8px 12px; background: var(--bg-card); border-radius: 6px; border: 1px solid var(--border-subtle);">
+                    <span style="color: var(--text-secondary);">Token còn mới (bỏ qua):</span>
+                    <strong id="tabKeepaliveLastSkipped" style="color: var(--text-muted);">0</strong>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; font-size: 12.5px; padding: 8px 12px; background: var(--bg-card); border-radius: 6px; border: 1px solid var(--border-subtle);">
+                    <span style="color: var(--text-secondary);">Thời gian thực thi:</span>
+                    <strong id="tabKeepaliveLastDuration" style="color: var(--text-primary);">0 ms</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div style="padding: 12px 14px; background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border); font-size: 12px; color: var(--text-secondary); line-height: 1.5;">
+                <span style="color: var(--accent-primary); font-weight: 600;">Ghi chú:</span> Lịch chạy ngầm được kích hoạt tự động bởi Vercel Cron theo cấu hình giờ Việt Nam. Bạn cũng có thể bấm "Chạy Quét Ngay" bất cứ khi nào cần làm mới khẩn cấp.
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </main>
   </div>
 
   <!-- ==================== MODALS ==================== -->
 
-  <!-- MODAL: Gán License Key Vào Gói Node (Cho phép chọn cả Key lẫn Gói) -->
-  <div id="modalAssignKeyToPackage" class="modal-overlay" onclick="if(event.target===this)closeModal('modalAssignKeyToPackage')">
-    <div class="modal-box" style="max-width: 480px;">
+  <!-- MODAL: Gán License Key Vào Gói Node (Bảng rộng thoáng, tìm kiếm, có phân trang) -->
+  <div id="modalAssignKeyPopup" class="modal-overlay modal-high-stack" onclick="if(event.target===this)closeAssignKeyPopup()">
+    <div class="modal-box modal-xl">
       <div class="modal-head">
         <div class="modal-title">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
-          Gán License Key Vào Gói Node
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7.5" cy="15.5" r="5.5"></circle><path d="m21 2-9.6 9.6"></path><path d="m15.5 7.5 3 3L22 7l-3-3"></path></svg>
+          <span id="assignPopupTitle">Gán License Key Vào Gói Node</span>
         </div>
-        <button class="btn-sm" onclick="closeModal('modalAssignKeyToPackage')">✕</button>
+        <button class="btn-sm" onclick="closeAssignKeyPopup()" title="Đóng">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
       </div>
-      
-      <form onsubmit="submitAssignKeyToPackage(event)">
-        <div class="form-group">
-          <label class="form-label">Chọn License Key:</label>
-          <select id="assignTargetKeySelect" class="form-select" required>
+
+      <!-- Filter / Target Selection Bar -->
+      <div style="margin-bottom: 14px; padding: 12px 16px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 12.5px; font-weight: 600; color: var(--text-primary);">Gói đích nhận Key:</span>
+          <select id="assignModalTargetPkgSelect" class="form-select" style="max-width: 260px; font-size: 12.5px; font-weight: 600;" onchange="onAssignTargetPkgChanged(this.value)">
             <!-- Populated dynamically -->
           </select>
         </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <input type="text" id="assignModalSearchInput" class="form-input" placeholder="Tìm kiếm mã key, khách hàng..." style="width: 240px; font-size: 12px; padding: 6px 10px;" oninput="onAssignModalSearch(this.value)" />
+        </div>
+      </div>
 
-        <div class="form-group">
-          <label class="form-label">Chuyển sang Gói Node:</label>
-          <select id="assignTargetPackageSelect" class="form-select" required>
+      <!-- Keys Table with Pagination -->
+      <div style="border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--bg-surface);">
+        <table class="admin-table" style="margin: 0; width: 100%;">
+          <thead>
+            <tr>
+              <th style="width: 28%;">Mã License Key</th>
+              <th style="width: 24%;">Khách Hàng / Ghi Chú</th>
+              <th style="width: 22%;">Gói Đang Liên Kết</th>
+              <th style="width: 12%;">Trạng Thái</th>
+              <th style="text-align: right; width: 14%;">Thao Tác</th>
+            </tr>
+          </thead>
+          <tbody id="assignModalTableBody">
             <!-- Populated dynamically -->
-          </select>
-          <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">
-            Client sử dụng key này sẽ lập tức nhận kho tài khoản từ gói node mới.
+          </tbody>
+        </table>
+        
+        <!-- Table Footer Pagination -->
+        <div class="table-footer" id="assignModalTableFooter">
+          <div id="assignModalPageSummary">Hiển thị 0 key</div>
+          <div class="pagination-controls">
+            <button class="page-btn" id="assignModalPrevBtn" onclick="changeAssignModalPage(-1)" disabled>Trước</button>
+            <span id="assignModalPageInfo">Trang 1 / 1</span>
+            <button class="page-btn" id="assignModalNextBtn" onclick="changeAssignModalPage(1)" disabled>Sau</button>
           </div>
         </div>
+      </div>
 
-        <div class="modal-foot">
-          <button type="button" class="btn-secondary" onclick="closeModal('modalAssignKeyToPackage')">Hủy</button>
-          <button type="submit" class="btn-primary">Lưu Thay Đổi</button>
-        </div>
-      </form>
+      <div class="modal-foot">
+        <button type="button" class="btn-secondary" onclick="closeAssignKeyPopup()">Đóng</button>
+      </div>
     </div>
   </div>
 
@@ -1204,7 +1351,7 @@
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7.5" cy="15.5" r="5.5"></circle><path d="m21 2-9.6 9.6"></path><path d="m15.5 7.5 3 3L22 7l-3-3"></path></svg>
           <span id="pkgKeysModalTitle">Danh sách License Key</span>
         </div>
-        <button class="btn-sm" onclick="closeModal('modalPackageKeys')">✕</button>
+        <button class="btn-sm" onclick="closeModal('modalPackageKeys')" title="Đóng"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
       </div>
 
       <!-- Header actions bar -->
@@ -1265,7 +1412,7 @@
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
           Cấu hình Chạy Ngầm Keep-Alive
         </div>
-        <button class="btn-sm" onclick="closeModal('modalKeepaliveConfig')">✕</button>
+        <button class="btn-sm" onclick="closeModal('modalKeepaliveConfig')" title="Đóng"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
       </div>
 
       <form onsubmit="submitKeepaliveConfig(event)">
@@ -1343,7 +1490,7 @@
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
           Kết Quả Chạy Thử xAI Live
         </div>
-        <button class="btn-sm" onclick="closeModal('modalTestResult')">✕</button>
+        <button class="btn-sm" onclick="closeModal('modalTestResult')" title="Đóng"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
       </div>
 
       <div id="testResultContent"></div>
@@ -1362,7 +1509,7 @@
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7.5" cy="15.5" r="5.5"></circle><path d="m21 2-9.6 9.6"></path><path d="m15.5 7.5 3 3L22 7l-3-3"></path></svg>
           Tạo Mã License Key Mới
         </div>
-        <button class="btn-sm" onclick="closeModal('createKeyModal')">✕</button>
+        <button class="btn-sm" onclick="closeModal('createKeyModal')" title="Đóng"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
       </div>
       <form onsubmit="submitCreateKey(event)">
         <div class="form-group">
@@ -1412,7 +1559,7 @@
     <div class="modal-box modal-lg">
       <div class="modal-head">
         <div class="modal-title">Nạp File Node JSON</div>
-        <button class="btn-sm" onclick="closeModal('uploadPackageModal')">✕</button>
+        <button class="btn-sm" onclick="closeModal('uploadPackageModal')" title="Đóng"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
       </div>
 
       <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 7px; padding: 12px 16px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between;">
@@ -1465,7 +1612,7 @@
     <div class="modal-box">
       <div class="modal-head">
         <div class="modal-title">Nhập Token Dạng Text</div>
-        <button class="btn-sm" onclick="closeModal('bulkImportModal')">✕</button>
+        <button class="btn-sm" onclick="closeModal('bulkImportModal')" title="Đóng"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
       </div>
       <form onsubmit="submitBulkImport(event)">
         <div class="form-group">
@@ -1485,7 +1632,7 @@
     <div class="modal-box" style="max-width: 440px;">
       <div class="modal-head">
         <div class="modal-title">Thêm 1 Node Mới</div>
-        <button class="btn-sm" onclick="closeModal('addNodeModal')">✕</button>
+        <button class="btn-sm" onclick="closeModal('addNodeModal')" title="Đóng"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
       </div>
       <form onsubmit="submitAddNode(event)">
         <div class="form-group">
@@ -1521,7 +1668,7 @@
 
   <!-- JavaScript Logic -->
   <script>
-    // 🛡️ Stealth Gate
+    // Stealth Gate
     const urlParams = new URLSearchParams(window.location.search);
     const rawSecret = urlParams.get('portal') || urlParams.get('key') || urlParams.get('secret') || '';
     let adminToken = sessionStorage.getItem('admin_token') || '';
@@ -1569,9 +1716,13 @@
       }
       const toast = document.createElement('div');
       const borderColor = type === 'success' ? '#10b981' : (type === 'warning' ? '#f59e0b' : '#ef4444');
-      const icon = type === 'success' ? '✔' : (type === 'warning' ? '⚠️' : '✖');
+      const icon = type === 'success'
+        ? '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>'
+        : (type === 'warning'
+          ? '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>'
+          : '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>');
       toast.style.cssText = `background:#18181b;border:1px solid ${borderColor};color:#f4f4f5;padding:10px 16px;border-radius:7px;font-size:12.5px;box-shadow:0 10px 25px rgba(0,0,0,0.5);display:flex;align-items:center;gap:8px;pointer-events:auto;transition:all 0.25s ease;`;
-      toast.innerHTML = `<span style="font-weight:700;color:${borderColor};">${icon}</span><span>${escapeHtml(message)}</span>`;
+      toast.innerHTML = `<span style="display:inline-flex;align-items:center;">${icon}</span><span>${escapeHtml(message)}</span>`;
       container.appendChild(toast);
       setTimeout(() => {
         toast.style.opacity = '0';
@@ -1647,9 +1798,9 @@
       document.getElementById('adminSidebar')?.classList.add('collapsed');
     }
 
-    // Tab Navigation & URL Routing
+    // Tab Navigation & URL Routing (4 Tabs: Dashboard, License Keys, Kho Gói Node, Cấu Hình Ngầm)
     function navigateToTab(tabName, skipPush = false) {
-      const tabs = ['dashboard', 'licensekeys', 'packagenode'];
+      const tabs = ['dashboard', 'licensekeys', 'packagenode', 'setting'];
       if (!tabs.includes(tabName)) tabName = 'dashboard';
 
       // Update Nav Items
@@ -1657,19 +1808,31 @@
       if (tabName === 'dashboard') document.getElementById('navDashboard')?.classList.add('active');
       if (tabName === 'licensekeys') document.getElementById('navLicenseKeys')?.classList.add('active');
       if (tabName === 'packagenode') document.getElementById('navPackageNode')?.classList.add('active');
+      if (tabName === 'setting') document.getElementById('navSetting')?.classList.add('active');
 
       // Update Panes
       document.getElementById('tabDashboard').style.display = tabName === 'dashboard' ? 'block' : 'none';
       document.getElementById('tabLicenseKeys').style.display = tabName === 'licensekeys' ? 'block' : 'none';
       document.getElementById('tabPackageNode').style.display = tabName === 'packagenode' ? 'block' : 'none';
+      document.getElementById('tabSetting').style.display = tabName === 'setting' ? 'block' : 'none';
 
       // Update Topbar Title
       const titles = {
         dashboard: 'Dashboard Tổng Quan',
         licensekeys: 'Quản Lý Mã License Key',
-        packagenode: 'Kho File & Gói Node'
+        packagenode: 'Kho File & Gói Node',
+        setting: 'Cấu Hình Tự Động Chạy Ngầm'
       };
       document.getElementById('pageTitleText').textContent = titles[tabName] || 'Quản trị hệ thống';
+
+      // Update Browser Title
+      const docTitles = {
+        dashboard: 'AI Claude Admin | Dashboard',
+        licensekeys: 'AI Claude Admin | License Keys',
+        packagenode: 'AI Claude Admin | Kho Gói Node',
+        setting: 'AI Claude Admin | Cấu Hình Ngầm'
+      };
+      document.title = docTitles[tabName] || 'AI Claude Admin';
 
       // Update URL with history.pushState
       if (!skipPush) {
@@ -1677,6 +1840,7 @@
         let newUrl = `/admin?portal=${portal}`;
         if (tabName === 'licensekeys') newUrl = `/admin?portal=${portal}/licensekeys`;
         if (tabName === 'packagenode') newUrl = `/admin?portal=${portal}/packagenode`;
+        if (tabName === 'setting') newUrl = `/admin?portal=${portal}/setting`;
         window.history.pushState({ tab: tabName }, '', newUrl);
       }
 
@@ -1693,6 +1857,8 @@
         navigateToTab('licensekeys', true);
       } else if (path.includes('/packagenode') || search.includes('packagenode') || hash.includes('packagenode')) {
         navigateToTab('packagenode', true);
+      } else if (path.includes('/setting') || search.includes('setting') || hash.includes('setting')) {
+        navigateToTab('setting', true);
       } else {
         navigateToTab('dashboard', true);
       }
@@ -1890,6 +2056,79 @@
           statusText.textContent = `Tự động kiểm tra và làm mới token lúc ${hourStr} VN định kỳ ${cfg.intervalDays || 2} ngày/lần.`;
         }
       }
+
+      // Sync Tab 4 Settings Form & Status
+      const tabAutoRun = document.getElementById('tabKeepaliveAutoRun');
+      const tabHour = document.getElementById('tabKeepaliveRunHour');
+      const tabInterval = document.getElementById('tabKeepaliveIntervalDays');
+      const tabThreshold = document.getElementById('tabKeepaliveFreshThreshold');
+
+      if (tabAutoRun) tabAutoRun.checked = isAct;
+      if (tabHour) {
+        // Populate 24 hours if empty
+        if (tabHour.children.length === 0) {
+          for (let h = 0; h < 24; h++) {
+            const opt = document.createElement('option');
+            opt.value = h;
+            opt.textContent = `${String(h).padStart(2, '0')}:00 (Giờ VN)`;
+            tabHour.appendChild(opt);
+          }
+        }
+        tabHour.value = cfg.runHour !== undefined ? cfg.runHour : 3;
+      }
+      if (tabInterval) tabInterval.value = cfg.intervalDays || 2;
+      if (tabThreshold) tabThreshold.value = cfg.freshThresholdHours || 48;
+
+      // Status in Tab 4
+      const lastTimeEl = document.getElementById('tabKeepaliveLastTime');
+      const lastPkgsEl = document.getElementById('tabKeepaliveLastPkgs');
+      const lastRefEl = document.getElementById('tabKeepaliveLastRefreshed');
+      const lastSkipEl = document.getElementById('tabKeepaliveLastSkipped');
+      const lastDurEl = document.getElementById('tabKeepaliveLastDuration');
+
+      if (lastTimeEl) {
+        lastTimeEl.textContent = (lastRun && lastRun.timestamp) ? new Date(lastRun.timestamp).toLocaleString('vi-VN') : 'Chưa có nhật ký';
+      }
+      if (lastPkgsEl) lastPkgsEl.textContent = `${lastRun ? (lastRun.packagesProcessed || 0) : 0} gói`;
+      if (lastRefEl) lastRefEl.textContent = `${lastRun ? (lastRun.refreshed || 0) : 0} node`;
+      if (lastSkipEl) lastSkipEl.textContent = `${lastRun ? (lastRun.skipped || 0) : 0} node`;
+      if (lastDurEl) lastDurEl.textContent = `${lastRun ? (lastRun.durationMs || 0) : 0} ms`;
+    }
+
+    async function saveKeepaliveConfigFromTab(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnTabSaveKeepalive');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner" style="width: 12px; height: 12px;"></span> Đang lưu...';
+      }
+
+      const payload = {
+        autoRunEnabled: document.getElementById('tabKeepaliveAutoRun').checked,
+        runHour: parseInt(document.getElementById('tabKeepaliveRunHour').value, 10),
+        intervalDays: parseInt(document.getElementById('tabKeepaliveIntervalDays').value, 10),
+        freshThresholdHours: parseInt(document.getElementById('tabKeepaliveFreshThreshold').value, 10)
+      };
+
+      try {
+        const res = await fetch('/api/admin?action=saveKeepAliveConfig', {
+          method: 'POST',
+          headers: authHeaders(),
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Lỗi lưu cấu hình');
+        window.currentKeepaliveConfig = data.config;
+        showAdminToast('Đã lưu cấu hình tự động chạy ngầm thành công!', 'success');
+        await fetchPackages();
+      } catch (err) {
+        showAdminToast(err.message, 'error');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> <span>Lưu Cấu Hình</span>';
+        }
+      }
     }
 
     // Keepalive Config Modal
@@ -1942,6 +2181,12 @@
         btn.innerHTML = '<span class="spinner" style="width: 12px; height: 12px;"></span> Đang chạy...';
       }
 
+      const btnTab = document.getElementById('btnSettingTriggerKeepalive');
+      if (btnTab) {
+        btnTab.disabled = true;
+        btnTab.innerHTML = '<span class="spinner" style="width: 12px; height: 12px;"></span> Đang chạy...';
+      }
+
       try {
         const res = await fetch('/api/cron-keepalive', { method: 'POST', headers: authHeaders() });
         const data = await res.json();
@@ -1955,9 +2200,14 @@
       } catch (err) {
         showAdminToast('Lỗi kết nối: ' + err.message, 'error');
       } finally {
+        const boltSvg = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg> <span>Chạy ngay</span>';
         if (btn) {
           btn.disabled = false;
-          btn.innerHTML = '⚡ Chạy ngay';
+          btn.innerHTML = boltSvg;
+        }
+        if (btnTab) {
+          btnTab.disabled = false;
+          btnTab.innerHTML = boltSvg;
         }
       }
     }
@@ -1994,7 +2244,7 @@
       tbody.innerHTML = pagedPackages.map(p => {
         const assignedKeys = (keysData || []).filter(k => (k.packageId || 'default') === p.id);
         const keysText = assignedKeys.length > 0
-          ? `<button class="btn-link-underline" onclick="openPackageKeysModal('${escapeHtml(p.id)}')">🔑 Xem ${assignedKeys.length} Key đang dùng</button>`
+          ? `<button class="btn-link-underline" onclick="openPackageKeysModal('${escapeHtml(p.id)}')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:-1px; margin-right:3px;"><circle cx="7.5" cy="15.5" r="5.5"></circle><path d="m21 2-9.6 9.6"></path><path d="m15.5 7.5 3 3L22 7l-3-3"></path></svg>Xem ${assignedKeys.length} Key đang dùng</button>`
           : `<button class="btn-link-underline" onclick="openAssignKeyModalForPkg('${escapeHtml(p.id)}')">+ Gán Key</button>`;
 
         const isDefaultBadge = p.isDefault ? '<span class="status-badge status-active" style="margin-left: 6px; font-size: 10px;">Mặc định</span>' : '';
@@ -2011,7 +2261,7 @@
             <td>${keysText}</td>
             <td>
               <button class="btn-sm" id="btnTestPkg-${escapeHtml(p.id)}" onclick="testPackageNode('${escapeHtml(p.id)}')">
-                ▶ Chạy thử
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> <span>Chạy thử</span>
               </button>
             </td>
             <td class="nowrap">${p.updatedAt ? new Date(p.updatedAt).toLocaleDateString('vi-VN') : '—'}</td>
@@ -2105,63 +2355,166 @@
       renderModalPackageKeysTable();
     }
 
-    // Modal Assign Key into Package (Interactive selection)
-    function openAssignKeyModalForPkg(pkgId) {
-      populatePackageDropdowns();
-      populateKeyDropdowns();
-      
-      const pkgSelect = document.getElementById('assignTargetPackageSelect');
-      if (pkgSelect && pkgId) pkgSelect.value = pkgId;
+    // Modal Assign Key Popup (Spacious, Searchable, with Pagination)
+    let assignModalTargetPkgId = 'default';
+    let assignModalSearchQuery = '';
+    let assignModalCurrentPage = 1;
+    const assignModalPerPage = 6;
+    let assignModalFilteredKeys = [];
 
-      openModal('modalAssignKeyToPackage');
+    function openAssignKeyModalForPkg(pkgId) {
+      assignModalTargetPkgId = pkgId || 'default';
+      assignModalSearchQuery = '';
+      assignModalCurrentPage = 1;
+
+      // Populate Target Package Dropdown inside Modal
+      const targetSelect = document.getElementById('assignModalTargetPkgSelect');
+      if (targetSelect) {
+        targetSelect.innerHTML = (packagesData || []).map(p => `
+          <option value="${escapeHtml(p.id)}" ${p.id === assignModalTargetPkgId ? 'selected' : ''}>
+            ${escapeHtml(p.name)} (${(p.nodeCount || 0).toLocaleString('vi-VN')} node)
+          </option>
+        `).join('');
+      }
+
+      const searchInput = document.getElementById('assignModalSearchInput');
+      if (searchInput) searchInput.value = '';
+
+      renderAssignModalTable();
+      openModal('modalAssignKeyPopup');
     }
     const openAssignModalFromBtn = () => openAssignKeyModalForPkg('default');
 
-    function populateKeyDropdowns() {
-      const select = document.getElementById('assignTargetKeySelect');
-      if (!select) return;
+    function onAssignTargetPkgChanged(val) {
+      assignModalTargetPkgId = val;
+      renderAssignModalTable();
+    }
 
-      if (keysData.length === 0) {
-        select.innerHTML = '<option value="">Chưa có License Key nào</option>';
+    function onAssignModalSearch(val) {
+      assignModalSearchQuery = (val || '').toLowerCase().trim();
+      assignModalCurrentPage = 1;
+      renderAssignModalTable();
+    }
+
+    function changeAssignModalPage(delta) {
+      assignModalCurrentPage += delta;
+      renderAssignModalTable();
+    }
+
+    function renderAssignModalTable() {
+      const tbody = document.getElementById('assignModalTableBody');
+      const footer = document.getElementById('assignModalTableFooter');
+      const summary = document.getElementById('assignModalPageSummary');
+      const info = document.getElementById('assignModalPageInfo');
+      const prevBtn = document.getElementById('assignModalPrevBtn');
+      const nextBtn = document.getElementById('assignModalNextBtn');
+
+      // Filter Keys
+      assignModalFilteredKeys = (keysData || []).filter(k => {
+        if (!assignModalSearchQuery) return true;
+        const q = assignModalSearchQuery;
+        return (k.key || '').toLowerCase().includes(q) || (k.label || '').toLowerCase().includes(q);
+      });
+
+      if (assignModalFilteredKeys.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 24px; color: var(--text-muted);">Không tìm thấy License Key nào phù hợp.</td></tr>';
+        if (footer) footer.style.display = 'none';
         return;
       }
 
-      select.innerHTML = keysData.map(k => {
-        const pkg = packagesData.find(p => p.id === (k.packageId || 'default'));
-        const pkgName = pkg ? pkg.name : 'Kho Mặc Định';
-        return `<option value="${escapeHtml(k.id)}">${escapeHtml(k.key)} — ${escapeHtml(k.label || 'Khách hàng')} (Đang ở: ${escapeHtml(pkgName)})</option>`;
+      if (footer) footer.style.display = 'flex';
+      const totalPages = Math.ceil(assignModalFilteredKeys.length / assignModalPerPage) || 1;
+      if (assignModalCurrentPage > totalPages) assignModalCurrentPage = totalPages;
+      if (assignModalCurrentPage < 1) assignModalCurrentPage = 1;
+
+      const startIdx = (assignModalCurrentPage - 1) * assignModalPerPage;
+      const endIdx = Math.min(startIdx + assignModalPerPage, assignModalFilteredKeys.length);
+      const pagedKeys = assignModalFilteredKeys.slice(startIdx, endIdx);
+
+      summary.textContent = `Hiển thị ${startIdx + 1} - ${endIdx} trên ${assignModalFilteredKeys.length} key`;
+      info.textContent = `Trang ${assignModalCurrentPage} / ${totalPages}`;
+      prevBtn.disabled = assignModalCurrentPage <= 1;
+      nextBtn.disabled = assignModalCurrentPage >= totalPages;
+
+      tbody.innerHTML = pagedKeys.map(k => {
+        const curPkgId = k.packageId || 'default';
+        const curPkg = (packagesData || []).find(p => p.id === curPkgId);
+        const curPkgName = curPkg ? curPkg.name : (curPkgId === 'default' ? 'Kho Node Mặc Định' : curPkgId);
+        const isAlreadyInTarget = curPkgId === assignModalTargetPkgId;
+
+        const actionHtml = isAlreadyInTarget
+          ? `<span class="badge-linked"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Đang liên kết</span>`
+          : `<button class="btn-primary-sm" onclick="doAssignKeyToPackage('${escapeHtml(k.id)}', '${escapeHtml(k.key)}')">+ Gán Vào Gói</button>`;
+
+        return `
+          <tr>
+            <td>
+              <span class="mono-cell" style="font-weight: 600; font-size: 12.5px;">${escapeHtml(k.key)}</span>
+            </td>
+            <td>
+              <span style="font-weight: 500; color: var(--text-primary); font-size: 12.5px;">${escapeHtml(k.label || 'Chưa đặt tên')}</span>
+            </td>
+            <td>
+              <span style="font-size: 12px; color: var(--text-secondary); background: var(--bg-card); padding: 2px 7px; border-radius: 4px; border: 1px solid var(--border-subtle);">${escapeHtml(curPkgName)}</span>
+            </td>
+            <td>
+              <span class="status-badge ${k.active !== false ? 'status-active' : 'status-suspended'}">
+                ${k.active !== false ? 'Hoạt động' : 'Tạm khóa'}
+              </span>
+            </td>
+            <td style="text-align: right;" class="nowrap">
+              ${actionHtml}
+            </td>
+          </tr>
+        `;
       }).join('');
     }
 
-    async function submitAssignKeyToPackage(e) {
-      e.preventDefault();
-      const keyId = document.getElementById('assignTargetKeySelect').value;
-      const packageId = document.getElementById('assignTargetPackageSelect').value;
-
-      if (!keyId || !packageId) {
-        showAdminToast('Vui lòng chọn Key và Gói Node', 'warning');
-        return;
-      }
+    async function doAssignKeyToPackage(keyId, keyString) {
+      const targetPkg = (packagesData || []).find(p => p.id === assignModalTargetPkgId);
+      const pkgName = targetPkg ? targetPkg.name : 'Kho Node Mặc Định';
 
       try {
         const res = await fetch('/api/admin?action=assignKeyPackage', {
           method: 'POST',
           headers: authHeaders(),
-          body: JSON.stringify({ keyId, packageId })
+          body: JSON.stringify({ keyId, packageId: assignModalTargetPkgId })
         });
         const data = await res.json();
         if (res.ok) {
-          closeModal('modalAssignKeyToPackage');
-          showAdminToast('Đã gán Key vào gói node thành công!', 'success');
-          await fetchPackages();
-          await fetchKeys();
-          if (currentViewingPkgId) openPackageKeysModal(currentViewingPkgId);
+          // Update in local keysData
+          const kObj = (keysData || []).find(k => k.id === keyId);
+          if (kObj) kObj.packageId = assignModalTargetPkgId;
+
+          showAdminToast(`Đã gán thành công key ${keyString} vào "${pkgName}"!`, 'success');
+          renderAssignModalTable();
+
+          // Also update parent package keys modal if open in background
+          if (currentViewingPkgId) {
+            currentPkgKeysList = (keysData || []).filter(k => (k.packageId || 'default') === currentViewingPkgId);
+            renderModalPackageKeysTable();
+          }
+
+          // Background re-sync
+          fetchPackages();
         } else {
           showAdminToast(data.error || 'Lỗi gán key', 'error');
         }
       } catch (err) {
         showAdminToast('Lỗi: ' + err.message, 'error');
       }
+    }
+
+    function closeAssignKeyPopup() {
+      closeModal('modalAssignKeyPopup');
+      if (currentViewingPkgId) {
+        currentPkgKeysList = (keysData || []).filter(k => (k.packageId || 'default') === currentViewingPkgId);
+        renderModalPackageKeysTable();
+      }
+    }
+
+    function populateKeyDropdowns() {
+      // Kept for backward compatibility
     }
 
     function createNewKeyForCurrentPkg() {
@@ -2213,7 +2566,7 @@
         if (data.ok) {
           content.innerHTML = `
             <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 7px; padding: 12px; margin-bottom: 14px;">
-              <div style="font-weight: 700; color: #10b981; font-size: 14px;">✔ HTTP 200 OK — Hoạt Động Hoàn Hảo</div>
+              <div style="font-weight: 700; color: #10b981; font-size: 14px; display: flex; align-items: center; gap: 6px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> HTTP 200 OK — Hoạt Động Hoàn Hảo</div>
               <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 3px;">Node đã kết nối thành công tới máy chủ xAI.</div>
             </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
@@ -2223,7 +2576,7 @@
               </div>
               <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px;">
                 <div style="font-size: 11px; color: var(--text-muted);">Độ trễ:</div>
-                <div style="font-weight: 700; font-size: 13px; color: #10b981;">⚡ ${data.latencyMs} ms</div>
+                <div style="font-weight: 700; font-size: 13px; color: #10b981; display: flex; align-items: center; gap: 4px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg> ${data.latencyMs} ms</div>
               </div>
             </div>
             <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px;">
@@ -2236,7 +2589,7 @@
         } else {
           content.innerHTML = `
             <div style="background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 7px; padding: 12px;">
-              <div style="font-weight: 700; color: #ef4444; font-size: 14px;">✖ Thất bại (Mã ${data.status || 500})</div>
+              <div style="font-weight: 700; color: #ef4444; font-size: 14px; display: flex; align-items: center; gap: 6px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> Thất bại (Mã ${data.status || 500})</div>
               <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 3px;">${escapeHtml(data.error || 'Lỗi kết nối xAI')}</div>
             </div>
           `;
@@ -2247,7 +2600,7 @@
       } finally {
         if (btn) {
           btn.disabled = false;
-          btn.innerHTML = '▶ Chạy thử';
+          btn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> <span>Chạy thử</span>';
         }
       }
     }
@@ -2298,7 +2651,7 @@
             <td>
               <div style="display: flex; align-items: center; gap: 6px;">
                 <span class="mono-cell" style="font-weight: 600;">${escapeHtml(k.key)}</span>
-                <button class="btn-sm" onclick="copyText('${escapeHtml(k.key)}')" title="Copy" style="padding: 2px 5px;">📋</button>
+                <button class="btn-sm" onclick="copyText('${escapeHtml(k.key)}')" title="Sao chép" style="padding: 3px 6px; display: inline-flex; align-items: center;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
               </div>
             </td>
             <td><strong style="color: var(--text-primary);">${escapeHtml(k.label || 'Khách hàng')}</strong></td>
