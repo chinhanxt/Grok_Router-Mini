@@ -1263,9 +1263,9 @@
     <aside class="admin-sidebar" id="adminSidebar">
       <div class="sidebar-head">
         <div class="sidebar-brand">
-          <div class="brand-avatar-container" onclick="handleBrandClick(event)" title="Grok Router (chinhanxt)">
+          <div class="brand-avatar-container" onclick="handleBrandClick(event)">
             <img src="https://github.com/chinhanxt.png" alt="chinhanxt" class="brand-avatar" onerror="this.src='https://avatars.githubusercontent.com/u/10202759?v=4'" />
-            <div class="brand-expand-overlay" title="Mở rộng sidebar">
+            <div class="brand-expand-overlay">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
             </div>
           </div>
@@ -1281,7 +1281,7 @@
           <span class="nav-icon">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
           </span>
-          <span class="nav-label">Dashboard</span>
+          <span class="nav-label">Tổng Quan</span>
         </a>
 
         <a href="javascript:void(0)" class="sidebar-nav-item" id="navLicenseKeys" onclick="navigateToTab('licensekeys')">
@@ -1324,12 +1324,12 @@
           <button class="mobile-menu-btn" onclick="toggleMobileSidebar()" title="Menu">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
           </button>
-          <h1 class="page-title" id="pageTitleText">Dashboard Tổng Quan</h1>
+          <h1 class="page-title" id="pageTitleText">Tổng Quan</h1>
         </div>
         <div class="topbar-right">
           <div id="keepaliveTopPill" class="keepalive-pill">
             <span class="pill-dot"></span>
-            <span id="keepaliveTopText">Keep-Alive: Đang kết nối</span>
+            <span id="keepaliveTopText">Duy trì Token: Đang kết nối</span>
           </div>
           <button class="btn-secondary" onclick="loadAllData()" title="Làm mới dữ liệu">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
@@ -1351,22 +1351,22 @@
         <div id="tabDashboard" class="tab-pane">
           <div class="stats-grid">
             <div class="stat-card">
-              <div class="stat-label">License Key Đã Cấp</div>
+              <div class="stat-label">License Key</div>
               <div class="stat-value" id="dashTotalKeys">0</div>
-              <div class="stat-sub" id="dashKeysSub">0 đang kích hoạt</div>
+              <div class="stat-sub" id="dashKeysSub">0 hoạt động</div>
             </div>
             <div class="stat-card">
-              <div class="stat-label">Tổng Kho Node xAI</div>
+              <div class="stat-label">Kho Node xAI</div>
               <div class="stat-value" id="dashTotalNodes">0</div>
               <div class="stat-sub">Sẵn sàng điều phối</div>
             </div>
             <div class="stat-card">
-              <div class="stat-label">Gói Node Phân Phối</div>
+              <div class="stat-label">Gói Node</div>
               <div class="stat-value" id="dashTotalPackages">0</div>
               <div class="stat-sub">Kho gói độc lập</div>
             </div>
             <div class="stat-card stat-card-highlight">
-              <div class="stat-label">Chạy Ngầm Keep-Alive</div>
+              <div class="stat-label">Duy Trì Token</div>
               <div class="stat-value" id="dashKeepaliveBadge" style="font-size: 16px;">Bật 24/7</div>
               <div class="stat-sub" id="dashKeepaliveSub">Lịch quét: --:-- VN</div>
             </div>
@@ -1376,7 +1376,7 @@
           <div class="keepalive-banner">
             <div class="keepalive-info">
               <div class="keepalive-title-row">
-                <span style="color: var(--accent-primary); display: inline-flex; vertical-align: -2px; margin-right: 4px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></span><strong>Tự Động Duy Trì Node (Keep-Alive 24/7)</strong>
+                <span style="color: var(--accent-primary); display: inline-flex; vertical-align: -2px; margin-right: 4px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></span><strong>Duy Trì Token Tự Động (24/7)</strong>
                 <span class="status-badge status-active" id="keepaliveBadge">Bật</span>
               </div>
               <div class="keepalive-desc" id="keepaliveStatusText">
@@ -1420,7 +1420,6 @@
           <div class="toolbar-actions">
             <div>
               <h2 class="toolbar-title">Quản Lý License Key</h2>
-              <div style="font-size: 12px; color: var(--text-muted);">Cấp mã bản quyền và phân bổ kho node cho từng người dùng.</div>
             </div>
             <div style="display: flex; gap: 8px;">
               <button class="btn-secondary" onclick="openAssignModalFromBtn()" title="Gán hoặc đổi gói node cho License Key">
@@ -1473,15 +1472,13 @@
               <polyline points="17 8 12 3 7 8"></polyline>
               <line x1="12" y1="3" x2="12" y2="15"></line>
             </svg>
-            <div style="font-weight: 600; font-size: 13.5px; margin-bottom: 3px;">Kéo thả file .json vào đây hoặc bấm để tải lên</div>
-            <div style="font-size: 11.5px; color: var(--text-muted);">Hỗ trợ file xuất token hàng loạt. Tùy chọn Ghi đè hoặc Tạo gói độc lập.</div>
+            <div style="font-weight: 600; font-size: 13.5px;">Kéo thả file .json vào đây hoặc bấm để tải lên</div>
             <input type="file" id="jsonFileInput" accept=".json" style="display: none;" onchange="handleFileInputChange(this)" />
           </div>
 
           <div class="toolbar-actions">
             <div>
-              <h2 class="toolbar-title">Danh Sách File & Gói Node</h2>
-              <div style="font-size: 12px; color: var(--text-muted);">Quản lý kho tài khoản xAI được định tuyến cho các License Key.</div>
+              <h2 class="toolbar-title">Danh Sách Gói Node</h2>
             </div>
             <div style="display: flex; gap: 8px;">
               <button class="btn-secondary" onclick="openAssignKeyModalForPkg('default')">
@@ -1527,15 +1524,12 @@
         <!-- ==================== TAB 4: CẤU HÌNH NGẦM (KEEP-ALIVE) ==================== -->
         <div id="tabSetting" class="tab-pane" style="display: none;">
           <!-- Top Banner -->
-          <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 22px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
-            <div>
-              <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
-                <span style="color: var(--accent-primary); display: flex;">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                </span>
-                <h2 style="font-size: 16px; font-weight: 700; margin: 0;">Tự Động Duy Trì Node & OAuth Token (Keep-Alive)</h2>
-              </div>
-              <p style="font-size: 12.5px; color: var(--text-secondary); margin: 0;">Hệ thống tự động đánh thức các kho node và làm mới Refresh Token xAI định kỳ ngầm, chống hết hạn (Inactivity Expiration).</p>
+          <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="color: var(--accent-primary); display: flex;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+              </span>
+              <h2 style="font-size: 16px; font-weight: 700; margin: 0;">Cấu Hình Duy Trì Token Tự Động</h2>
             </div>
             <div style="display: flex; gap: 10px;">
               <button class="btn-primary" onclick="triggerManualKeepAlive()" id="btnSettingTriggerKeepalive">
@@ -1554,13 +1548,10 @@
               </h3>
 
               <form onsubmit="saveKeepaliveConfigFromTab(event)">
-                <div class="form-group" style="margin-bottom: 16px;">
+                <div class="form-group" style="margin-bottom: 18px;">
                   <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none;">
                     <input type="checkbox" id="tabKeepaliveAutoRun" style="width: 17px; height: 17px; accent-color: var(--accent-primary);" />
-                    <div>
-                      <span style="font-size: 13.5px; font-weight: 600; color: var(--text-primary);">Kích hoạt chế độ Tự Động Quét Ngầm</span>
-                      <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 2px;">Vercel Cron sẽ tự động ping làm mới token ngầm theo lịch bên dưới.</div>
-                    </div>
+                    <span style="font-size: 13.5px; font-weight: 600; color: var(--text-primary);">Kích hoạt chế độ Tự Động Quét Ngầm</span>
                   </label>
                 </div>
 
@@ -1582,8 +1573,7 @@
                       <span>Giờ khác ▾</span>
                     </button>
                   </div>
-                  <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 5px;">Khuyến nghị từ 02:00 - 05:00 sáng khi lưu lượng truy cập thấp nhất.</div>
-                </div>
+                                  </div>
 
                 <div class="form-group" style="margin-bottom: 18px;">
                   <label class="form-label" style="font-size: 12.5px; font-weight: 600;">Chu kỳ quét tự động:</label>
@@ -1603,8 +1593,7 @@
                       <div class="config-pill-desc">Tiết kiệm lượt gọi</div>
                     </div>
                   </div>
-                  <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 6px;">xAI hết hạn token sau 7 ngày không hoạt động. Quét 2 ngày/lần đảm bảo an toàn tuyệt đối.</div>
-                </div>
+                                  </div>
 
                 <div class="form-group" style="margin-bottom: 22px;">
                   <label class="form-label" style="font-size: 12.5px; font-weight: 600;">Ngưỡng làm mới token trước khi hết hạn:</label>
@@ -1665,9 +1654,7 @@
                 </div>
               </div>
 
-              <div style="padding: 12px 14px; background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border); font-size: 12px; color: var(--text-secondary); line-height: 1.5;">
-                <span style="color: var(--accent-primary); font-weight: 600;">Ghi chú:</span> Lịch chạy ngầm được kích hoạt tự động bởi Vercel Cron theo cấu hình giờ Việt Nam. Bạn cũng có thể bấm "Chạy Quét Ngay" bất cứ khi nào cần làm mới khẩn cấp.
-              </div>
+
             </div>
           </div>
         </div>
@@ -2329,10 +2316,10 @@
 
       // Update Topbar Title
       const titles = {
-        dashboard: 'Dashboard Tổng Quan',
-        licensekeys: 'Quản Lý Mã License Key',
-        packagenode: 'Kho File & Gói Node',
-        setting: 'Cấu Hình Tự Động Chạy Ngầm'
+        dashboard: 'Tổng Quan',
+        licensekeys: 'Quản Lý License Key',
+        packagenode: 'Danh Sách Gói Node',
+        setting: 'Cấu Hình Duy Trì Token'
       };
       document.getElementById('pageTitleText').textContent = titles[tabName] || 'Quản trị hệ thống';
 
@@ -2530,7 +2517,7 @@
                 <div style="font-size: 11px; color: var(--text-muted);">${escapeHtml(k.label || 'Khách hàng')}</div>
               </div>
               <span class="status-badge ${k.active !== false ? 'status-active' : 'status-suspended'}">
-                ${k.active !== false ? 'Active' : 'Khóa'}
+                ${k.active !== false ? 'Hoạt động' : 'Tạm khóa'}
               </span>
             </div>
           `).join('');
@@ -2557,7 +2544,7 @@
         dashBadge.style.color = isAct ? 'var(--status-active)' : 'var(--status-suspended)';
       }
       if (subText) subText.textContent = `Lịch quét: ${hourStr} VN (${cfg.intervalDays || 2} ngày/lần)`;
-      if (topPill) topPill.textContent = `Keep-Alive: ${isAct ? 'Bật (' + hourStr + ')' : 'Tắt'}`;
+      if (topPill) topPill.textContent = `Duy trì: ${isAct ? 'Bật (' + hourStr + ')' : 'Tắt'}`;
 
       if (statusText) {
         if (lastRun && lastRun.timestamp) {
@@ -2768,7 +2755,7 @@
         if (!res.ok) throw new Error(data.error || 'Lỗi lưu cấu hình');
         window.currentKeepaliveConfig = data.config;
         closeModal('modalKeepaliveConfig');
-        showAdminToast('Đã lưu cấu hình Keep-Alive ngầm thành công!', 'success');
+        showAdminToast('Đã lưu cấu hình duy trì token thành công!', 'success');
         await fetchPackages();
       } catch (err) {
         showAdminToast(err.message, 'error');
@@ -2795,7 +2782,7 @@
         const res = await fetch('/api/cron-keepalive', { method: 'POST', headers: authHeaders() });
         const data = await res.json();
         if (!res.ok) {
-          showAdminToast(data.error || 'Lỗi chạy Keep-Alive', 'error');
+          showAdminToast(data.error || 'Lỗi duy trì token', 'error');
           return;
         }
         const s = data.summary || {};
