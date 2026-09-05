@@ -39,6 +39,7 @@ test('Setup routes return correct bash, powershell, and cmd scripts with dynamic
     assert.ok(bashText.includes('claude-opus-5'));
     assert.ok(bashText.includes('claude-haiku-4-5'));
     assert.ok(bashText.includes('settings.json'));
+    assert.ok(bashText.includes('"alwaysThinkingEnabled": false'));
     assert.ok(bashText.includes('CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC="1"'));
 
     // Test alias: /install.sh
@@ -59,6 +60,7 @@ test('Setup routes return correct bash, powershell, and cmd scripts with dynamic
     assert.ok(psText.includes('claude-opus-5'));
     assert.ok(psText.includes('claude-haiku-4-5'));
     assert.ok(psText.includes('settings.json'));
+    assert.ok(psText.includes('"alwaysThinkingEnabled": false'));
     assert.ok(psText.includes('SetEnvironmentVariable'));
 
     // 3. Windows CMD script: /claude.cmd

@@ -53,12 +53,13 @@ if [ ! -f "$CLAUDE_SETTINGS" ]; then
     "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1"
   },
   "permissions": { "allow": [], "deny": [] },
-  "alwaysThinkingEnabled": true
+  "alwaysThinkingEnabled": false
 }
 JSON
 else
   sed "\${SED_INPLACE[@]}" 's|"ANTHROPIC_BASE_URL": "[^"]*"|"ANTHROPIC_BASE_URL": "${baseUrl}"|g' "$CLAUDE_SETTINGS" 2>/dev/null || true
   sed "\${SED_INPLACE[@]}" 's|"ANTHROPIC_AUTH_TOKEN": "[^"]*"|"ANTHROPIC_AUTH_TOKEN": "${key}"|g' "$CLAUDE_SETTINGS" 2>/dev/null || true
+  sed "\${SED_INPLACE[@]}" 's|"alwaysThinkingEnabled": true|"alwaysThinkingEnabled": false|g' "$CLAUDE_SETTINGS" 2>/dev/null || true
 fi
 
 RC_FILE=""
@@ -132,7 +133,7 @@ $jsonConfig = @"
     "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1"
   },
   "permissions": { "allow": [], "deny": [] },
-  "alwaysThinkingEnabled": true
+  "alwaysThinkingEnabled": false
 }
 "@
 Set-Content $settingsFile -Value $jsonConfig -Encoding UTF8
