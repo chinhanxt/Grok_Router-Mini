@@ -156,7 +156,8 @@ export default async function handler(req, res) {
     let totalNodes = 0;
     for (const p of packages) totalNodes += (p.nodeCount || 0);
 
-    return res.status(200).json({ ok: true, packages, totalNodes, keys, hasKv: hasKvConfigured() });
+    const lastKeepAlive = (await kvGet('keepalive_last_run')) || null;
+    return res.status(200).json({ ok: true, packages, totalNodes, keys, lastKeepAlive, hasKv: hasKvConfigured() });
   }
 
   // 5.2. Upload / Import Node Package (Hỗ trợ 2 option: Đè lên node hiện tại hoặc tạo mới)

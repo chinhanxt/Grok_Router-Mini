@@ -5,5 +5,16 @@
   "rewrites": [
     { "source": "/install.ps1", "destination": "/api/install?type=ps1" },
     { "source": "/install.sh", "destination": "/api/install?type=sh" }
+  ],
+  "functions": {
+    "api/cron-keepalive.js": {
+      "maxDuration": 60
+    }
+  },
+  "crons": [
+    {
+      "path": "/api/cron-keepalive",
+      "schedule": "0 20 * * *"
+    }
   ]
 }
