@@ -961,8 +961,8 @@
     .toolbar-actions {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 12px;
+      justify-content: flex-end;
+      gap: 8px;
       margin-bottom: 16px;
       flex-wrap: wrap;
     }
@@ -1418,19 +1418,14 @@
         <!-- ==================== TAB 2: LICENSE KEYS ==================== -->
         <div id="tabLicenseKeys" class="tab-pane" style="display: none;">
           <div class="toolbar-actions">
-            <div>
-              <h2 class="toolbar-title">Quản Lý License Key</h2>
-            </div>
-            <div style="display: flex; gap: 8px;">
-              <button class="btn-secondary" onclick="openAssignModalFromBtn()" title="Gán hoặc đổi gói node cho License Key">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
-                Gán Gói Cho Key
-              </button>
-              <button class="btn-primary" onclick="openCreateKeyModal()">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                Tạo Mã License
-              </button>
-            </div>
+            <button class="btn-secondary" onclick="openAssignModalFromBtn()" title="Gán hoặc đổi gói node cho License Key">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+              Gán Gói Cho Key
+            </button>
+            <button class="btn-primary" onclick="openCreateKeyModal()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              Tạo Mã License
+            </button>
           </div>
 
           <div class="table-frame">
@@ -1477,18 +1472,13 @@
           </div>
 
           <div class="toolbar-actions">
-            <div>
-              <h2 class="toolbar-title">Danh Sách Gói Node</h2>
-            </div>
-            <div style="display: flex; gap: 8px;">
-              <button class="btn-secondary" onclick="openAssignKeyModalForPkg('default')">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7.5" cy="15.5" r="5.5"></circle><path d="m21 2-9.6 9.6"></path><path d="m15.5 7.5 3 3L22 7l-3-3"></path></svg>
-                Gán Key Vào Gói
-              </button>
-              <button class="btn-secondary" onclick="openAddNodeModal()">+ Thêm 1 Node</button>
-              <button class="btn-secondary" onclick="openBulkImportModal()">+ Nhập Token text</button>
-              <button class="btn-primary" onclick="document.getElementById('jsonFileInput').click()">Tải File JSON</button>
-            </div>
+            <button class="btn-secondary" onclick="openAssignKeyModalForPkg('default')">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7.5" cy="15.5" r="5.5"></circle><path d="m21 2-9.6 9.6"></path><path d="m15.5 7.5 3 3L22 7l-3-3"></path></svg>
+              Gán Key Vào Gói
+            </button>
+            <button class="btn-secondary" onclick="openAddNodeModal()">+ Thêm 1 Node</button>
+            <button class="btn-secondary" onclick="openBulkImportModal()">+ Nhập Token text</button>
+            <button class="btn-primary" onclick="document.getElementById('jsonFileInput').click()">Tải File JSON</button>
           </div>
 
           <!-- Packages Table -->
