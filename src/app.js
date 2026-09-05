@@ -16,7 +16,7 @@ const __dirname = path.dirname(__filename);
 const publicDir = path.resolve(__dirname, '../public');
 
 export function createApp(options = {}) {
-  const { config, pool, userService, proxyService, nodeHealthService, licenseService } = options;
+  const { config, pool, userService, proxyService, nodeHealthService, licenseService, storage = options.storage || pool?.storage } = options;
   const authMiddleware = options.authMiddleware || (userService ? createAuthMiddleware(userService) : null);
   const app = express();
 
@@ -34,12 +34,31 @@ export function createApp(options = {}) {
 
   const activityLogs = [];
   const MAX_LOGS = 100;
+  const logsFile = config?.LOGS_FILE || (config?.DATA_DIR ? path.join(config.DATA_DIR, 'logs.json') : null);
+
+  if (storage && logsFile) {
+    storage.read(logsFile, []).then(saved => {
+      if (Array.isArray(saved) && saved.length > 0) {
+        activityLogs.push(...saved.slice(0, MAX_LOGS));
+      }
+    }).catch(() => {});
+  }
+
+  let saveLogsTimer = null;
+  const persistLogs = () => {
+    if (!storage || !logsFile) return;
+    if (saveLogsTimer) return;
+    saveLogsTimer = setTimeout(() => {
+      saveLogsTimer = null;
+      storage.write(logsFile, activityLogs).catch(() => {});
+    }, 1500);
+  };
 
   app.use((req, res, next) => {
     const start = Date.now();
     res.on('finish', () => {
-      const isStatic = req.path === '/' || req.path.endsWith('.html') || req.path.endsWith('.ico');
-      if (!isStatic) {
+      const isStatic = req.path === '/' || req.path.endsWith('.html') || req.path.endsWith('.ico') || req.path.endsWith('.js') || req.path.endsWith('.css');
+      if (!isStatic && !req.path.startsWith('/api/logs')) {
         activityLogs.unshift({
           id: crypto.randomUUID ? crypto.randomUUID().slice(0, 8) : String(Date.now()),
           timestamp: new Date().toLocaleTimeString('vi-VN', { hour12: false }),
@@ -50,6 +69,7 @@ export function createApp(options = {}) {
           model: req.body?.model || null
         });
         if (activityLogs.length > MAX_LOGS) activityLogs.pop();
+        persistLogs();
       }
     });
     next();
@@ -84,8 +104,11 @@ export function createApp(options = {}) {
 
   const adminGuard = authMiddleware?.requireAdmin || ((req, res) => res.status(403).json({ error: 'Chỉ Admin mới có quyền truy cập.' }));
   app.get('/api/logs', adminGuard, (req, res) => res.json(activityLogs));
-  app.delete('/api/logs', adminGuard, (req, res) => {
+  app.delete('/api/logs', adminGuard, async (req, res) => {
     activityLogs.length = 0;
+    if (storage && logsFile) {
+      await storage.write(logsFile, []).catch(() => {});
+    }
     res.json({ success: true });
   });
 

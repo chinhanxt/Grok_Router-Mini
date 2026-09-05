@@ -8,6 +8,8 @@ export class AppConfig {
     this.DATA_DIR = env.DATA_DIR || path.join(os.homedir(), '.grok-router');
     this.ACCOUNTS_FILE = path.join(this.DATA_DIR, 'accounts.json');
     this.USERS_FILE = path.join(this.DATA_DIR, 'users.json');
+    this.STATS_FILE = path.join(this.DATA_DIR, 'stats.json');
+    this.LOGS_FILE = path.join(this.DATA_DIR, 'logs.json');
     this.AUTH_SECRET = env.AUTH_SECRET || 'grok-mini-auth-secret-key-2026';
     this.GROK_PROXY_BASE = 'https://cli-chat-proxy.grok.com/v1';
     this.XAI_CLIENT_ID = 'b1a00492-073a-47ea-816f-4c329264a828';

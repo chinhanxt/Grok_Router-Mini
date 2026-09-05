@@ -52,6 +52,18 @@ export function createAccountRouter(accountPool, authMiddleware, nodeHealthServi
     }
   });
 
+  // Get persistent statistics
+  router.get(['/stats', '/api/accounts/stats'], guard, (req, res) => {
+    if (typeof accountPool.getStats === 'function') {
+      return res.json(accountPool.getStats());
+    }
+    const accounts = accountPool.getAccounts();
+    res.json({
+      totalRequests: accounts.reduce((s, a) => s + (a.requestCount || 0), 0),
+      totalTokens: accounts.reduce((s, a) => s + (a.totalTokens || 0), 0)
+    });
+  });
+
   // Export accounts (full credentials for backup & sharing)
   router.get(['/export', '/api/accounts/export'], guard, async (req, res) => {
     try {

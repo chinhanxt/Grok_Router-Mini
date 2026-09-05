@@ -100,7 +100,18 @@ export class LicenseService {
         rawNodes = data.nodes;
       }
 
-      // Nạp các node mới được cấp vào AccountPool (thay thế toàn bộ để tránh cộng dồn)
+      // Map existing accounts to preserve usage stats, cooldowns, and createdAt
+      const existingMap = new Map();
+      for (const acc of (this.accountPool.accounts || [])) {
+        if (acc.id) existingMap.set(acc.id, acc);
+        if (acc.email) existingMap.set(acc.email.toLowerCase(), acc);
+        if (acc.name) existingMap.set(acc.name, acc);
+      }
+
+      // Preserve non-license accounts (manual nodes added by admin)
+      const manualAccounts = (this.accountPool.accounts || []).filter(a => a.source !== 'license');
+
+      // Nạp các node mới được cấp vào AccountPool (đồng bộ thông tin, giữ nguyên thống kê sử dụng)
       const newAccounts = rawNodes.map(n => {
         let expiresAt = n.expiresAt || 0;
         const token = n.ssoToken || n.apiKey || n.token || '';
@@ -113,19 +124,27 @@ export class LicenseService {
             }
           } catch {}
         }
+        const email = (n.email || '').trim().toLowerCase();
+        const licId = `lic-${n.id || crypto.randomUUID().slice(0, 8)}`;
+        const existing = existingMap.get(licId) || (email ? existingMap.get(email) : null) || (n.name ? existingMap.get(n.name) : null);
+
         return new Account({
-          id: `lic-${n.id || crypto.randomUUID().slice(0, 8)}`,
-          name: n.name || n.email || 'Cloud Node',
-          email: n.email || '',
+          id: existing ? existing.id : licId,
+          name: n.name || n.email || (existing ? existing.name : 'Cloud Node'),
+          email: email || (existing ? existing.email : ''),
           ssoToken: token,
-          refreshToken: n.refreshToken || '',
+          refreshToken: n.refreshToken || (existing ? existing.refreshToken : ''),
           source: 'license',
-          status: n.status || 'active',
-          expiresAt
+          status: (existing && existing.status === 'disabled') ? 'disabled' : (n.status || 'active'),
+          cooldownUntil: existing ? (existing.cooldownUntil || 0) : 0,
+          requestCount: existing ? (existing.requestCount || 0) : 0,
+          totalTokens: existing ? (existing.totalTokens || 0) : 0,
+          expiresAt: expiresAt || (existing ? existing.expiresAt : 0),
+          createdAt: existing ? existing.createdAt : Date.now()
         });
       });
 
-      this.accountPool.accounts = newAccounts;
+      this.accountPool.accounts = [...manualAccounts, ...newAccounts];
       await this.accountPool.save();
 
       // Lưu trạng thái license

@@ -12,6 +12,27 @@ export class AccountPool {
   async init() {
     const raw = await this.storage.read(this.config.ACCOUNTS_FILE, []);
     this.accounts = raw.map(Account.fromJSON);
+    if (this.config?.STATS_FILE) {
+      this.stats = await this.storage.read(this.config.STATS_FILE, {
+        totalRequests: 0,
+        totalTokens: 0,
+        createdAt: Date.now(),
+        lastUpdated: Date.now()
+      });
+      const accTokens = this.accounts.reduce((s, a) => s + (a.totalTokens || 0), 0);
+      const accRequests = this.accounts.reduce((s, a) => s + (a.requestCount || 0), 0);
+      if (accTokens > (this.stats.totalTokens || 0)) this.stats.totalTokens = accTokens;
+      if (accRequests > (this.stats.totalRequests || 0)) this.stats.totalRequests = accRequests;
+    }
+  }
+
+  getStats() {
+    const accTokens = this.accounts.reduce((s, a) => s + (a.totalTokens || 0), 0);
+    const accRequests = this.accounts.reduce((s, a) => s + (a.requestCount || 0), 0);
+    return {
+      totalRequests: Math.max(this.stats?.totalRequests || 0, accRequests),
+      totalTokens: Math.max(this.stats?.totalTokens || 0, accTokens)
+    };
   }
 
   getAccounts() {
@@ -59,6 +80,12 @@ export class AccountPool {
       acc.requestCount = (acc.requestCount || 0) + 1;
       acc.totalTokens = (acc.totalTokens || 0) + tokens;
       await this.save();
+    }
+    if (this.stats && this.config?.STATS_FILE) {
+      this.stats.totalRequests = (this.stats.totalRequests || 0) + 1;
+      this.stats.totalTokens = (this.stats.totalTokens || 0) + tokens;
+      this.stats.lastUpdated = Date.now();
+      await this.storage.write(this.config.STATS_FILE, this.stats).catch(() => {});
     }
   }
 

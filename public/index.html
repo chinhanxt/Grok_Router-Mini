@@ -2865,6 +2865,17 @@
         if (!res.ok) return;
         accounts = await res.json();
         renderAccountsPage();
+
+        // Also fetch persistent server stats to avoid any reset on updates
+        fetch('/api/accounts/stats', {
+          headers: { 'Authorization': 'Bearer ' + currentToken }
+        }).then(r => r.ok ? r.json() : null).then(st => {
+          if (st) {
+            if (st.totalTokens) localStorage.setItem('stat_cumulative_tokens', String(Math.max(st.totalTokens, parseInt(localStorage.getItem('stat_cumulative_tokens') || '0', 10))));
+            if (st.totalRequests) localStorage.setItem('stat_cumulative_requests', String(Math.max(st.totalRequests, parseInt(localStorage.getItem('stat_cumulative_requests') || '0', 10))));
+            renderAccountsPage();
+          }
+        }).catch(() => {});
       } catch (err) {
         console.error(err);
       }
@@ -3093,10 +3104,16 @@
       tbody.innerHTML = '';
       const total = accounts.length;
 
-      // Aggregated KPIs across all streams
+      // Aggregated KPIs across all streams (with persistent cumulative fallback)
       const now = Date.now();
-      const totalTokens = accounts.reduce((s, a) => s + (a.totalTokens || 0), 0);
-      const totalRequests = accounts.reduce((s, a) => s + (a.requestCount || 0), 0);
+      const computedTokens = accounts.reduce((s, a) => s + (a.totalTokens || 0), 0);
+      const computedRequests = accounts.reduce((s, a) => s + (a.requestCount || 0), 0);
+      const storedTokens = parseInt(localStorage.getItem('stat_cumulative_tokens') || '0', 10) || 0;
+      const storedRequests = parseInt(localStorage.getItem('stat_cumulative_requests') || '0', 10) || 0;
+      const totalTokens = Math.max(computedTokens, storedTokens);
+      const totalRequests = Math.max(computedRequests, storedRequests);
+      if (totalTokens > storedTokens) localStorage.setItem('stat_cumulative_tokens', String(totalTokens));
+      if (totalRequests > storedRequests) localStorage.setItem('stat_cumulative_requests', String(totalRequests));
       const activeCount = accounts.filter(a => a.status === 'active' || (a.status !== 'disabled' && (!a.cooldownUntil || a.cooldownUntil <= now))).length;
       const coolingCount = accounts.filter(a => a.status === 'cooling' && a.cooldownUntil > now).length;
       const disabledCount = accounts.filter(a => a.status === 'disabled').length;

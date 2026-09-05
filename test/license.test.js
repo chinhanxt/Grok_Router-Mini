@@ -86,3 +86,66 @@ test('licenseRoutes mount on /api/license and respond to HTTP requests', async (
     fs.rmSync(tmpDir, { recursive: true, force: true });
   }
 });
+
+test('LicenseService preserves existing account usage metrics and manual accounts on re-activation', async () => {
+  const tmpDir = path.join(os.tmpdir(), `test-lic-stats-${Date.now()}`);
+  const config = new AppConfig({ DATA_DIR: tmpDir });
+  const storage = new JsonStorage();
+  const pool = new AccountPool(storage, config);
+  const licenseService = new LicenseService(pool, storage, config);
+
+  // Setup mock license server
+  const mockApp = createApp({ config });
+  mockApp.post('/api/license', (req, res) => {
+    res.json({
+      ok: true,
+      label: 'Pro Package',
+      packageId: 'pro',
+      nodes: [
+        { id: 'node-alpha', name: 'Node Alpha', email: 'alpha@example.com', token: 'jwt.token.1' },
+        { id: 'node-beta', name: 'Node Beta', email: 'beta@example.com', token: 'jwt.token.2' }
+      ]
+    });
+  });
+
+  const mockServer = mockApp.listen(0);
+  const mockPort = mockServer.address().port;
+  const mockUrl = `http://127.0.0.1:${mockPort}`;
+
+  try {
+    // Add a manual account first
+    await pool.addAccount({ id: 'manual-1', name: 'Manual Node', email: 'manual@domain.com', source: 'manual' });
+    assert.equal(pool.accounts.length, 1);
+
+    // Initial activation
+    const act1 = await licenseService.activate('PRO-KEY', mockUrl);
+    assert.equal(act1.ok, true);
+    assert.equal(pool.accounts.length, 3); // 1 manual + 2 license
+
+    const alpha = pool.accounts.find(a => a.email === 'alpha@example.com');
+    assert.ok(alpha);
+    assert.equal(alpha.requestCount, 0);
+    assert.equal(alpha.totalTokens, 0);
+
+    // Simulate usage
+    await pool.incrementUsage(alpha.id, 1250);
+    assert.equal(alpha.requestCount, 1);
+    assert.equal(alpha.totalTokens, 1250);
+
+    // Re-activate / update license (e.g. startup sync or package refresh)
+    const act2 = await licenseService.activate('PRO-KEY', mockUrl);
+    assert.equal(act2.ok, true);
+
+    // Verify statistics & manual account were PRESERVED, not reset!
+    assert.equal(pool.accounts.length, 3);
+    const alphaAfter = pool.accounts.find(a => a.email === 'alpha@example.com');
+    assert.equal(alphaAfter.requestCount, 1, 'requestCount must not be wiped to 0');
+    assert.equal(alphaAfter.totalTokens, 1250, 'totalTokens must not be wiped to 0');
+
+    const manualAfter = pool.accounts.find(a => a.id === 'manual-1');
+    assert.ok(manualAfter, 'manual account must be preserved');
+  } finally {
+    mockServer.close();
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
+});
