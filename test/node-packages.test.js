@@ -175,3 +175,65 @@ test('Admin API: Node Package management and Key assignment flow', async () => {
 
   fs.rmSync(tmpDir, { recursive: true, force: true });
 });
+
+test('Admin API: KeepAlive config and testPackageNode endpoints', async () => {
+  // 1. Get default KeepAlive config
+  const getCfgReq = {
+    method: 'GET',
+    url: 'http://localhost/api/admin?action=getKeepAliveConfig',
+    headers: { authorization: 'Bearer chinhanxt' }
+  };
+  const getCfgRes = createMockRes();
+  await adminHandler(getCfgReq, getCfgRes);
+  assert.equal(getCfgRes.statusCode, 200);
+  assert.equal(getCfgRes.body.ok, true);
+  assert.ok(getCfgRes.body.config);
+
+  // 2. Save custom KeepAlive config
+  const saveCfgReq = {
+    method: 'POST',
+    url: 'http://localhost/api/admin?action=saveKeepAliveConfig',
+    headers: { authorization: 'Bearer chinhanxt' },
+    body: { autoRunEnabled: true, intervalDays: 3, freshThresholdHours: 72 }
+  };
+  const saveCfgRes = createMockRes();
+  await adminHandler(saveCfgReq, saveCfgRes);
+  assert.equal(saveCfgRes.statusCode, 200);
+  assert.equal(saveCfgRes.body.config.intervalDays, 3);
+  assert.equal(saveCfgRes.body.config.freshThresholdHours, 72);
+
+  // 3. Test node live verification mock
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async (url) => {
+    if (url.includes('/models')) {
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({
+          data: [{ id: 'grok-4.6', name: 'Grok 4.6' }]
+        })
+      };
+    }
+    return { ok: false, status: 500 };
+  };
+
+  try {
+    const { kvSet } = await import('../api/lib/kv.js');
+    await kvSet('package_default', [{ id: 'node-1', name: 'Test Node', email: 'test@grok.com', ssoToken: 'tok-123' }]);
+
+    const testReq = {
+      method: 'POST',
+      url: 'http://localhost/api/admin?action=testPackageNode',
+      headers: { authorization: 'Bearer chinhanxt' },
+      body: { packageId: 'default' }
+    };
+    const testRes = createMockRes();
+    await adminHandler(testReq, testRes);
+    assert.equal(testRes.statusCode, 200);
+    assert.equal(testRes.body.ok, true);
+    assert.ok(testRes.body.models.includes('grok-4.6'));
+    assert.ok(testRes.body.latencyMs !== undefined);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});

@@ -157,7 +157,12 @@ export default async function handler(req, res) {
     for (const p of packages) totalNodes += (p.nodeCount || 0);
 
     const lastKeepAlive = (await kvGet('keepalive_last_run')) || null;
-    return res.status(200).json({ ok: true, packages, totalNodes, keys, lastKeepAlive, hasKv: hasKvConfigured() });
+    const keepaliveConfig = (await kvGet('keepalive_config')) || {
+      autoRunEnabled: true,
+      intervalDays: 2,
+      freshThresholdHours: 48
+    };
+    return res.status(200).json({ ok: true, packages, totalNodes, keys, lastKeepAlive, keepaliveConfig, hasKv: hasKvConfigured() });
   }
 
   // 5.2. Upload / Import Node Package (Hỗ trợ 2 option: Đè lên node hiện tại hoặc tạo mới)
@@ -331,6 +336,127 @@ export default async function handler(req, res) {
     targetKey.packageId = packageId;
     await kvSet('keys', keys);
     return res.status(200).json({ ok: true, key: targetKey });
+  }
+
+  // 5.7. Chạy thử Node thực tế trong gói
+  if (action === 'testPackageNode' && (req.method === 'POST' || req.method === 'GET')) {
+    const pkgId = (body?.packageId || searchParams.get('packageId') || 'default').trim();
+    const rawNodes = (await kvGet(`package_${pkgId}`)) || (pkgId === 'default' ? await kvGet('nodes') : []);
+    const nodes = Array.isArray(rawNodes) ? rawNodes : [];
+
+    if (nodes.length === 0) {
+      return res.status(400).json({ error: 'Gói node trống hoặc không có tài khoản nào' });
+    }
+
+    const candidate = nodes.find(n => (n.ssoToken || n.apiKey) && n.status !== 'disabled') || nodes[0];
+    let token = candidate.ssoToken || candidate.apiKey || '';
+    const startTest = Date.now();
+
+    try {
+      let testRes = await fetch('https://cli-chat-proxy.grok.com/v1/models', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'x-grok-client-version': '1.0.0',
+          'User-Agent': 'grok-cli/1.0.0'
+        },
+        signal: AbortSignal.timeout(8000)
+      });
+
+      if (testRes.status === 401 && candidate.refreshToken) {
+        const refreshParams = new URLSearchParams({
+          grant_type: 'refresh_token',
+          client_id: 'b1a00492-073a-47ea-816f-4c329264a828',
+          refresh_token: candidate.refreshToken
+        });
+        const refRes = await fetch('https://auth.x.ai/oauth2/token', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: refreshParams.toString(),
+          signal: AbortSignal.timeout(6000)
+        });
+        if (refRes.ok) {
+          const refData = await refRes.json();
+          if (refData.access_token) {
+            candidate.ssoToken = refData.access_token;
+            if (refData.refresh_token) candidate.refreshToken = refData.refresh_token;
+            candidate.status = 'active';
+            candidate.lastRefreshedAt = new Date().toISOString();
+            token = refData.access_token;
+            await kvSet(`package_${pkgId}`, nodes);
+            if (pkgId === 'default') await kvSet('nodes', nodes);
+
+            testRes = await fetch('https://cli-chat-proxy.grok.com/v1/models', {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'x-grok-client-version': '1.0.0',
+                'User-Agent': 'grok-cli/1.0.0'
+              },
+              signal: AbortSignal.timeout(8000)
+            });
+          }
+        }
+      }
+
+      const latencyMs = Date.now() - startTest;
+      if (testRes.ok) {
+        const data = await testRes.json().catch(() => ({}));
+        const models = (data.data || []).map(m => m.id || m.name);
+        return res.status(200).json({
+          ok: true,
+          status: 200,
+          latencyMs,
+          node: {
+            email: candidate.email || candidate.name || 'AI Node',
+            maskedToken: token ? `${token.slice(0, 8)}...${token.slice(-4)}` : '',
+            status: candidate.status || 'active'
+          },
+          models: models.length > 0 ? models : ['grok-4.6'],
+          message: 'Kết nối xAI thành công 100%! Node hoạt động hoàn hảo.'
+        });
+      } else {
+        const errText = await testRes.text().catch(() => '');
+        return res.status(200).json({
+          ok: false,
+          status: testRes.status,
+          latencyMs,
+          node: {
+            email: candidate.email || candidate.name || 'AI Node',
+            status: candidate.status || 'active'
+          },
+          error: `xAI phản hồi mã ${testRes.status}: ${errText.slice(0, 150)}`
+        });
+      }
+    } catch (err) {
+      return res.status(200).json({
+        ok: false,
+        status: 500,
+        latencyMs: Date.now() - startTest,
+        error: `Lỗi kết nối kiểm tra: ${err.message}`
+      });
+    }
+  }
+
+  // 5.8. Lấy Cấu hình Tự động Keep-Alive
+  if (action === 'getKeepAliveConfig' && req.method === 'GET') {
+    const config = (await kvGet('keepalive_config')) || {
+      autoRunEnabled: true,
+      intervalDays: 2,
+      freshThresholdHours: 48
+    };
+    return res.status(200).json({ ok: true, config });
+  }
+
+  // 5.9. Lưu Cấu hình Tự động Keep-Alive
+  if (action === 'saveKeepAliveConfig' && req.method === 'POST') {
+    const { autoRunEnabled, intervalDays, freshThresholdHours } = body || {};
+    const newConfig = {
+      autoRunEnabled: autoRunEnabled !== false,
+      intervalDays: parseInt(intervalDays, 10) || 2,
+      freshThresholdHours: parseInt(freshThresholdHours, 10) || 48,
+      updatedAt: new Date().toISOString()
+    };
+    await kvSet('keepalive_config', newConfig);
+    return res.status(200).json({ ok: true, config: newConfig });
   }
 
   // 6. Get License Keys

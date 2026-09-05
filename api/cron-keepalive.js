@@ -65,7 +65,7 @@ async function refreshSingleNode(node) {
   }
 }
 
-async function processPackage(pkgId, startTime) {
+async function processPackage(pkgId, startTime, freshThresholdMs = FRESH_THRESHOLD_MS) {
   const rawNodes = (await kvGet(`package_${pkgId}`)) || (pkgId === 'default' ? await kvGet('nodes') : []);
   const nodes = Array.isArray(rawNodes) ? rawNodes : [];
   if (nodes.length === 0) return { checked: 0, refreshed: 0, expired: 0, skipped: 0, errors: 0 };
@@ -87,7 +87,7 @@ async function processPackage(pkgId, startTime) {
     const promises = chunk.map(async node => {
       if (node.lastRefreshedAt && node.status === 'active') {
         const lastRef = new Date(node.lastRefreshedAt).getTime();
-        if (now - lastRef < FRESH_THRESHOLD_MS) {
+        if (now - lastRef < freshThresholdMs) {
           skipped++;
           return;
         }
@@ -137,6 +137,15 @@ export default async function handler(req, res) {
   }
 
   try {
+    const config = (await kvGet('keepalive_config')) || {};
+    const isVercelCron = req.headers['x-vercel-cron'] === '1';
+    if (config.autoRunEnabled === false && isVercelCron) {
+      return res.status(200).json({ ok: true, message: 'Keep-Alive is disabled in settings', skipped: true });
+    }
+
+    const freshHours = parseInt(config.freshThresholdHours, 10) || 48;
+    const freshThresholdMs = freshHours * 60 * 60 * 1000;
+
     const rawPackages = await kvGet('node_packages');
     let packages = Array.isArray(rawPackages) ? rawPackages : [];
 
@@ -157,7 +166,7 @@ export default async function handler(req, res) {
     for (const pkg of packages) {
       if (Date.now() - startTime >= MAX_EXECUTION_MS) break;
 
-      const pResult = await processPackage(pkg.id, startTime);
+      const pResult = await processPackage(pkg.id, startTime, freshThresholdMs);
       summary.packagesProcessed++;
       summary.totalChecked += pResult.checked;
       summary.refreshed += pResult.refreshed;
