@@ -1314,23 +1314,6 @@
       gap: 0.65rem;
     }
 
-    .playground-header-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0.35rem 0.5rem;
-      background-color: var(--secondary);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      font-size: 0.775rem;
-    }
-
-    .playground-meta-left {
-      display: flex;
-      align-items: center;
-      gap: 0.65rem;
-    }
-
     .claude-thinking-card {
       border: 1px solid #e2e8f0;
       background-color: #fafaf9;
@@ -1462,14 +1445,35 @@
 
       <div id="loginAlert" class="alert alert-danger hidden"></div>
 
+      <!-- Thông tin đăng nhập mặc định cho Local -->
+      <div style="margin-bottom: 1.15rem; padding: 0.75rem 0.85rem; background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: var(--radius-md); font-size: 0.815rem; color: #166534;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.35rem;">
+          <span style="font-weight: 600; display: flex; align-items: center; gap: 5px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+            Tài khoản quản trị (Local)
+          </span>
+          <button type="button" onclick="prefillAdminLogin()" style="background: #dcfce7; border: 1px solid #86efac; color: #15803d; font-size: 11px; padding: 2px 8px; border-radius: 4px; cursor: pointer; font-weight: 600;">
+            Điền nhanh
+          </button>
+        </div>
+        <div style="display: flex; gap: 0.85rem; font-family: var(--font-mono); font-size: 0.775rem;">
+          <span>Tài khoản: <strong>admin</strong></span>
+          <span>Mật khẩu: <strong>admin123</strong></span>
+        </div>
+      </div>
+
       <form id="loginForm" onsubmit="handleLogin(event)">
         <div class="form-group">
           <label for="loginEmail">Tài khoản</label>
-          <input type="text" id="loginEmail" placeholder="Nhập tài khoản..." required autocomplete="username">
+          <input type="text" id="loginEmail" value="admin" placeholder="admin" required autocomplete="username">
         </div>
         <div class="form-group">
           <label for="loginPassword">Mật khẩu</label>
-          <input type="password" id="loginPassword" placeholder="Nhập mật khẩu..." required autocomplete="current-password">
+          <input type="password" id="loginPassword" value="admin123" placeholder="admin123" required autocomplete="current-password">
         </div>
         <button type="submit" class="btn btn-primary btn-block" id="loginBtn">Đăng nhập</button>
       </form>
@@ -1791,26 +1795,6 @@
 
             <!-- Playground Output Container -->
             <div class="playground-output-container" id="aiTestContainer">
-              <!-- Top bar with model badge, TTFT & timing info, action buttons (Copy) -->
-              <div class="playground-header-bar hidden" id="aiTestHeaderBar">
-                <div class="playground-meta-left">
-                  <span class="badge badge-outline" id="aiTestModelBadge" style="display: inline-flex; align-items: center; gap: 4px; font-weight: 600;">
-                    <span class="status-indicator online" style="width: 6px; height: 6px;"></span>
-                    <span id="aiTestModelName">Claude Sonnet 5</span>
-                  </span>
-                  <span class="playground-time-stat" id="aiTestTimeStat" style="font-size: 11px; color: var(--muted-foreground);"></span>
-                </div>
-                <div class="playground-actions">
-                  <button class="btn btn-outline btn-xs" id="copyResultBtn" onclick="copyPlaygroundResult()" title="Sao chép câu trả lời" style="display: inline-flex; align-items: center; gap: 4px;">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                    <span id="copyResultText">Sao chép</span>
-                  </button>
-                </div>
-              </div>
-
               <!-- Claude Thinking Card -->
               <div class="claude-thinking-card hidden" id="claudeThinkingCard">
                 <div class="thinking-header" onclick="toggleThinkingDetails()">
@@ -1834,8 +1818,19 @@
                 </div>
               </div>
 
-              <!-- Answer Area -->
-              <div class="playground-result" id="aiTestResult">Kết quả phản hồi...</div>
+              <!-- Answer Area with Copy Button -->
+              <div class="playground-answer-wrapper" style="display: flex; flex-direction: column; gap: 0.4rem;">
+                <div class="playground-result" id="aiTestResult">Kết quả phản hồi...</div>
+                <div style="display: flex; justify-content: flex-end;">
+                  <button class="btn btn-outline btn-xs hidden" id="copyResultBtn" onclick="copyPlaygroundResult()" title="Sao chép câu trả lời" style="display: inline-flex; align-items: center; gap: 4px;">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    <span id="copyResultText">Sao chép</span>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -2651,6 +2646,13 @@
       }
     }
 
+    function prefillAdminLogin() {
+      const emailInput = document.getElementById('loginEmail');
+      const passInput = document.getElementById('loginPassword');
+      if (emailInput) emailInput.value = 'admin';
+      if (passInput) passInput.value = 'admin123';
+    }
+
     let thinkingTimer = null;
 
     async function sendAITest() {
@@ -2659,9 +2661,7 @@
       const model = document.getElementById('aiTestModel').value;
       const sendBtn = document.getElementById('aiTestBtn');
       const resultBox = document.getElementById('aiTestResult');
-      const headerBar = document.getElementById('aiTestHeaderBar');
-      const modelNameEl = document.getElementById('aiTestModelName');
-      const timeStatEl = document.getElementById('aiTestTimeStat');
+      const copyBtn = document.getElementById('copyResultBtn');
       const thinkingCard = document.getElementById('claudeThinkingCard');
       const thinkingSparkle = document.getElementById('thinkingSparkle');
       const thinkingTitle = document.getElementById('thinkingTitle');
@@ -2680,8 +2680,8 @@
       const hasAccounts = Array.isArray(accounts) && accounts.length > 0;
 
       if (!hasActiveLicense && !hasAccounts) {
-        if (headerBar) headerBar.classList.add('hidden');
         if (thinkingCard) thinkingCard.classList.add('hidden');
+        if (copyBtn) copyBtn.classList.add('hidden');
         resultBox.innerHTML = '<strong style="color:var(--destructive);">Chưa có mã sử dụng.</strong><br/><br/>Vui lòng chuyển sang mục <a href="javascript:void(0)" onclick="switchTab(\'license\')" style="color:#2563eb; text-decoration:underline; font-weight:600;">Mã sử dụng</a> để kích hoạt License Key trước khi gửi tin nhắn thử nghiệm.';
         resultBox.style.color = 'var(--destructive)';
         showToast('Chưa có mã sử dụng! Vui lòng kích hoạt License Key.', 'error');
@@ -2691,19 +2691,13 @@
       // Reset state
       sendBtn.disabled = true;
       playgroundRawContent = '';
+      if (copyBtn) copyBtn.classList.add('hidden');
       if (thinkingTimer) {
         clearInterval(thinkingTimer);
         thinkingTimer = null;
       }
 
-      // Show header bar & thinking card in active state
-      if (headerBar) headerBar.classList.remove('hidden');
-      if (modelNameEl) {
-        const modelLabelEl = document.getElementById('selectedModelLabel');
-        modelNameEl.textContent = modelLabelEl ? modelLabelEl.textContent : model;
-      }
-      if (timeStatEl) timeStatEl.textContent = 'Đang kết nối...';
-
+      // Show thinking card in active state
       if (thinkingCard) thinkingCard.classList.remove('hidden');
       if (thinkingSparkle) thinkingSparkle.classList.add('claude-sparkle-spin');
       if (thinkingTitle) {
@@ -2736,9 +2730,6 @@
         const elapsedSec = ((now - startTime) / 1000).toFixed(1);
         if (!thinkingCompleted && thinkingTimerPill) {
           thinkingTimerPill.textContent = '(' + elapsedSec + 's)';
-        }
-        if (timeStatEl) {
-          timeStatEl.textContent = 'Thời gian: ' + elapsedSec + 's';
         }
       }, 100);
 
@@ -2778,6 +2769,7 @@
         if (!res.ok) {
           if (thinkingTimer) clearInterval(thinkingTimer);
           if (thinkingCard) thinkingCard.classList.add('hidden');
+          if (copyBtn) copyBtn.classList.add('hidden');
           const err = await res.json().catch(() => ({ error: res.statusText }));
           const errMsg = err.error?.message || err.error || err.message || JSON.stringify(err);
           if (err.error?.code === 'no_active_license' || errMsg.includes('Chưa có mã sử dụng')) {
@@ -2787,7 +2779,6 @@
             resultBox.textContent = '[' + res.status + '] ' + errMsg;
           }
           resultBox.style.color = 'var(--destructive)';
-          if (timeStatEl) timeStatEl.textContent = 'Lỗi kết nối';
           return;
         }
 
@@ -2834,12 +2825,10 @@
                 if (thinkTagOpen !== -1) {
                   const thinkTagClose = accumulatedRawStream.indexOf('</thinking>');
                   if (thinkTagClose === -1) {
-                    // Still streaming thinking inside <thinking>
                     accumulatedThinking = accumulatedRawStream.slice(thinkTagOpen + 10);
                     if (thinkingContent) thinkingContent.textContent = accumulatedThinking;
                     continue;
                   } else {
-                    // Finished <thinking> tag
                     accumulatedThinking = accumulatedRawStream.slice(thinkTagOpen + 10, thinkTagClose);
                     if (thinkingContent) thinkingContent.textContent = accumulatedThinking;
                     accumulatedContent = (accumulatedRawStream.slice(0, thinkTagOpen) + accumulatedRawStream.slice(thinkTagClose + 11)).trimStart();
@@ -2854,6 +2843,7 @@
                 }
 
                 playgroundRawContent = accumulatedContent;
+                if (copyBtn) copyBtn.classList.remove('hidden');
 
                 // Render streaming answer with cursor
                 resultBox.textContent = accumulatedContent;
@@ -2872,21 +2862,15 @@
 
         // Stream completed
         completeThinking();
-        const totalDuration = ((Date.now() - startTime) / 1000).toFixed(1);
-        const ttftMs = firstTokenTime ? (firstTokenTime - startTime) : (Date.now() - startTime);
-
         resultBox.textContent = accumulatedContent || '(Không có nội dung trả về)';
         playgroundRawContent = accumulatedContent;
-
-        if (timeStatEl) {
-          timeStatEl.textContent = 'Tổng: ' + totalDuration + 's • TTFT: ' + ttftMs + 'ms';
-        }
+        if (copyBtn && accumulatedContent) copyBtn.classList.remove('hidden');
       } catch (err) {
         if (thinkingTimer) clearInterval(thinkingTimer);
         completeThinking();
         resultBox.textContent = err.message;
         resultBox.style.color = 'var(--destructive)';
-        if (timeStatEl) timeStatEl.textContent = 'Lỗi truy vấn';
+        if (copyBtn) copyBtn.classList.add('hidden');
       } finally {
         if (thinkingTimer) {
           clearInterval(thinkingTimer);
