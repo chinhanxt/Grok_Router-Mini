@@ -34,9 +34,26 @@ export async function pipeAnthropicStream(upstreamRes, clientRes, reqModel, msgI
 
   let outputTokens = 0;
   let buffer = '';
+  let thinkingBlockStarted = false;
   let textBlockStarted = false;
   let currentBlockIndex = 0;
   const openToolBlocks = new Map();
+
+  const closeThinkingBlock = () => {
+    if (thinkingBlockStarted) {
+      writeAndFlush(`event: content_block_delta\ndata: ${JSON.stringify({
+        type: 'content_block_delta',
+        index: currentBlockIndex,
+        delta: { type: 'signature_delta', signature: 'sig_' + crypto.randomUUID().replace(/-/g, '').slice(0, 32) }
+      })}\n\n`);
+      writeAndFlush(`event: content_block_stop\ndata: ${JSON.stringify({
+        type: 'content_block_stop',
+        index: currentBlockIndex
+      })}\n\n`);
+      thinkingBlockStarted = false;
+      currentBlockIndex += 1;
+    }
+  };
 
   const processChunk = (chunkStr) => {
     buffer += chunkStr;
@@ -54,7 +71,26 @@ export async function pipeAnthropicStream(upstreamRes, clientRes, reqModel, msgI
         const delta = parsed.choices?.[0]?.delta;
         if (!delta) continue;
 
+        const reasoningChunk = delta.reasoning_content ?? delta.thought ?? delta.reasoning;
+        if (reasoningChunk) {
+          if (!thinkingBlockStarted) {
+            thinkingBlockStarted = true;
+            writeAndFlush(`event: content_block_start\ndata: ${JSON.stringify({
+              type: 'content_block_start',
+              index: currentBlockIndex,
+              content_block: { type: 'thinking', thinking: '' }
+            })}\n\n`);
+          }
+          outputTokens += 1;
+          writeAndFlush(`event: content_block_delta\ndata: ${JSON.stringify({
+            type: 'content_block_delta',
+            index: currentBlockIndex,
+            delta: { type: 'thinking_delta', thinking: reasoningChunk }
+          })}\n\n`);
+        }
+
         if (delta.content) {
+          closeThinkingBlock();
           if (!textBlockStarted) {
             textBlockStarted = true;
             writeAndFlush(`event: content_block_start\ndata: ${JSON.stringify({
@@ -72,6 +108,7 @@ export async function pipeAnthropicStream(upstreamRes, clientRes, reqModel, msgI
         }
 
         if (Array.isArray(delta.tool_calls)) {
+          closeThinkingBlock();
           if (textBlockStarted) {
             writeAndFlush(`event: content_block_stop\ndata: ${JSON.stringify({
               type: 'content_block_stop',
@@ -163,6 +200,7 @@ export async function pipeAnthropicStream(upstreamRes, clientRes, reqModel, msgI
       } catch {}
     }
   } finally {
+    closeThinkingBlock();
     if (textBlockStarted) {
       writeAndFlush(`event: content_block_stop\ndata: ${JSON.stringify({
         type: 'content_block_stop',

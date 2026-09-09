@@ -18,6 +18,47 @@ export function resolveReasoningEffort(reqModel, explicitEffort = null) {
   return 'medium';
 }
 
+export function pruneToolResult(text, isRecent = false, isError = false) {
+  if (!text || typeof text !== 'string') return text || '';
+
+  // If error, preserve full error unless massively bloated
+  if (isError) {
+    if (text.length <= 8000) return text;
+    const lines = text.split('\n');
+    if (lines.length > 50) {
+      const head = lines.slice(0, 25).join('\n');
+      const tail = lines.slice(-25).join('\n');
+      return `${head}\n\n[... Truncated ${lines.length - 50} lines of error details by Grok Router ...]\n\n${tail}`;
+    }
+    return text.slice(0, 4000) + '\n[... Truncated error details ...]\n' + text.slice(-4000);
+  }
+
+  // If recent (last 2-3 turns), keep full content unless massive
+  if (isRecent) {
+    if (text.length <= 15000) return text;
+    const lines = text.split('\n');
+    if (lines.length > 100) {
+      const head = lines.slice(0, 50).join('\n');
+      const tail = lines.slice(-50).join('\n');
+      return `${head}\n\n[... Truncated ${lines.length - 100} lines of large tool output by Grok Router ...]\n\n${tail}`;
+    }
+    return text.slice(0, 7500) + '\n[... Truncated large tool output ...]\n' + text.slice(-7500);
+  }
+
+  // For older turns, prune aggressively by line count (> 30 lines) or character length (> 1500 chars)
+  const lines = text.split('\n');
+  if (lines.length > 30) {
+    const head = lines.slice(0, 12).join('\n');
+    const tail = lines.slice(-12).join('\n');
+    return `${head}\n\n[... Truncated ${lines.length - 24} lines of previous tool output by Grok Router to preserve context ...]\n\n${tail}`;
+  }
+  if (text.length > 1500) {
+    return text.slice(0, 700) + '\n[... Truncated previous output by Grok Router ...]\n' + text.slice(-700);
+  }
+
+  return text;
+}
+
 export function buildOpenAIPayload(reqBody, reqModel) {
   const messages = [];
 
@@ -43,7 +84,11 @@ export function buildOpenAIPayload(reqBody, reqModel) {
   }
 
   if (Array.isArray(reqBody.messages)) {
-    for (const msg of reqBody.messages) {
+    const totalMsgs = reqBody.messages.length;
+    for (let msgIdx = 0; msgIdx < totalMsgs; msgIdx++) {
+      const msg = reqBody.messages[msgIdx];
+      const isRecent = msgIdx >= totalMsgs - 4;
+
       if (typeof msg.content === 'string') {
         messages.push({ role: msg.role, content: msg.content });
       } else if (Array.isArray(msg.content)) {
@@ -80,9 +125,31 @@ export function buildOpenAIPayload(reqBody, reqModel) {
                 ? block.content.map(c => c.text || JSON.stringify(c)).join('\n')
                 : JSON.stringify(block.content || '');
 
-            if (block.is_error) {
-              resultText = `[ERROR]: ${resultText}`;
+            const isError = Boolean(block.is_error);
+
+            // Autonomous self-healing recovery hints
+            if (isError || resultText.includes('String to replace not found') || resultText.includes('File edit failed')) {
+              if (resultText.includes('String to replace not found') || resultText.includes('File edit failed') || resultText.includes('does not match')) {
+                resultText = `[TOOL ERROR - EDIT STRING MISMATCH]:
+Chuỗi old_string không khớp chính xác với nội dung file thực tế trên đĩa.
+[AUTONOMOUS RECOVERY INSTRUCTION]:
+1. Tuyệt đối KHÔNG đoán nội dung file. Hãy gọi ngay công cụ View (hoặc file read) để đọc lại chính xác các dòng code cần sửa.
+2. Sao chép chính xác 100% từng ký tự, dấu cách thụt lề (indentation) và ngắt dòng từ kết quả View vào old_string.
+3. Sau đó thử lại công cụ Edit với old_string chuẩn xác.
+Chi tiết lỗi gốc: ${resultText}`;
+              } else if (resultText.toLowerCase().includes('command failed') || resultText.includes('exit code')) {
+                resultText = `[TOOL ERROR - COMMAND EXECUTION FAILED]:
+Lệnh Bash vừa thực thi bị lỗi hoặc kết thúc với mã lỗi khác 0.
+[AUTONOMOUS RECOVERY INSTRUCTION]:
+Phân tích kỹ thông báo lỗi bên dưới, xác định nguyên nhân (sai đường dẫn, thiếu module, cú pháp...) và tự động sửa chữa trước khi tiếp tục.
+Chi tiết lỗi: ${resultText}`;
+              } else {
+                resultText = `[TOOL ERROR]: ${resultText}\n[AUTONOMOUS RECOVERY INSTRUCTION]: Công cụ gặp lỗi. Hãy kiểm tra nguyên nhân và thử cách tiếp cận thay thế phù hợp.`;
+              }
             }
+
+            // Context pruning for older turns
+            resultText = pruneToolResult(resultText, isRecent, isError);
 
             messages.push({
               role: 'tool',
@@ -148,6 +215,15 @@ export function formatAnthropicResponse(data, reqModel, msgId) {
   const choice = data.choices?.[0];
   const msg = choice?.message || {};
   const contentBlocks = [];
+
+  const reasoning = msg.reasoning_content || msg.thought || msg.reasoning;
+  if (reasoning) {
+    contentBlocks.push({
+      type: 'thinking',
+      thinking: reasoning,
+      signature: 'sig_' + crypto.randomUUID().replace(/-/g, '').slice(0, 32)
+    });
+  }
 
   if (msg.content) {
     contentBlocks.push({ type: 'text', text: sanitizeClaudeText(msg.content) });

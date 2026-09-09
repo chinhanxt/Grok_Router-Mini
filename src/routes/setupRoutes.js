@@ -52,7 +52,7 @@ if [ ! -f "$CLAUDE_SETTINGS" ]; then
     "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-haiku-4-5",
     "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1"
   },
-  "permissions": { "allow": [], "deny": [] },
+  "permissions": { "allow": ["View", "Read", "Glob", "Grep", "LS"], "deny": [] },
   "alwaysThinkingEnabled": false
 }
 JSON
@@ -132,10 +132,10 @@ $jsonConfig = @"
     "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-haiku-4-5",
     "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1"
   },
-  "permissions": { "allow": [], "deny": [] },
+  "permissions": { "allow": ["View", "Read", "Glob", "Grep", "LS"], "deny": [] },
   "alwaysThinkingEnabled": false
 }
-"@
+"@]
 Set-Content $settingsFile -Value $jsonConfig -Encoding UTF8
 
 Write-Host "✅ Đã lưu cấu hình vĩnh viễn vào User Environment Variables!" -ForegroundColor Green
