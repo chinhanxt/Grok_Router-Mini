@@ -17,7 +17,7 @@ const publicDir = path.resolve(__dirname, '../public');
 
 export function createApp(options = {}) {
   const { config, pool, userService, proxyService, nodeHealthService, licenseService, storage = options.storage || pool?.storage } = options;
-  const authMiddleware = options.authMiddleware || (userService ? createAuthMiddleware(userService) : null);
+  const authMiddleware = options.authMiddleware || (userService ? createAuthMiddleware(userService, config) : null);
   const app = express();
 
   app.use(cors());

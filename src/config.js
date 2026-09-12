@@ -11,6 +11,7 @@ export class AppConfig {
     this.STATS_FILE = path.join(this.DATA_DIR, 'stats.json');
     this.LOGS_FILE = path.join(this.DATA_DIR, 'logs.json');
     this.AUTH_SECRET = env.AUTH_SECRET || 'grok-mini-auth-secret-key-2026';
+    this.API_KEY = env.API_KEY || 'sk-keychinhan-xtchinhan-YOUR_KEY';
     this.GROK_PROXY_BASE = 'https://cli-chat-proxy.grok.com/v1';
     this.XAI_CLIENT_ID = 'b1a00492-073a-47ea-816f-4c329264a828';
     this.XAI_AUTH_BASE = 'https://auth.x.ai';

@@ -41,6 +41,7 @@ test('Setup routes return correct bash, powershell, and cmd scripts with dynamic
     assert.ok(bashText.includes('settings.json'));
     assert.ok(bashText.includes('"alwaysThinkingEnabled": false'));
     assert.ok(bashText.includes('CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC="1"'));
+    assert.ok(bashText.includes('NO_PROXY="localhost,127.0.0.1"'));
 
     // Test alias: /install.sh
     const bashAliasRes = await fetch(`${baseUrl}/install.sh`);
@@ -62,6 +63,7 @@ test('Setup routes return correct bash, powershell, and cmd scripts with dynamic
     assert.ok(psText.includes('settings.json'));
     assert.ok(psText.includes('"alwaysThinkingEnabled": false'));
     assert.ok(psText.includes('SetEnvironmentVariable'));
+    assert.ok(psText.includes('NO_PROXY'));
 
     // 3. Windows CMD script: /claude.cmd
     const cmdRes = await fetch(`${baseUrl}/claude.cmd?key=test-token-cmd`, {
@@ -77,6 +79,14 @@ test('Setup routes return correct bash, powershell, and cmd scripts with dynamic
     assert.ok(cmdText.includes('claude-opus-5'));
     assert.ok(cmdText.includes('claude-haiku-4-5'));
     assert.ok(cmdText.includes('setx ANTHROPIC_BASE_URL'));
+    assert.ok(cmdText.includes('NO_PROXY'));
+
+    // 4. Verify localhost is normalized to 127.0.0.1
+    const normRes = await fetch(`${baseUrl}/claude.sh`, {
+      headers: { 'x-forwarded-host': 'localhost:3005' }
+    });
+    const normText = await normRes.text();
+    assert.ok(normText.includes('ANTHROPIC_BASE_URL="http://127.0.0.1:3005"'));
   } finally {
     server.close();
   }

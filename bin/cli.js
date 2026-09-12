@@ -18,9 +18,9 @@ const { checkUpdate, formatUpdateBanner } = await import(notifierPath);
 
 const distShortcut = path.join(__dirname, '../dist/utils/shortcut.js');
 const shortcutPath = fs.existsSync(distShortcut) ? distShortcut : path.join(__dirname, '../src/utils/shortcut.js');
-const { setupShortcut } = await import(shortcutPath);
+const { setupShortcut, syncClaudeConfig } = await import(shortcutPath);
 
-let pkg = { name: 'ai-claude-keyapi', version: '1.0.14' };
+let pkg = { name: 'ai-claude-keyapi', version: '1.0.15' };
 try {
   const rawPkg = fs.readFileSync(path.join(__dirname, '../package.json'), 'utf8');
   pkg = JSON.parse(rawPkg);
@@ -73,7 +73,7 @@ Options:
 }
 
 function printBanner(port, host) {
-  const localUrl = `http://localhost:${port}`;
+  const localUrl = `http://127.0.0.1:${port}`;
   const cReset = '\x1b[0m', cBold = '\x1b[1m', cCyan = '\x1b[36m';
   const cGreen = '\x1b[32m', cYellow = '\x1b[33m', cDim = '\x1b[2m';
 
@@ -101,6 +101,10 @@ ${cCyan}┌───────────────────────
      ${cYellow}Windows (CMD):${cReset}
        curl -fsSL ${localUrl}/claude.cmd -o setup.cmd && setup.cmd
 
+  ${cBold}💡 Mẹo khi làm trọn gói cả dự án lớn:${cReset}
+     Chạy: ${cGreen}claude --dangerously-skip-permissions${cReset}
+     ${cDim}(Agent tự động tạo thư mục, ghi file & chạy lệnh liên tục không dừng hỏi quyền)${cReset}
+
   ${cDim}Press Ctrl+C to stop the server${cReset}
 `);
 }
@@ -114,7 +118,7 @@ async function startWithPortFallback(options) {
       return { server, port: currentPort };
     } catch (err) {
       if (err.code === 'EADDRINUSE' && attempt < maxAttempts - 1) {
-        console.log(`\x1b[33m⚠️ Port ${currentPort} is in use. Trying port ${currentPort + 1}...\x1b[0m`);
+        console.log(`\x1b[33m⚠️ Cổng ${currentPort} đang bận (hoặc đang có tiến trình aiclaude khác chạy). Tự động chuyển sang cổng ${currentPort + 1}...\x1b[0m`);
         currentPort++;
         continue;
       }
@@ -139,6 +143,17 @@ async function main() {
 
     printBanner(resolvedPort, resolvedHost);
 
+    // Auto-sync Claude Code configuration so Claude CLI always connects to the active port
+    if (typeof syncClaudeConfig === 'function') {
+      const syncResult = syncClaudeConfig({
+        port: resolvedPort,
+        apiKey: options.license || server.config?.API_KEY
+      });
+      if (syncResult?.synced) {
+        console.log(`  \x1b[32m✔ Đã tự động đồng bộ cấu hình Claude Code -> http://127.0.0.1:${resolvedPort}\x1b[0m\n`);
+      }
+    }
+
     if (options.license && server.licenseService) {
       console.log(`\x1b[36m🔑 Đang kích hoạt License Key: ${options.license}...\x1b[0m`);
       const lic = await server.licenseService.activate(options.license);
@@ -149,15 +164,30 @@ async function main() {
       }
     }
 
-    checkUpdate({ packageName: pkg.name, currentVersion: pkg.version }).then(res => {
+    try {
+      const updatePromise = checkUpdate({ packageName: pkg.name, currentVersion: pkg.version });
+      const res = await Promise.race([
+        updatePromise,
+        new Promise(resolve => setTimeout(() => resolve(null), 600))
+      ]);
       if (res?.hasUpdate && res?.latestVersion) {
         console.log(formatUpdateBanner({
           packageName: pkg.name,
           currentVersion: pkg.version,
           latestVersion: res.latestVersion
         }));
+      } else if (!res) {
+        updatePromise.then(lateRes => {
+          if (lateRes?.hasUpdate && lateRes?.latestVersion) {
+            console.log(formatUpdateBanner({
+              packageName: pkg.name,
+              currentVersion: pkg.version,
+              latestVersion: lateRes.latestVersion
+            }));
+          }
+        }).catch(() => {});
       }
-    }).catch(() => {});
+    } catch {}
 
     const cleanup = () => {
       console.log('\nGracefully shutting down AI Claude KeyAPI...');

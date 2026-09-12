@@ -44,7 +44,7 @@ export async function startServer(portOrOptions = {}, maybeHost = null) {
 
   const nodeHealthService = new NodeHealthService(pool, config);
   const proxyService = new ProxyService(pool, config, nodeHealthService);
-  const authMiddleware = createAuthMiddleware(userService);
+  const authMiddleware = createAuthMiddleware(userService, config);
   const licenseService = new LicenseService(pool, storage, config);
   await licenseService.syncOnStartup();
   const licenseHeartbeat = new LicenseHeartbeat(licenseService, pool, storage, config);

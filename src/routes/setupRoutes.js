@@ -12,7 +12,12 @@ export function createSetupRouter(config = {}) {
   }
 
   function getBaseUrl(req) {
-    const host = req.headers['x-forwarded-host'] || req.headers.host || 'localhost:3005';
+    let host = req.headers['x-forwarded-host'] || req.headers.host || '127.0.0.1:3005';
+    if (host.startsWith('localhost:')) {
+      host = host.replace('localhost:', '127.0.0.1:');
+    } else if (host === 'localhost') {
+      host = '127.0.0.1';
+    }
     const proto = req.headers['x-forwarded-proto'] || req.protocol || 'http';
     return `${proto}://${host}`;
   }
@@ -31,6 +36,7 @@ export ANTHROPIC_DEFAULT_OPUS_MODEL="claude-opus-5"
 export ANTHROPIC_DEFAULT_SONNET_MODEL="claude-sonnet-5"
 export ANTHROPIC_DEFAULT_HAIKU_MODEL="claude-haiku-4-5"
 export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC="1"
+export NO_PROXY="localhost,127.0.0.1"
 
 CLAUDE_SETTINGS="$HOME/.claude/settings.json"
 mkdir -p "$HOME/.claude" 2>/dev/null || true
@@ -50,7 +56,8 @@ if [ ! -f "$CLAUDE_SETTINGS" ]; then
     "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-5",
     "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-5",
     "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-haiku-4-5",
-    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1"
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+    "NO_PROXY": "localhost,127.0.0.1"
   },
   "permissions": { "allow": ["View", "Read", "Glob", "Grep", "LS"], "deny": [] },
   "alwaysThinkingEnabled": false
@@ -72,6 +79,7 @@ fi
 if [ -n "$RC_FILE" ]; then
   sed "\${SED_INPLACE[@]}" '/ANTHROPIC_/d' "$RC_FILE" 2>/dev/null || true
   sed "\${SED_INPLACE[@]}" '/CLAUDE_CODE_/d' "$RC_FILE" 2>/dev/null || true
+  sed "\${SED_INPLACE[@]}" '/NO_PROXY/d' "$RC_FILE" 2>/dev/null || true
   echo 'export ANTHROPIC_BASE_URL="${baseUrl}"' >> "$RC_FILE"
   echo 'export ANTHROPIC_AUTH_TOKEN="${key}"' >> "$RC_FILE"
   echo 'export ANTHROPIC_DEFAULT_FABLE_MODEL="claude-fable-5-1"' >> "$RC_FILE"
@@ -79,9 +87,12 @@ if [ -n "$RC_FILE" ]; then
   echo 'export ANTHROPIC_DEFAULT_SONNET_MODEL="claude-sonnet-5"' >> "$RC_FILE"
   echo 'export ANTHROPIC_DEFAULT_HAIKU_MODEL="claude-haiku-4-5"' >> "$RC_FILE"
   echo 'export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC="1"' >> "$RC_FILE"
+  echo 'export NO_PROXY="localhost,127.0.0.1"' >> "$RC_FILE"
+  echo 'alias claudex="claude --dangerously-skip-permissions"' >> "$RC_FILE"
 fi
 
 echo "🚀 Khởi động Claude Code qua AI Gateway (${baseUrl})..."
+echo "💡 Mẹo làm trọn gói dự án: Chạy 'claude --dangerously-skip-permissions' (hoặc 'claudex') để tự động tạo file và chạy lệnh liên tục!"
 if command -v claude >/dev/null 2>&1; then
   exec claude "$@"
 else
@@ -108,6 +119,7 @@ $apiKey = "${key}"
 [System.Environment]::SetEnvironmentVariable('ANTHROPIC_DEFAULT_SONNET_MODEL', 'claude-sonnet-5', 'User')
 [System.Environment]::SetEnvironmentVariable('ANTHROPIC_DEFAULT_HAIKU_MODEL', 'claude-haiku-4-5', 'User')
 [System.Environment]::SetEnvironmentVariable('CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC', '1', 'User')
+[System.Environment]::SetEnvironmentVariable('NO_PROXY', 'localhost,127.0.0.1', 'User')
 
 $env:ANTHROPIC_BASE_URL = $baseUrl
 $env:ANTHROPIC_AUTH_TOKEN = $apiKey
@@ -116,6 +128,7 @@ $env:ANTHROPIC_DEFAULT_OPUS_MODEL = 'claude-opus-5'
 $env:ANTHROPIC_DEFAULT_SONNET_MODEL = 'claude-sonnet-5'
 $env:ANTHROPIC_DEFAULT_HAIKU_MODEL = 'claude-haiku-4-5'
 $env:CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = '1'
+$env:NO_PROXY = 'localhost,127.0.0.1'
 
 $claudeDir = "$HOME\\.claude"
 if (!(Test-Path $claudeDir)) { New-Item -ItemType Directory -Path $claudeDir -Force | Out-Null }
@@ -130,15 +143,17 @@ $jsonConfig = @"
     "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-5",
     "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-5",
     "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-haiku-4-5",
-    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1"
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+    "NO_PROXY": "localhost,127.0.0.1"
   },
   "permissions": { "allow": ["View", "Read", "Glob", "Grep", "LS"], "deny": [] },
   "alwaysThinkingEnabled": false
 }
-"@]
+"@
 Set-Content $settingsFile -Value $jsonConfig -Encoding UTF8
 
 Write-Host "✅ Đã lưu cấu hình vĩnh viễn vào User Environment Variables!" -ForegroundColor Green
+Write-Host "💡 Mẹo làm trọn gói dự án: Chạy 'claude --dangerously-skip-permissions' để tự động tạo file và chạy lệnh liên tục!" -ForegroundColor Yellow
 Write-Host "🚀 Đang mở Claude Code qua AI Gateway ($baseUrl)..." -ForegroundColor Cyan
 
 if (Get-Command claude -ErrorAction SilentlyContinue) {
@@ -169,6 +184,7 @@ setx ANTHROPIC_DEFAULT_OPUS_MODEL "claude-opus-5" >nul 2>&1
 setx ANTHROPIC_DEFAULT_SONNET_MODEL "claude-sonnet-5" >nul 2>&1
 setx ANTHROPIC_DEFAULT_HAIKU_MODEL "claude-haiku-4-5" >nul 2>&1
 setx CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC "1" >nul 2>&1
+setx NO_PROXY "localhost,127.0.0.1" >nul 2>&1
 
 set "ANTHROPIC_BASE_URL=%BASE_URL%"
 set "ANTHROPIC_AUTH_TOKEN=%API_KEY%"
@@ -177,8 +193,10 @@ set "ANTHROPIC_DEFAULT_OPUS_MODEL=claude-opus-5"
 set "ANTHROPIC_DEFAULT_SONNET_MODEL=claude-sonnet-5"
 set "ANTHROPIC_DEFAULT_HAIKU_MODEL=claude-haiku-4-5"
 set "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1"
+set "NO_PROXY=localhost,127.0.0.1"
 
 echo [OK] Da luu cau hinh vao Windows Environment!
+echo [*] Meo lam tron goi du an: Chay 'claude --dangerously-skip-permissions' de tu dong tao file lien tuc!
 echo [..] Dang khoi dong Claude Code (%BASE_URL%)...
 
 where claude >nul 2>&1

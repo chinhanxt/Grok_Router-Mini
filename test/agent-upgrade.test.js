@@ -26,6 +26,8 @@ test('Agent Protocol includes precise Edit string matching and ReAct verificatio
   assert.ok(AUTONOMOUS_AGENT_PROTOCOL.includes('AUTONOMOUS REACT WORKFLOW'));
   assert.ok(AUTONOMOUS_AGENT_PROTOCOL.includes('SELF-HEALING AND RESILIENCE'));
   assert.ok(AUTONOMOUS_AGENT_PROTOCOL.includes('DIRECT ACTION OVER EXPLANATION'));
+  assert.ok(AUTONOMOUS_AGENT_PROTOCOL.includes('STRICT BAN ON HALLUCINATED COMPLETION'));
+  assert.ok(AUTONOMOUS_AGENT_PROTOCOL.includes('PROJECT SCAFFOLDING & MULTI-FILE EXECUTION DIRECTIVE'));
 });
 
 test('pruneToolResult prunes older large outputs while preserving recent and error context', () => {

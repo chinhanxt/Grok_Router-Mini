@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
-import { setupShortcut } from '../src/utils/shortcut.js';
+import { setupShortcut, syncClaudeConfig } from '../src/utils/shortcut.js';
 
 test('setupShortcut creates executable in ~/.local/bin and alias in rc on Unix', () => {
   const tmpHome = path.join(os.tmpdir(), 'shortcut-unix-' + Date.now());
@@ -62,6 +62,40 @@ test('setupShortcut creates cmd and ps1 files on Windows', () => {
 
   const cmdContent = fs.readFileSync(cmdPath, 'utf8');
   assert.ok(cmdContent.includes('ai-claude-keyapi'));
+
+  fs.rmSync(tmpHome, { recursive: true, force: true });
+});
+
+test('syncClaudeConfig creates or updates ~/.claude/settings.json with current port and NO_PROXY', () => {
+  const tmpHome = path.join(os.tmpdir(), 'claude-sync-' + Date.now());
+  fs.mkdirSync(tmpHome, { recursive: true });
+
+  const res = syncClaudeConfig({
+    homeDir: tmpHome,
+    platform: 'linux',
+    port: 3005,
+    apiKey: 'sk-test-key-123'
+  });
+
+  assert.equal(res.synced, true);
+  const settingsFile = path.join(tmpHome, '.claude', 'settings.json');
+  assert.ok(fs.existsSync(settingsFile));
+
+  const content = JSON.parse(fs.readFileSync(settingsFile, 'utf8'));
+  assert.equal(content.env.ANTHROPIC_BASE_URL, 'http://127.0.0.1:3005');
+  assert.equal(content.env.ANTHROPIC_AUTH_TOKEN, 'sk-test-key-123');
+  assert.equal(content.env.NO_PROXY, 'localhost,127.0.0.1');
+
+  // Second run with port 3006 should update port without losing permissions or existing token
+  const res2 = syncClaudeConfig({
+    homeDir: tmpHome,
+    platform: 'linux',
+    port: 3006
+  });
+  assert.equal(res2.synced, true);
+  const content2 = JSON.parse(fs.readFileSync(settingsFile, 'utf8'));
+  assert.equal(content2.env.ANTHROPIC_BASE_URL, 'http://127.0.0.1:3006');
+  assert.equal(content2.env.ANTHROPIC_AUTH_TOKEN, 'sk-test-key-123');
 
   fs.rmSync(tmpHome, { recursive: true, force: true });
 });

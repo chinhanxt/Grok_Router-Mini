@@ -38,20 +38,27 @@ Khi gateway đang chạy trên máy của bạn, mở một cửa sổ terminal 
 
 - **macOS / Linux (Bash):**
   ```bash
-  curl -fsSL http://localhost:3005/claude.sh | bash
+  curl -fsSL http://127.0.0.1:3005/claude.sh | bash
   ```
 
 - **Windows (PowerShell):**
   ```powershell
-  irm http://localhost:3005/claude.ps1 | iex
+  irm http://127.0.0.1:3005/claude.ps1 | iex
   ```
 
 - **Windows (Command Prompt):**
   ```cmd
-  curl -fsSL http://localhost:3005/claude.cmd -o setup.cmd && setup.cmd
+  curl -fsSL http://127.0.0.1:3005/claude.cmd -o setup.cmd && setup.cmd
   ```
 
 Sau đó khởi động `claude` trong terminal để bắt đầu làm việc.
+
+> 💡 **Mẹo khi làm trọn gói cả dự án (Scaffolding / Multi-file):**
+> Khởi động Claude Code với cờ tự trị:
+> ```bash
+> claude --dangerously-skip-permissions
+> ```
+> Cờ này cho phép agent tự động tạo thư mục, ghi toàn bộ file code và chạy lệnh cài đặt liên tục mà không bị dừng lại hỏi xác nhận từng thao tác.
 
 ---
 

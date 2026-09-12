@@ -184,6 +184,18 @@ test('AuthMiddleware enforces requireAuth and requireAdmin', async () => {
   called = false;
   requireAdmin(reqAdmin, resAdmin, () => { called = true; });
   assert.equal(called, true);
+
+  // 7. Permanent Master API key passes requireAuth and requireAdmin without expiration
+  const reqMaster = { headers: { authorization: 'Bearer sk-keychinhan-xtchinhan-YOUR_KEY' } };
+  const resMaster = mockRes();
+  called = false;
+  requireAuth(reqMaster, resMaster, () => { called = true; });
+  assert.equal(called, true);
+  assert.equal(reqMaster.user.role, 'admin');
+
+  called = false;
+  requireAdmin(reqMaster, resMaster, () => { called = true; });
+  assert.equal(called, true);
 });
 
 test('createAuthRouter sets up /login, /me, and /users endpoints', async () => {

@@ -1596,9 +1596,21 @@
               </div>
               <div class="code-box-content"><code id="setupCodeContent">curl -fsSL "http://localhost:3005/claude.sh" | bash</code></div>
             </div>
-            <div style="margin-top: 1rem; display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: var(--muted-foreground);">
+            <div style="margin-top: 0.5rem; font-size: 0.78rem; color: #475569; display: flex; align-items: center; gap: 0.35rem;">
+              <span>✨</span>
+              <span><strong>Chỉ cần chạy 1 lần duy nhất</strong> khi thiết lập máy. Cấu hình được lưu vĩnh viễn, khi cập nhật phiên bản mới bạn <strong>không cần chạy lại</strong>.</span>
+            </div>
+            <div style="margin-top: 0.75rem; display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: var(--muted-foreground);">
               <span>Base URL:</span>
               <code style="font-family: var(--font-mono); font-size: 0.8rem; color: #0284c7; background: #f0f9ff; padding: 2px 8px; border-radius: var(--radius-sm); border: 1px solid #bae6fd; font-weight: 600;" id="manualBaseUrl">http://localhost:3005</code>
+            </div>
+
+            <div style="margin-top: 1rem; padding: 0.85rem 1rem; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: var(--radius-md); font-size: 0.82rem; color: #166534; line-height: 1.5;">
+              <div style="font-weight: 600; display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.35rem;">
+                <span>💡</span> Mẹo khi làm trọn gói cả dự án (Scaffolding / Multi-file)
+              </div>
+              <div>Khởi động Claude Code với cờ tự trị: <code style="font-family: var(--font-mono); font-size: 0.8rem; background: #dcfce7; color: #15803d; padding: 2px 6px; border-radius: 4px; font-weight: 600;">claude --dangerously-skip-permissions</code></div>
+              <div style="font-size: 0.78rem; color: #15803d; margin-top: 0.25rem;">Cờ này cho phép agent tự động tạo thư mục, ghi toàn bộ file và chạy lệnh cài đặt liên tục mà không bị gián đoạn hỏi quyền từng thao tác.</div>
             </div>
           </div>
 
@@ -2512,18 +2524,22 @@
     }
 
     function updateSetupCommands() {
-      const origin = window.location.origin;
-      const keyParam = currentToken ? '?key=' + encodeURIComponent(currentToken) : '';
+      let origin = window.location.origin;
+      if (origin.includes('localhost:')) {
+        origin = origin.replace('localhost:', '127.0.0.1:');
+      } else if (origin.endsWith('localhost')) {
+        origin = origin.replace('localhost', '127.0.0.1');
+      }
       const codeElem = document.getElementById('setupCodeContent');
       const manualUrl = document.getElementById('manualBaseUrl');
       if (manualUrl) manualUrl.textContent = origin;
 
       if (currentSetupOs === 'bash') {
-        codeElem.textContent = 'curl -fsSL "' + origin + '/claude.sh' + keyParam + '" | bash';
+        codeElem.textContent = 'curl -fsSL "' + origin + '/claude.sh" | bash';
       } else if (currentSetupOs === 'ps') {
-        codeElem.textContent = 'irm "' + origin + '/claude.ps1' + keyParam + '" | iex';
+        codeElem.textContent = 'irm "' + origin + '/claude.ps1" | iex';
       } else if (currentSetupOs === 'cmd') {
-        codeElem.textContent = 'curl -fsSL "' + origin + '/claude.cmd' + keyParam + '" -o setup.cmd && setup.cmd';
+        codeElem.textContent = 'curl -fsSL "' + origin + '/claude.cmd" -o setup.cmd && setup.cmd';
       }
     }
 

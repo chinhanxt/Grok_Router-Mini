@@ -22,7 +22,7 @@ export function isNewerVersion(latest, current) {
 /**
  * Generate terminal banner notifying about an available update
  */
-export function formatUpdateBanner({ packageName = 'grok-router-mini', currentVersion, latestVersion }) {
+export function formatUpdateBanner({ packageName = 'ai-claude-keyapi', currentVersion, latestVersion }) {
   const cReset = '\x1b[0m';
   const cBold = '\x1b[1m';
   const cYellow = '\x1b[33m';
@@ -36,6 +36,7 @@ ${cYellow}│${cReset}                                                          
 ${cYellow}│${cReset}   ${cBold}🔔 ĐÃ CÓ PHIÊN BẢN MỚI: ${cDim}v${currentVersion}${cReset} ${cBold}→${cReset} ${cGreen}v${latestVersion}${cReset}                   ${cYellow}│${cReset}
 ${cYellow}│${cReset}   Chạy lệnh sau để cập nhật lên bản mới nhất:                ${cYellow}│${cReset}
 ${cYellow}│${cReset}   ${cCyan}npm install -g ${packageName}${cReset}                           ${cYellow}│${cReset}
+${cYellow}│${cReset}   ${cDim}(hoặc chạy: npx ${packageName}@latest)${cReset}                 ${cYellow}│${cReset}
 ${cYellow}│${cReset}                                                             ${cYellow}│${cReset}
 ${cYellow}╰─────────────────────────────────────────────────────────────╯${cReset}`;
 }
@@ -45,10 +46,10 @@ ${cYellow}╰──────────────────────�
  * Safe: never throws or blocks execution
  */
 export async function checkUpdate({
-  packageName = 'grok-router-mini',
+  packageName = 'ai-claude-keyapi',
   currentVersion = '1.0.0',
   cacheDir = null,
-  checkIntervalMs = 12 * 60 * 60 * 1000, // 12 hours
+  checkIntervalMs = 60 * 60 * 1000, // 1 hour
   timeoutMs = 1800
 } = {}) {
   const dir = cacheDir || path.join(os.homedir(), '.grok-router');
