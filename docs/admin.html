@@ -1380,7 +1380,7 @@
                 <span class="status-badge status-active" id="keepaliveBadge">Bật</span>
               </div>
               <div class="keepalive-desc" id="keepaliveStatusText">
-                Tự động kiểm tra và gia hạn token xAI ngầm định kỳ.
+                Tự động kiểm tra và làm mới token lúc 03:00 VN hàng ngày định kỳ 1 ngày/lần.
               </div>
             </div>
             <div class="keepalive-actions">
@@ -1567,14 +1567,14 @@
 
                 <div class="form-group" style="margin-bottom: 18px;">
                   <label class="form-label" style="font-size: 12.5px; font-weight: 600;">Chu kỳ quét tự động:</label>
-                  <input type="hidden" id="tabKeepaliveIntervalDays" value="2" />
+                  <input type="hidden" id="tabKeepaliveIntervalDays" value="1" />
                   <div class="config-pill-grid">
-                    <div class="config-pill-item config-interval-item" data-val="1" onclick="selectKeepaliveInterval(1)">
+                    <div class="config-pill-item config-interval-item active" data-val="1" onclick="selectKeepaliveInterval(1)">
+                      <span class="config-pill-badge">Khuyên dùng</span>
                       <div class="config-pill-title">Mỗi 1 ngày</div>
                       <div class="config-pill-desc">Hàng ngày</div>
                     </div>
-                    <div class="config-pill-item config-interval-item active" data-val="2" onclick="selectKeepaliveInterval(2)">
-                      <span class="config-pill-badge">Khuyên dùng</span>
+                    <div class="config-pill-item config-interval-item" data-val="2" onclick="selectKeepaliveInterval(2)">
                       <div class="config-pill-title">Mỗi 2 ngày</div>
                       <div class="config-pill-desc">Tối ưu an toàn</div>
                     </div>
@@ -1583,18 +1583,18 @@
                       <div class="config-pill-desc">Tiết kiệm lượt gọi</div>
                     </div>
                   </div>
-                                  </div>
+                </div>
 
                 <div class="form-group" style="margin-bottom: 22px;">
                   <label class="form-label" style="font-size: 12.5px; font-weight: 600;">Ngưỡng làm mới token trước khi hết hạn:</label>
-                  <input type="hidden" id="tabKeepaliveFreshThreshold" value="48" />
+                  <input type="hidden" id="tabKeepaliveFreshThreshold" value="24" />
                   <div class="config-pill-grid">
-                    <div class="config-pill-item config-threshold-item" data-val="24" onclick="selectKeepaliveThreshold(24)">
+                    <div class="config-pill-item config-threshold-item active" data-val="24" onclick="selectKeepaliveThreshold(24)">
+                      <span class="config-pill-badge">Khuyên dùng</span>
                       <div class="config-pill-title">24 Giờ</div>
                       <div class="config-pill-desc">Chỉ làm mới sát hạn</div>
                     </div>
-                    <div class="config-pill-item config-threshold-item active" data-val="48" onclick="selectKeepaliveThreshold(48)">
-                      <span class="config-pill-badge">Khuyên dùng</span>
+                    <div class="config-pill-item config-threshold-item" data-val="48" onclick="selectKeepaliveThreshold(48)">
                       <div class="config-pill-title">48 Giờ</div>
                       <div class="config-pill-desc">Làm mới trước 2 ngày</div>
                     </div>
@@ -1914,8 +1914,8 @@
         <div class="form-group">
           <label class="form-label">Tần suất quét làm mới:</label>
           <select id="cfgIntervalDays" class="form-select">
-            <option value="1">Mỗi 1 ngày</option>
-            <option value="2" selected>Mỗi 2 ngày (Khuyên dùng)</option>
+            <option value="1" selected>Mỗi 1 ngày (Khuyên dùng)</option>
+            <option value="2">Mỗi 2 ngày</option>
             <option value="3">Mỗi 3 ngày</option>
           </select>
         </div>
@@ -1923,8 +1923,8 @@
         <div class="form-group">
           <label class="form-label">Bỏ qua token còn tươi mới:</label>
           <select id="cfgFreshHours" class="form-select">
-            <option value="24">Trong vòng 24 giờ</option>
-            <option value="48" selected>Trong vòng 48 giờ (Khuyên dùng)</option>
+            <option value="24" selected>Trong vòng 24 giờ (Khuyên dùng)</option>
+            <option value="48">Trong vòng 48 giờ</option>
             <option value="72">Trong vòng 72 giờ</option>
           </select>
           <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">
@@ -2524,7 +2524,7 @@
       const subText = document.getElementById('dashKeepaliveSub');
       const statusText = document.getElementById('keepaliveStatusText');
 
-      const label = isAct ? `Bật 24/7 (Mỗi ${cfg.intervalDays || 2} ngày lúc ${hourStr} VN)` : 'Đã tạm tắt';
+      const label = isAct ? `Bật 24/7 (Mỗi ${cfg.intervalDays || 1} ngày lúc ${hourStr} VN)` : 'Đã tạm tắt';
       if (badge) {
         badge.className = isAct ? 'status-badge status-active' : 'status-badge status-suspended';
         badge.textContent = isAct ? `Bật (${hourStr})` : 'Tắt';
@@ -2533,7 +2533,7 @@
         dashBadge.textContent = isAct ? 'Bật 24/7' : 'Đã tắt';
         dashBadge.style.color = isAct ? 'var(--status-active)' : 'var(--status-suspended)';
       }
-      if (subText) subText.textContent = `Lịch quét: ${hourStr} VN (${cfg.intervalDays || 2} ngày/lần)`;
+      if (subText) subText.textContent = `Lịch quét: ${hourStr} VN (${cfg.intervalDays || 1} ngày/lần)`;
       if (topPill) topPill.textContent = `Duy trì: ${isAct ? 'Bật (' + hourStr + ')' : 'Tắt'}`;
 
       if (statusText) {
@@ -2541,7 +2541,7 @@
           const dStr = new Date(lastRun.timestamp).toLocaleString('vi-VN');
           statusText.innerHTML = `Lần chạy gần nhất: <strong>${dStr}</strong> (Làm mới: ${lastRun.refreshed || 0} node, Còn hạn: ${lastRun.skipped || 0}) • Lịch: <strong>${hourStr} VN</strong> hàng ngày.`;
         } else {
-          statusText.textContent = `Tự động kiểm tra và làm mới token lúc ${hourStr} VN định kỳ ${cfg.intervalDays || 2} ngày/lần.`;
+          statusText.textContent = `Tự động kiểm tra và làm mới token lúc ${hourStr} VN hàng ngày định kỳ ${cfg.intervalDays || 1} ngày/lần.`;
         }
       }
 
@@ -2550,8 +2550,8 @@
       if (tabAutoRun) tabAutoRun.checked = isAct;
 
       selectKeepaliveHour(cfg.runHour !== undefined ? cfg.runHour : 3, false);
-      selectKeepaliveInterval(cfg.intervalDays || 2);
-      selectKeepaliveThreshold(cfg.freshThresholdHours || 48);
+      selectKeepaliveInterval(cfg.intervalDays || 1);
+      selectKeepaliveThreshold(cfg.freshThresholdHours || 24);
 
       // Status in Tab 4
       const lastTimeEl = document.getElementById('tabKeepaliveLastTime');
@@ -2714,11 +2714,11 @@
 
     // Keepalive Config Modal
     function openKeepaliveConfigModal() {
-      const cfg = window.currentKeepaliveConfig || { autoRunEnabled: true, intervalDays: 2, runHour: 3, freshThresholdHours: 48 };
+      const cfg = window.currentKeepaliveConfig || { autoRunEnabled: true, intervalDays: 1, runHour: 3, freshThresholdHours: 24 };
       document.getElementById('cfgAutoRunEnabled').checked = cfg.autoRunEnabled !== false;
       document.getElementById('cfgRunHour').value = String(cfg.runHour !== undefined ? cfg.runHour : 3);
-      document.getElementById('cfgIntervalDays').value = String(cfg.intervalDays || 2);
-      document.getElementById('cfgFreshHours').value = String(cfg.freshThresholdHours || 48);
+      document.getElementById('cfgIntervalDays').value = String(cfg.intervalDays || 1);
+      document.getElementById('cfgFreshHours').value = String(cfg.freshThresholdHours || 24);
       openModal('modalKeepaliveConfig');
     }
 

@@ -53,7 +53,7 @@ test('Admin API: Node Package management and Key assignment flow', async () => {
     { id: 'n2', name: 'Node 2', email: 'n2@test.com', ssoToken: 'sso-tok-2', refreshToken: 'ref-2' },
     { id: 'n3', name: 'Node 3', email: 'n3@test.com', ssoToken: 'sso-tok-3', refreshToken: 'ref-3' },
     { id: 'n4', name: 'Node 4', email: 'n4@test.com', ssoToken: 'sso-tok-4', refreshToken: 'ref-4' },
-    { id: 'n5', name: 'Node 5', email: 'n5@test.com', ssoToken: 'sso-tok-5', refreshToken: 'ref-5' }
+    { id: 'n5', name: 'Node 5', email: 'n5@test.com', ssoToken: 'sso-tok-5', refreshToken: 'sso=bad_cookie; Domain=.x.ai' }
   ];
 
   const uploadReq = {
@@ -77,6 +77,9 @@ test('Admin API: Node Package management and Key assignment flow', async () => {
   assert.equal(newPkg.name, 'Gói VIP 5 Node');
   assert.equal(newPkg.nodeCount, 5);
 
+  const pkgNodes = await (await import('../api/lib/kv.js')).kvGet(`package_${newPkg.id}`);
+  assert.equal(pkgNodes[4].refreshToken, '', 'Cookie should be stripped from refreshToken');
+
   // 3. getNodePackages returns the new package
   const getPackagesReq = {
     method: 'GET',
@@ -87,6 +90,8 @@ test('Admin API: Node Package management and Key assignment flow', async () => {
   await adminHandler(getPackagesReq, getPackagesRes);
   assert.equal(getPackagesRes.statusCode, 200);
   assert.ok(getPackagesRes.body.packages.some(p => p.id === newPkg.id));
+  assert.equal(getPackagesRes.body.keepaliveConfig.intervalDays, 1);
+  assert.equal(getPackagesRes.body.keepaliveConfig.freshThresholdHours, 24);
 
   // 4. getPackageNodes returns paginated nodes and supports search
   const previewReq = {
@@ -188,6 +193,8 @@ test('Admin API: KeepAlive config and testPackageNode endpoints', async () => {
   assert.equal(getCfgRes.statusCode, 200);
   assert.equal(getCfgRes.body.ok, true);
   assert.ok(getCfgRes.body.config);
+  assert.equal(getCfgRes.body.config.intervalDays, 1);
+  assert.equal(getCfgRes.body.config.freshThresholdHours, 24);
 
   // 2. Save custom KeepAlive config
   const saveCfgReq = {

@@ -4,7 +4,7 @@ import { kvGet, kvSet, verifyAdmin } from './lib/kv.js';
 const XAI_AUTH_BASE = 'https://auth.x.ai';
 const XAI_CLIENT_ID = 'b1a00492-073a-47ea-816f-4c329264a828';
 const MAX_EXECUTION_MS = 50000; // 50s limit before Vercel 60s timeout
-const FRESH_THRESHOLD_MS = 48 * 60 * 60 * 1000; // 48 hours
+const FRESH_THRESHOLD_MS = 24 * 60 * 60 * 1000; // 24 hours
 
 function isAuthorized(req, searchParams) {
   const cronSecret = process.env.CRON_SECRET;
@@ -57,8 +57,9 @@ async function refreshSingleNode(node) {
     if (data.refresh_token) {
       node.refreshToken = data.refresh_token;
     }
-    node.status = 'active';
+    node.expiresAt = new Date(Date.now() + (data.expires_in || 21600) * 1000).toISOString();
     node.lastRefreshedAt = new Date().toISOString();
+    node.status = 'active';
     return { success: true };
   } catch (err) {
     return { transient: true, error: err.message };
@@ -159,7 +160,7 @@ export default async function handler(req, res) {
       }
     }
 
-    const freshHours = parseInt(config.freshThresholdHours, 10) || 48;
+    const freshHours = parseInt(config.freshThresholdHours, 10) || 24;
     const freshThresholdMs = freshHours * 60 * 60 * 1000;
 
     const rawPackages = await kvGet('node_packages');

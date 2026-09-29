@@ -159,9 +159,9 @@ export default async function handler(req, res) {
     const lastKeepAlive = (await kvGet('keepalive_last_run')) || null;
     const keepaliveConfig = (await kvGet('keepalive_config')) || {
       autoRunEnabled: true,
-      intervalDays: 2,
+      intervalDays: 1,
       runHour: 3,
-      freshThresholdHours: 48
+      freshThresholdHours: 24
     };
     return res.status(200).json({ ok: true, packages, totalNodes, keys, lastKeepAlive, keepaliveConfig, hasKv: hasKvConfigured() });
   }
@@ -174,14 +174,19 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Danh sách node trống hoặc không hợp lệ' });
     }
 
-    const minified = nodes.map(n => ({
-      id: n.id || crypto.randomUUID(),
-      name: n.name || n.email || 'AI Node',
-      email: n.email || '',
-      ssoToken: n.ssoToken || n.apiKey || n.token || n.access_token || '',
-      refreshToken: n.refreshToken || n.refresh_token || n.ssoRwCookie || '',
-      status: n.status || 'active'
-    })).filter(n => n.ssoToken);
+    const minified = nodes.map(n => {
+      const rawRf = (n.refreshToken || n.refresh_token || '').trim();
+      const isCookie = rawRf.startsWith('sso=') || rawRf.includes(';');
+      return {
+        id: n.id || crypto.randomUUID(),
+        name: n.name || n.email || 'AI Node',
+        email: n.email || '',
+        ssoToken: (n.ssoToken || n.apiKey || n.token || n.access_token || '').trim(),
+        refreshToken: isCookie ? '' : rawRf,
+        ...(n.expiresAt ? { expiresAt: n.expiresAt } : {}),
+        status: n.status || 'active'
+      };
+    }).filter(n => n.ssoToken);
 
     if (minified.length === 0) {
       return res.status(400).json({ error: 'Không tìm thấy token hợp lệ nào trong file' });
@@ -410,6 +415,7 @@ export default async function handler(req, res) {
           if (refData.access_token) {
             candidate.ssoToken = refData.access_token;
             if (refData.refresh_token) candidate.refreshToken = refData.refresh_token;
+            candidate.expiresAt = new Date(Date.now() + (refData.expires_in || 21600) * 1000).toISOString();
             candidate.status = 'active';
             candidate.lastRefreshedAt = new Date().toISOString();
             token = refData.access_token;
@@ -471,9 +477,9 @@ export default async function handler(req, res) {
   if (action === 'getKeepAliveConfig' && req.method === 'GET') {
     const config = (await kvGet('keepalive_config')) || {
       autoRunEnabled: true,
-      intervalDays: 2,
+      intervalDays: 1,
       runHour: 3,
-      freshThresholdHours: 48
+      freshThresholdHours: 24
     };
     return res.status(200).json({ ok: true, config });
   }
@@ -483,9 +489,9 @@ export default async function handler(req, res) {
     const { autoRunEnabled, intervalDays, runHour, freshThresholdHours } = body || {};
     const newConfig = {
       autoRunEnabled: autoRunEnabled !== false,
-      intervalDays: parseInt(intervalDays, 10) || 2,
+      intervalDays: parseInt(intervalDays, 10) || 1,
       runHour: runHour !== undefined ? parseInt(runHour, 10) : 3,
-      freshThresholdHours: parseInt(freshThresholdHours, 10) || 48,
+      freshThresholdHours: parseInt(freshThresholdHours, 10) || 24,
       updatedAt: new Date().toISOString()
     };
     await kvSet('keepalive_config', newConfig);

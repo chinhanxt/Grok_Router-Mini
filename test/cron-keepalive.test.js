@@ -109,6 +109,8 @@ test('cron-keepalive accepts vercel cron header and refreshes tokens', async () 
     assert.equal(updatedNodes[0].refreshToken, 'new-refresh-valid');
     assert.equal(updatedNodes[0].status, 'active');
     assert.ok(updatedNodes[0].lastRefreshedAt);
+    assert.ok(updatedNodes[0].expiresAt);
+    assert.ok(new Date(updatedNodes[0].expiresAt).getTime() > Date.now());
 
     assert.equal(updatedNodes[1].status, 'expired');
 
