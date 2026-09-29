@@ -305,16 +305,46 @@ export default async function handler(req, res) {
     return res.status(200).json(nodes);
   }
 
-  // 5.5. Xóa Gói Node
-  if (action === 'deleteNodePackage' && req.method === 'DELETE') {
-    const id = searchParams.get('id');
-    if (!id || id === 'default') {
-      return res.status(400).json({ error: 'Không thể xóa gói mặc định' });
+  // 5.5. Xóa Gói Node hoặc Làm trống Gói Node
+  if ((action === 'deleteNodePackage' || action === 'deletePackage' || action === 'clearPackageNodes' || action === 'clearNodes') && (req.method === 'DELETE' || req.method === 'POST')) {
+    const id = searchParams.get('id') || searchParams.get('packageId') || body?.packageId || body?.id;
+    if (!id) {
+      return res.status(400).json({ error: 'Thiếu mã gói node (id hoặc packageId)' });
     }
 
     let packages = (await kvGet('node_packages')) || [];
+
+    // Nếu là gói mặc định hoặc yêu cầu làm trống
+    if (id === 'default' || action === 'clearPackageNodes' || action === 'clearNodes') {
+      await kvSet(`package_${id}`, []);
+      if (id === 'default') {
+        await kvSet('nodes', []);
+      }
+      const pkg = packages.find(p => p.id === id);
+      if (pkg) {
+        pkg.nodeCount = 0;
+        pkg.updatedAt = new Date().toISOString();
+        await kvSet('node_packages', packages);
+      }
+      return res.status(200).json({ ok: true, message: `Đã làm sạch toàn bộ node trong gói ${id}`, totalPackages: packages.length });
+    }
+
+    // Xóa gói thông thường
     packages = packages.filter(p => p.id !== id);
     await kvSet('node_packages', packages);
+
+    // Chuyển các key đang dùng gói bị xóa về default
+    let keys = (await kvGet('keys')) || [];
+    let keysUpdated = false;
+    for (const k of keys) {
+      if (k.packageId === id) {
+        k.packageId = 'default';
+        keysUpdated = true;
+      }
+    }
+    if (keysUpdated) {
+      await kvSet('keys', keys);
+    }
 
     const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
     const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;

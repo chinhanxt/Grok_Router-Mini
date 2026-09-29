@@ -3396,6 +3396,11 @@
           <div class="action-dropdown-divider"></div>
           <div class="action-dropdown-item danger" onclick="onMenuDeletePackageClick()">Xóa gói Node</div>
         `;
+      } else {
+        html += `
+          <div class="action-dropdown-divider"></div>
+          <div class="action-dropdown-item danger" onclick="onMenuClearPackageNodesClick()">Làm trống Node (${(p.nodeCount || 0).toLocaleString('vi-VN')})</div>
+        `;
       }
 
       menu.innerHTML = html;
@@ -3411,6 +3416,11 @@
       const id = currentActionPackageId;
       closeActionMenu();
       if (id) deletePackage(id);
+    }
+    function onMenuClearPackageNodesClick() {
+      const id = currentActionPackageId;
+      closeActionMenu();
+      if (id) clearPackageNodes(id);
     }
 
     function positionDropdown(btn, menu) {
@@ -3638,17 +3648,42 @@
       if (!ok) return;
 
       try {
-        const res = await fetch('/api/admin?action=deletePackage&packageId=' + pkgId, {
-          method: 'POST',
+        const res = await fetch('/api/admin?action=deleteNodePackage&id=' + encodeURIComponent(pkgId), {
+          method: 'DELETE',
           headers: authHeaders()
         });
+        const data = await res.json().catch(() => ({}));
         if (res.ok) {
           showAdminToast('Đã xóa gói node thành công', 'success');
           await fetchPackages();
           await fetchKeys();
+        } else {
+          showAdminToast('Lỗi xóa: ' + (data.error || res.statusText), 'error');
         }
       } catch (err) {
         showAdminToast('Lỗi xóa: ' + err.message, 'error');
+      }
+    }
+
+    async function clearPackageNodes(pkgId) {
+      const ok = await customConfirm('Bạn có chắc muốn xóa sạch toàn bộ node trong gói này? Các License Key vẫn được giữ nguyên.', 'Làm trống gói Node');
+      if (!ok) return;
+
+      try {
+        const res = await fetch('/api/admin?action=clearPackageNodes&id=' + encodeURIComponent(pkgId), {
+          method: 'POST',
+          headers: authHeaders()
+        });
+        const data = await res.json().catch(() => ({}));
+        if (res.ok) {
+          showAdminToast('Đã làm trống danh sách node thành công', 'success');
+          await fetchPackages();
+          await fetchKeys();
+        } else {
+          showAdminToast('Lỗi làm trống: ' + (data.error || res.statusText), 'error');
+        }
+      } catch (err) {
+        showAdminToast('Lỗi làm trống: ' + err.message, 'error');
       }
     }
 
